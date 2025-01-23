@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  sushi:
+    build: .
+    container_name: Sushi_php
+    working_dir: /var/www/
+    volumes:
+      - ./ClientLeger:/var/www
+    ports:
+      - "8000:8000"
+    networks:
+      - sushi_network
+    depends_on:
+      - sushi_mysql
+    command: >
+      sh -c "composer install &&
+             npm install &&
+             npm run build &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+    
+  sushi_mysql:
+    image: mysql:8.0
+    container_name: Sushi_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: sushi_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306" 
+    networks:
+      - sushi_network
+    volumes:
+      - sushi_mysql:/var/lib/mysql
+  
+  sushi_phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: Sushi_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: sushi_mysql
+      MYSQL_ROOT_PASSWORD: root
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+    networks:
+      - sushi_network
+
+networks:
+  sushi_network:
+    driver: bridge
+  
+volumes:
+  sushi_mysql:
