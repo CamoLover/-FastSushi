@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('produits')->insert([
+        DB::table('ingredients')->insert([
             ['nom' => 'Fromage', 'photo' => 'fromage.jpg', 'prix_ht' => 2.50, 'type_ingredient' => 'fromage'],
             ['nom' => 'Concombre', 'photo' => 'concombre.jpg', 'prix_ht' => 1.00, 'type_ingredient' => 'légume'],
             ['nom' => 'Avocat', 'photo' => 'avocat.jpg', 'prix_ht' => 2.00, 'type_ingredient' => 'fruit'],
