@@ -27,9 +27,9 @@ class CreaCompteController extends Controller
         $validator = Validator::make($request->all(), [
             'nom'      => 'required|string|max:255',
             'prenom'   => 'required|string|max:255',
-            'telephone'=> 'nullable|string|max:20',
+            'tel'=> 'nullable|string|max:20',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8', // adapter la taille minimale selon vos besoins
+            'mdp' => 'required|string|min:8', // adapter la taille minimale selon vos besoins
         ]);
 
         if ($validator->fails()) {
@@ -42,9 +42,12 @@ class CreaCompteController extends Controller
         $user = Client::create([
             'nom'      => $request->input('nom'),
             'prenom'   => $request->input('prenom'),
-            'telephone'=> $request->input('telephone'),
+            'tel'=> $request->input('telephone'),
             'email'    => $request->input('email'),
-            'password' => Hash::make($request->input('password')), // bcrypt est utilisé par défaut
+            'mdp' => Hash::make($request->input('password')), // bcrypt est utilisé par défaut
+            
+            
+
         ]);
 
         return response()->json([

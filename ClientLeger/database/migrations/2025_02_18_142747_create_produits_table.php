@@ -9,9 +9,9 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('produit', function (Blueprint $table) {
+        Schema::create('produits', function (Blueprint $table) {
             $table->id('id_produit');
             $table->string('nom', 45);
             $table->string('type_produit', 45);
@@ -20,15 +20,16 @@ return new class extends Migration
             $table->string('photo', 200)->nullable();
             $table->decimal('tva', 10, 4);
             $table->string('description', 200)->nullable();
-            $table->timestamps();
+            $table->primary('id_produit');
         });
     }
+    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('produit');
+        Schema::dropIfExists('produits');
     }
 };
