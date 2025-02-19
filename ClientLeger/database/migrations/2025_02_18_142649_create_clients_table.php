@@ -9,27 +9,28 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('Client', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->id('id_client');
             $table->string('nom', 45);
             $table->string('prenom', 45);
             $table->string('email', 45)->nullable();
             $table->string('tel', 45)->nullable();
-            $table->string('mdp', 45);
+            $table->string('mdp', 450);
             $table->string('adresse', 100)->nullable();
             $table->integer('cp')->nullable();
             $table->string('ville', 45)->nullable();
-            $table->timestamps();
+            $table->primary('id_client');
         });
     }
+    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('Client');
+        Schema::dropIfExists('clients');
     }
 };
