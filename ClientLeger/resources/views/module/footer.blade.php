@@ -4,9 +4,7 @@
 
 <footer>
 
-    <div id="branding">
-        <p>FastSushi</p>
-    </div>
+    
 
     <div id="content">
         <div id="description">
@@ -29,11 +27,14 @@
             </div>
 
             <div id="les_reseaux">
-                <p>Insta</p>
+                <p>Instagram</p>
                 <p>Facebook</p>
                 <p>TikTok</p>
             </div>
         </div>
+    </div>
+    <div id="imgfoot">
+     <img src="{{asset('media/FS_Footer.png')}}" alt="" width="100%">
     </div>
 
 </footer>
@@ -45,7 +46,6 @@ body {
     font-family: 'Varela Round', sans-serif;
     background-color: gray;
 }
-
 #remplissage{
     border: 1px solid;
     border-color: red;
@@ -53,19 +53,20 @@ body {
 }
 footer {
     background-color: black;
-    color: red;
     text-align: center;
     padding: 20px;
     display: flex;
     flex-direction: column; 
     align-items: center;
+    margin-left: -15px;
+    margin-right: -15px;
 }
 
 #content {
     display: flex;
-    justify-content: space-between;
     width: 100%;
-    margin-bottom: 450px;
+    flex-wrap: wrap;
+    flex-direction: column;
 }
 
 footer div { 
@@ -74,43 +75,45 @@ footer div {
 }
 
 #description {
-    width: 40%; 
-    text-align: left;
-    background-color: rgb(44, 44, 44);
+    flex-grow: 1; 
+    display: flex;
+    justify-content: center;
+    color: #ccc5b9;
     border-radius: 30px;
-    color: red;
+    text-align: center;
 }
 
 #liens_utiles {
     flex-grow: 1; 
     display: flex;
     justify-content: space-around;
-    background-color: rgb(44, 44, 44);
+    
     border-radius: 30px;
 }
 
 #menu_rapide{
     background-color: rgb(32, 32, 32);
     border-radius: 15px;
-    color: red;
-}
+    color: #ccc5b9;}
 
 #stuff_legal{
-    background-color: rgb(32, 32, 32);
     border-radius: 15px;
-    color: red;
+    color: #ccc5b9;
+    background-color: rgb(32, 32, 32);
 }
 
 #les_reseaux{
-    background-color: rgb(32, 32, 32);
     border-radius: 15px;
-    color: red;
+    color: #ccc5b9;
+    background-color: rgb(32, 32, 32);
 }
 
-#branding{
-    font-size: 400px;
-    height: 10px;
-    border: 1px solid;
+#imgfoot{
+    margin-top: -5px;
+    margin-bottom: -50px;
+    padding: 0;
+    margin-left: -15px;
+    margin-right: -20px;
 }
 
 </style>
