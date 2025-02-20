@@ -24,5 +24,6 @@
     </head>
     <body class="font-sans antialiased bg-[#403D39] text-[#FFFCF2]">
         @include('module.header')
+        @include('module.footer')
     </body>
 </html>
