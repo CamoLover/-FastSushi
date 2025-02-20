@@ -1,16 +1,16 @@
 <header id="floatingHeader" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-[#252422] py-4 px-8 flex justify-between items-center shadow-lg border-b border-[#D90429] rounded-xl transition-transform duration-300">
     <!-- Logo -->
     <div class="text-2xl font-bold tracking-wide transition-transform transform hover:scale-110 text-[#CCC5B9]">
-        <a href="/" class="hover:text-white transition duration-300">Fast Sushi</a>
+        <a href="/" class="hover:text-[#FFFCF2] transition duration-300">Fast Sushi</a>
     </div>
 
     <!-- Navigation -->
     <nav id="navMenu" class="hidden lg:flex space-x-8 text-lg font-semibold text-[#CCC5B9]">
         <ul class="lg:flex space-x-8 hidden">
-            <li><a href="#" class="hover:text-white transition duration-300">Accueil</a></li>
-            <li><a href="#" class="hover:text-white transition duration-300">Menu</a></li>
-            <li><a href="#" class="hover:text-white transition duration-300">A propos</a></li>
-            <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
+            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a></li>
+            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a></li>
+            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a></li>
+            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Contact</a></li>
         </ul>
     </nav>
 
@@ -21,7 +21,7 @@
         </button>
 
         <!-- Context Menu -->
-        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-[#252422] text-white rounded-lg shadow-lg overflow-hidden">
+        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-[#252422] text-[#FFFCF2] rounded-lg shadow-lg overflow-hidden">
             <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
             <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Paramètre</a>
             <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Se Déconnecté</a>
@@ -36,11 +36,11 @@
 
 <!-- Mobile Menu -->
 <div id="mobileMenu" class="fixed top-0 left-0 w-full h-full bg-[#252422] flex flex-col items-center pt-20 space-y-6 text-[#CCC5B9] text-2xl font-semibold z-50 transform translate-x-full transition-transform duration-300">
-    <a href="#" class="hover:text-white transition duration-300">Accueil</a>
-    <a href="#" class="hover:text-white transition duration-300">Menu</a>
-    <a href="#" class="hover:text-white transition duration-300">A propos</a>
-    <a href="#" class="hover:text-white transition duration-300">Contact</a>
-    <button id="closeMenu" class="text-white mt-10"><i class="fa-solid fa-times fa-2x"></i></button>
+    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a>
+    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a>
+    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a>
+    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Contact</a>
+    <button id="closeMenu" class="text-[#FFFCF2] mt-10"><i class="fa-solid fa-times fa-2x"></i></button>
 </div>
 
 <script>
