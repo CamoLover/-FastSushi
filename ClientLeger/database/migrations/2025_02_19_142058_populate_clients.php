@@ -13,6 +13,31 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('clients')->insert([
+
+            [
+                'id_client' => 1,
+                'nom' => 'Dupont',
+                'prenom' => 'Jean',
+                'email' => 'jean.dupont@example.com',
+                'tel' => '0612345678',
+                'mdp' => bcrypt('password123'),
+                'adresse' => '12 rue des Lilas',
+                'cp' => 75001,
+                'ville' => 'Paris'
+            ],
+            [
+                'id_client' => 2,
+                'nom' => 'Martin',
+                'prenom' => 'Sophie',
+                'email' => 'sophie.martin@example.com',
+                'tel' => '0623456789',
+                'mdp' => bcrypt('securepass'),
+                'adresse' => '34 avenue Victor Hugo',
+                'cp' => 69002,
+                'ville' => 'Lyon'
+
+            ],
+           
             [
                 'id_client' => 3,
                 'nom' => 'Lemoine',
@@ -45,7 +70,7 @@ return new class extends Migration
                 'adresse' => '14 avenue de Bretagne',
                 'cp' => 35000,
                 'ville' => 'Rennes',
-            ]
+            ],
         ]);
     }
 
