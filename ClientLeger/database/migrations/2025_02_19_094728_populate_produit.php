@@ -17,7 +17,8 @@ return new class extends Migration {
                 'prix_ht' => 4.5,
                 'tva' => 0.10,
                 'prix_ttc' => 4.95,
-                'description' => 'Délicieuse salade de choux assaisonnée avec une sauce légère et savoureuse.'
+                'description' => 'Délicieuse salade de choux assaisonnée avec une sauce légère et savoureuse.',
+                'photo' =>'saladechoux.png'
             ],
         
             [
@@ -26,7 +27,8 @@ return new class extends Migration {
                 'prix_ht' => 5.0,
                 'tva' => 0.10,
                 'prix_ttc' => 5.5,
-                'description' => 'Salade d\'algues wakame marinées, riche en saveurs et en bienfaits nutritionnels.'
+                'description' => 'Salade d\'algues wakame marinées, riche en saveurs et en bienfaits nutritionnels.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Salade Fève de soja',
@@ -34,7 +36,8 @@ return new class extends Migration {
                 'prix_ht' => 4.2,
                 'tva' => 0.10,
                 'prix_ttc' => 4.62,
-                'description' => 'Salade fraîche de fèves de soja avec une touche de sésame et de sauce soja.'
+                'description' => 'Salade fraîche de fèves de soja avec une touche de sésame et de sauce soja.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Salade Crevettes',
@@ -42,7 +45,8 @@ return new class extends Migration {
                 'prix_ht' => 6.0,
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
-                'description' => 'Salade de crevettes croquantes accompagnée d\'une vinaigrette citronnée.'
+                'description' => 'Salade de crevettes croquantes accompagnée d\'une vinaigrette citronnée.',
+                'photo' =>'concombre.png'
             ],
 
             // Soupes
@@ -52,7 +56,8 @@ return new class extends Migration {
                 'prix_ht' => 3.5,
                 'tva' => 0.10,
                 'prix_ttc' => 3.85,
-                'description' => 'Soupe japonaise traditionnelle à base de miso et de tofu.'
+                'description' => 'Soupe japonaise traditionnelle à base de miso et de tofu.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Soupe Ramen crevettes',
@@ -60,7 +65,8 @@ return new class extends Migration {
                 'prix_ht' => 7.0,
                 'tva' => 0.10,
                 'prix_ttc' => 7.7,
-                'description' => 'Ramen aux crevettes avec un bouillon riche et parfumé.'
+                'description' => 'Ramen aux crevettes avec un bouillon riche et parfumé.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Soupe Ramen Poulet',
@@ -68,7 +74,8 @@ return new class extends Migration {
                 'prix_ht' => 6.5,
                 'tva' => 0.10,
                 'prix_ttc' => 7.15,
-                'description' => 'Ramen au poulet tendre dans un bouillon savoureux.'
+                'description' => 'Ramen au poulet tendre dans un bouillon savoureux.',
+                'photo' =>'concombre.png'
             ],
 
             // Plats
@@ -78,7 +85,8 @@ return new class extends Migration {
                 'prix_ht' => 8.0,
                 'tva' => 0.10,
                 'prix_ttc' => 8.8,
-                'description' => 'Sushi frais au saumon avec du riz vinaigré.'
+                'description' => 'Sushi frais au saumon avec du riz vinaigré.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Sushi Thon',
@@ -86,7 +94,8 @@ return new class extends Migration {
                 'prix_ht' => 8.5,
                 'tva' => 0.10,
                 'prix_ttc' => 9.35,
-                'description' => 'Sushi savoureux au thon rouge.'
+                'description' => 'Sushi savoureux au thon rouge.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Sushi Crevettes',
@@ -94,7 +103,8 @@ return new class extends Migration {
                 'prix_ht' => 7.5,
                 'tva' => 0.10,
                 'prix_ttc' => 8.25,
-                'description' => 'Sushi délicat aux crevettes décortiquées.'
+                'description' => 'Sushi délicat aux crevettes décortiquées.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Sushi Daurade',
@@ -102,7 +112,8 @@ return new class extends Migration {
                 'prix_ht' => 9.0,
                 'tva' => 0.10,
                 'prix_ttc' => 9.9,
-                'description' => 'Sushi raffiné à la daurade tendre.'
+                'description' => 'Sushi raffiné à la daurade tendre.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Sushi Anguille',
@@ -110,7 +121,8 @@ return new class extends Migration {
                 'prix_ht' => 10.0,
                 'tva' => 0.10,
                 'prix_ttc' => 11.0,
-                'description' => 'Sushi unique à l\'anguille grillée et caramélisée.'
+                'description' => 'Sushi unique à l\'anguille grillée et caramélisée.',
+                'photo' =>'concombre.png'
             ],
 
             // Customisations
@@ -120,7 +132,8 @@ return new class extends Migration {
                 'prix_ht' => 6.0,
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
-                'description' => 'Rouleaux de riz garnis d\'ingrédients frais et enroulés dans des feuilles de nori.'
+                'description' => 'Rouleaux de riz garnis d\'ingrédients frais et enroulés dans des feuilles de nori.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'California Rolls',
@@ -128,7 +141,8 @@ return new class extends Migration {
                 'prix_ht' => 6.5,
                 'tva' => 0.10,
                 'prix_ttc' => 7.15,
-                'description' => 'Makis inversés garnis de crabe et d\'avocat.'
+                'description' => 'Makis inversés garnis de crabe et d\'avocat.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Spring Rolls',
@@ -136,7 +150,8 @@ return new class extends Migration {
                 'prix_ht' => 6.8,
                 'tva' => 0.10,
                 'prix_ttc' => 7.48,
-                'description' => 'Rouleaux de printemps frais et légers.'
+                'description' => 'Rouleaux de printemps frais et légers.',
+                'photo' =>'concombre.png'
             ],
 
             // Desserts
@@ -146,7 +161,8 @@ return new class extends Migration {
                 'prix_ht' => 5.0,
                 'tva' => 0.10,
                 'prix_ttc' => 5.5,
-                'description' => 'Gâteau fondant au chocolat avec un cœur coulant.'
+                'description' => 'Gâteau fondant au chocolat avec un cœur coulant.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Maki Nutella banane',
@@ -154,7 +170,8 @@ return new class extends Migration {
                 'prix_ht' => 5.5,
                 'tva' => 0.10,
                 'prix_ttc' => 6.05,
-                'description' => 'Makis sucrés garnis de Nutella et de banane.'
+                'description' => 'Makis sucrés garnis de Nutella et de banane.',
+                'photo' =>'concombre.png'
             ],
             [
                 'nom' => 'Crispy Nutella pané',
@@ -162,7 +179,8 @@ return new class extends Migration {
                 'prix_ht' => 6.0,
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
-                'description' => 'Délice croustillant au Nutella pané.'
+                'description' => 'Délice croustillant au Nutella pané.',
+                'photo' =>'concombre.png'
             ],
         ]);
     }

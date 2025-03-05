@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BestSellerController;
 use App\Http\Controllers\CreaCompteController;
+use App\Http\Controllers\PanierController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,5 +19,14 @@ Route::get('/signup', function () {
     return view('signup');
 });
 
-Route::get('/best-sellers', [BestSellerController::class, 'bestSellers']);
+Route::get('/best-seller', function () {
+    return view('hero');
+});
 
+Route::post('/ajouter-au-panier', [PanierController::class, 'ajouterAuPanier']);
+Route::get('/panier', function () {
+    return view('panier');
+});
+Route::get('/panier', function () {
+    return view('panier');
+});
