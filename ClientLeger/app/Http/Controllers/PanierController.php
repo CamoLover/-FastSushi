@@ -36,4 +36,39 @@ class PanierController extends Controller
             return response()->json(['local' => true, 'produit' => $produit, 'quantite' => $request->quantite]);
         }
     }
+
+    public function index()
+    {
+        $user = Auth::user(); // Récupérer l'utilisateur connecté
+
+        if (!$user) {
+            return redirect('/login')->with('error', 'Vous devez être connecté pour voir votre panier.');
+        }
+
+        $panier = Panier::where('id_client', $user->id)->get(); // Récupération du panier
+        $total = $panier->sum(fn($item) => $item->produit->prix_ttc * $item->quantite);
+
+        return view('panier', compact('panier', 'total')); // Envoi des données à la vue
+    }
+
+    public function voirLePanier() 
+    {
+        $clients = \App\Models\Client::find(1); // Utiliser un ID d'utilisateur fictif pour tester
+        $panier = Panier::where('id_client', $clients->id_client)->with('lignes.produit')->get(); // Récupérer le panier et les lignes avec les produits associés
+        //$panier = Panier::where('id_client', $clients->id_client)->with('lignes')->get(); // Récupérer le panier et les lignes avec les produits associés
+        //dd($panier[0]->lignes);
+        // Calcul du total en parcourant les lignes du panier
+        $total = $panier->sum(fn($item) => $item->lignes->sum(fn($ligne) => $ligne->prix_ttc * $ligne->quantite));
+
+        $panier[0]->lignes = $panier[0]->lignes->map(function ($item) {
+            $item->produit->photo = $item->produit->photo 
+                ? asset('media/' . $item->produit->photo) 
+                : asset('media/concombre.png');
+        
+            return $item; // Retourne l'objet tel quel, mais avec `photo` mis à jour
+        });
+
+        //dd($panier[0]->lignes[0]);  
+        return view('panier', compact('panier', 'total')); // Envoi des données à la vue
+    }
 }

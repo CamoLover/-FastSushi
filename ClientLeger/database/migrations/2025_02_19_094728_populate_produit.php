@@ -49,7 +49,7 @@ return new class extends Migration {
                 'photo' =>'concombre.png'
             ],
 
-            // Soupes
+            // Soupes 5
             [
                 'nom' => 'Soupe Miso',
                 'type_produit' => 'Soupe',
@@ -78,7 +78,7 @@ return new class extends Migration {
                 'photo' =>'concombre.png'
             ],
 
-            // Plats
+            // Plats 8
             [
                 'nom' => 'Sushi Saumon',
                 'type_produit' => 'Plats',
