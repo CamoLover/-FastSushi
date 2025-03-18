@@ -5,8 +5,8 @@
     </div>
 
     <!-- Navigation -->
-    <nav id="navMenu" class="hidden lg:flex space-x-8 text-lg font-semibold text-[#CCC5B9]">
-        <ul class="lg:flex space-x-8 hidden">
+    <nav id="navMenu" class="hidden lg:flex justify-center flex-1 text-lg font-semibold text-[#CCC5B9]">
+        <ul class="flex space-x-8">
             <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a></li>
             <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a></li>
             <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a></li>
@@ -14,24 +14,37 @@
         </ul>
     </nav>
 
-    <!-- Profile Section -->
-    <div class="relative">
-        <button id="profileButton" onclick="toggleMenu()" class="w-10 h-10 rounded-full bg-[#403D39] flex items-center justify-center border-2 border-[#D90d29] hover:scale-110 transition-transform">
-            <i class="fa-solid fa-user fa-lg" style="color: #CCC5B9;"></i>
-        </button>
-
-        <!-- Context Menu -->
-        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-[#252422] text-[#FFFCF2] rounded-lg shadow-lg overflow-hidden">
-            <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
-            <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Paramètre</a>
-            <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Se Déconnecté</a>
+    <!-- Right Section -->
+    <div class="flex items-center space-x-4">
+        <!-- Cart Icon -->
+        <div class="relative">
+            <a href="/panier" class="relative flex items-center justify-center text-[#CCC5B9] hover:text-[#FFFCF2] transition-all hover:scale-110">
+                <i class="fa-solid fa-shopping-cart fa-lg"></i>
+                <span class="absolute -top-2 -right-2 bg-[#D90429] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {{ isset($cartItemCount) ? $cartItemCount : (Session::has('cartItems') ? count(Session::get('cartItems')) : 0) }}
+                </span>
+            </a>
         </div>
-    </div>
 
-    <!-- Hamburger Menu Button -->
-    <button id="menuToggle" class="lg:hidden text-[#CCC5B9] focus:outline-none">
-        <i class="fa-solid fa-bars fa-2x"></i>
-    </button>
+        <!-- Profile Section -->
+        <div class="relative">
+            <button id="profileButton" onclick="toggleMenu()" class="w-10 h-10 rounded-full bg-[#403D39] flex items-center justify-center border-2 border-[#D90d29] hover:scale-110 transition-transform">
+                <i class="fa-solid fa-user fa-lg" style="color: #CCC5B9;"></i>
+            </button>
+
+            <!-- Context Menu -->
+            <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-[#252422] text-[#FFFCF2] rounded-lg shadow-lg overflow-hidden">
+                <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
+                <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Paramètre</a>
+                <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Se Déconnecté</a>
+            </div>
+        </div>
+
+        <!-- Hamburger Menu Button -->
+        <button id="menuToggle" class="lg:hidden text-[#CCC5B9] focus:outline-none">
+            <i class="fa-solid fa-bars fa-2x"></i>
+        </button>
+    </div>
 </header>
 
 <!-- Mobile Menu -->
@@ -40,6 +53,15 @@
     <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a>
     <a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a>
     <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Contact</a>
+    
+    <!-- Cart Link for Mobile -->
+    <a href="/panier" class="hover:text-[#FFFCF2] transition duration-300 flex items-center">
+        <i class="fa-solid fa-shopping-cart mr-2"></i> Panier
+        <span class="ml-2 bg-[#D90429] text-white text-sm font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {{ isset($cartItemCount) ? $cartItemCount : (Session::has('cartItems') ? count(Session::get('cartItems')) : 0) }}
+        </span>
+    </a>
+    
     <button id="closeMenu" class="text-[#FFFCF2] mt-10"><i class="fa-solid fa-times fa-2x"></i></button>
 </div>
 
@@ -73,5 +95,5 @@
         }
     });
 </script>
-<!-- Extra padding so content doesn’t go under the header -->
+<!-- Extra padding so content doesn't go under the header -->
 <div class="h-20"></div>
