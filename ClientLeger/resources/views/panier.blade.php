@@ -142,6 +142,8 @@
             margin-bottom: 1rem;
         }
 
+    
+
         .total-label {
             font-size: 1.25rem;
         }
@@ -149,6 +151,15 @@
         .total-amount {
             font-size: 1.5rem;
             font-weight: bold;
+        }
+
+        .total-labelht {
+            color: #CCC5B9;
+        }
+
+        .total-amountht {
+            
+            color:#CCC5B9;
         }
 
         .checkout-btn {
@@ -179,33 +190,43 @@
     </div>
 
     <div class="cart-container">
-        @foreach ($panier[0]->lignes as $item)
-        <div class="cart-item">
-            <img src="{{ $item->produit->photo }}" alt="{{ $item->nom }}">
-            <div class="item-details">  
-                <h3 class="item-name">{{ $item->nom }}</h3>
-                <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
-            </div>
-            <div class="quantity-controls">
-            <form action="{{ route('panier.update', ['id' => $item->id_panier]) }}" method="POST">
-
-                    @csrf
-                    @method('PUT')
-                    <button type="submit" name="action" value="decrement" class="quantity-btn">-</button>
-                    <span class="quantity-value">{{ $item->quantite }}</span>
-                    <button type="submit" name="action" value="increment" class="quantity-btn">+</button>
-                </form>
-                <form action="{{ route('panier.destroy', ['id' => $item->id_panier]) }}" method="POST">
-
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="delete-btn">&#128465;</button>
-                </form>
-            </div>
-        </div>
+    @foreach (['Entrée', 'Plats', 'Desserts', 'Soupe', 'Customisation'] as $categorie)
+            @php
+                $items = $panier[0]->lignes->where('produit.type_produit', $categorie);
+            @endphp
+            @if ($items->isNotEmpty())
+                <h2>{{ $categorie }}</h2>
+                @foreach ($items as $item)
+                    <div class="cart-item">
+                    <img src="{{ $item->produit->photo }}" alt="{{ $item->nom }}">
+                        <div class="item-details">  
+                            <h3 class="item-name">{{ $item->nom }}</h3>
+                            <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
+                        </div>
+                        <div class="quantity-controls">
+                            <form action="{{ route('panier.update', ['id' => $item->id_panier]) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" name="action" value="decrement" class="quantity-btn">-</button>
+                                <span class="quantity-value">{{ $item->quantite }}</span>
+                                <button type="submit" name="action" value="increment" class="quantity-btn">+</button>
+                            </form>
+                            <form action="{{ route('panier.destroy', ['id' => $item->id_panier]) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="delete-btn">&#128465;</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         @endforeach
         
         <div class="cart-footer">
+        <div class="total">
+                <span class="total-labelht">Total HT</span>
+                <span class="total-amountht">{{ number_format($total_ht, 2, ',', ' ') }} €</span>
+            </div>
             <div class="total">
                 <span class="total-label">Total</span>
                 <span class="total-amount">{{ number_format($total, 2, ',', ' ') }} €</span>
