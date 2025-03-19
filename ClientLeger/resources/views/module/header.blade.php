@@ -7,10 +7,10 @@
     <!-- Navigation -->
     <nav id="navMenu" class="hidden lg:flex justify-center flex-1 text-lg font-semibold text-[#CCC5B9]">
         <ul class="flex space-x-8">
-            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a></li>
+            <li><a href="/" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a></li>
             <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a></li>
-            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a></li>
-            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Contact</a></li>
+            <li><a href="{{ url('/about') }}" class="hover:text-[#FFFCF2] transition duration-300">À propos</a></li>
+            <li><a href="{{ url('/contact') }}" class="hover:text-[#FFFCF2] transition duration-300">Contact</a></li>
         </ul>
     </nav>
 
@@ -26,7 +26,8 @@
             </a>
         </div>
 
-        <!-- Profile Section -->
+        @if(Session::has('client'))
+        <!-- Profile Section for logged in users -->
         <div class="relative">
             <button id="profileButton" onclick="toggleMenu()" class="w-10 h-10 rounded-full bg-[#403D39] flex items-center justify-center border-2 border-[#D90d29] hover:scale-110 transition-transform">
                 <i class="fa-solid fa-user fa-lg" style="color: #CCC5B9;"></i>
@@ -34,11 +35,23 @@
 
             <!-- Context Menu -->
             <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-[#252422] text-[#FFFCF2] rounded-lg shadow-lg overflow-hidden">
+                <div class="block px-4 py-2 text-sm border-b border-[#660708]">
+                    Bonjour, {{ Session::get('client')->prenom }}
+                </div>
                 <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
                 <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Paramètre</a>
-                <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Se Déconnecté</a>
+                <form method="POST" action="{{ route('logout') }}" class="block">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-[#660708]">Se Déconnecter</button>
+                </form>
             </div>
         </div>
+        @else
+        <!-- Login/Signup Button for guests -->
+        <a href="/sign" class="inline-flex items-center px-4 py-2 bg-[#D90429] text-white font-medium rounded-lg hover:bg-[#660708] transition-colors duration-300">
+            <i class="fa-solid fa-sign-in-alt mr-2"></i> Connexion
+        </a>
+        @endif
 
         <!-- Hamburger Menu Button -->
         <button id="menuToggle" class="lg:hidden text-[#CCC5B9] focus:outline-none">
@@ -49,10 +62,10 @@
 
 <!-- Mobile Menu -->
 <div id="mobileMenu" class="fixed top-0 left-0 w-full h-full bg-[#252422] flex flex-col items-center pt-20 space-y-6 text-[#CCC5B9] text-2xl font-semibold z-50 transform translate-x-full transition-transform duration-300">
-    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a>
+    <a href="/" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a>
     <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a>
-    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">A propos</a>
-    <a href="#" class="hover:text-[#FFFCF2] transition duration-300">Contact</a>
+    <a href="{{ url('/about') }}" class="hover:text-[#FFFCF2] transition duration-300">À propos</a>
+    <a href="{{ url('/contact') }}" class="hover:text-[#FFFCF2] transition duration-300">Contact</a>
     
     <!-- Cart Link for Mobile -->
     <a href="/panier" class="hover:text-[#FFFCF2] transition duration-300 flex items-center">
@@ -61,6 +74,12 @@
             {{ isset($cartItemCount) ? $cartItemCount : (Session::has('cartItems') ? count(Session::get('cartItems')) : 0) }}
         </span>
     </a>
+    
+    @if(!Session::has('client'))
+    <a href="/sign" class="hover:text-[#FFFCF2] transition duration-300 flex items-center">
+        <i class="fa-solid fa-sign-in-alt mr-2"></i> Connexion / S'inscrire
+    </a>
+    @endif
     
     <button id="closeMenu" class="text-[#FFFCF2] mt-10"><i class="fa-solid fa-times fa-2x"></i></button>
 </div>
@@ -78,8 +97,9 @@
     }
 
     function closeMenu(event) {
-        if (!event.target.closest("#profileButton") && !event.target.closest("#profileMenu")) {
-            document.getElementById("profileMenu").classList.add("hidden");
+        const profileMenu = document.getElementById("profileMenu");
+        if (profileMenu && !event.target.closest("#profileButton") && !event.target.closest("#profileMenu")) {
+            profileMenu.classList.add("hidden");
         }
     }
 
