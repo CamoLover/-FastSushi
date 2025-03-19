@@ -262,39 +262,60 @@ footer a {
     color: #3c97bf;
     text-decoration: none;
 }
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
     </style>
 </head>
 <body>
 
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
-		<form action="#">
+		<form id="signup-form" action="{{ url('/signup-bdd') }}" method="POST">
+            @csrf
 			<h1>Créer un compte</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-			</div>
-			<span>ou utilisez votre email pour l'inscription</span>
-			<input type="text" placeholder="Nom" />
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Mot de passe" />
-			<button>S'inscrire</button>
+            @if(session('signup_error'))
+            <div class="alert alert-danger">
+                {{ session('signup_error') }}
+            </div>
+            @endif
+			<input type="text" name="nom" placeholder="Nom" required />
+			<input type="text" name="prenom" placeholder="Prénom" required />
+			<input type="email" name="email" placeholder="Email" required />
+			<input type="tel" name="telephone" placeholder="Téléphone" />
+			<input type="password" name="password" placeholder="Mot de passe" required />
+			<button type="submit">S'inscrire</button>
 		</form>
 	</div>
 	<div class="form-container sign-in-container">
-		<form action="#">
+		<form id="signin-form" action="{{ url('/signin-bdd') }}" method="POST">
+            @csrf
 			<h1>Se connecter</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-			</div>
-			<span>ou utilisez votre compte</span>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Mot de passe" />
+            @if(session('signin_error'))
+            <div class="alert alert-danger">
+                {{ session('signin_error') }}
+            </div>
+            @endif
+			<input type="email" name="email" placeholder="Email" required />
+			<input type="password" name="mdp" placeholder="Mot de passe" required />
 			<a href="#">Mot de passe oublié ?</a>
-			<button>Connexion</button>
+			<button type="submit">Connexion</button>
 		</form>
 	</div>
 	<div class="overlay-container">
@@ -325,16 +346,6 @@ footer a {
 
         boutonConnexion.addEventListener('click', () => {
             conteneur.classList.remove("right-panel-active");
-        });
-        document.querySelector("form").addEventListener("submit", function(event) {
-            let inputs = this.querySelectorAll("input");
-            for (let input of inputs) {
-                if (!input.value) {
-                    alert("Veuillez remplir tous les champs !");
-                    event.preventDefault();
-                    return;
-                }
-            }
         });
     });
 </script>
