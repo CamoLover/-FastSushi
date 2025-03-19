@@ -1,185 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre Panier - Restaurant Sushi</title>
-    <style>
-        /* Reset CSS */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.home')
 
-        body {
-            min-height: 100vh;
-            background-color: #252422;
-            color: white;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
+@section('title', 'Fast Sushi - Panier')
 
-        /* Container styles */
-        .container {
-            max-width: 64rem;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-
-        /* Header styles */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-size: 1.875rem;
-            font-weight: bold;
-        }
-
-        .cart-icon {
-            width: 2rem;
-            height: 2rem;
-            color: #D90429;
-        }
-
-        /* Cart container */
-        .cart-container {
-            background-color: #403D39;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Cart item */
-        .cart-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #660708;
-        }
-
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-
-        .cart-item img {
-            width: 6rem;
-            height: 6rem;
-            object-fit: cover;
-            border-radius: 0.5rem;
-        }
-
-        .item-details {
-            flex: 1;
-        }
-
-        .item-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .item-price {
-            color: #CCC5B9;
-        }
-
-        /* Quantity controls */
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .quantity-btn {
-            padding: 0.25rem;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
-        }
-
-        .quantity-btn:hover {
-            background-color: #D90429;
-        }
-
-        .quantity-value {
-            width: 2rem;
-            text-align: center;
-        }
-
-        .delete-btn {
-            margin-left: 1rem;
-            padding: 0.5rem;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
-        }
-
-        .delete-btn:hover {
-            background-color: #D90429;
-        }
-
-        /* Cart footer */
-        .cart-footer {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #660708;
-        }
-
-        .total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-    
-
-        .total-label {
-            font-size: 1.25rem;
-        }
-
-        .total-amount {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .total-labelht {
-            color: #CCC5B9;
-        }
-
-        .total-amountht {
-            
-            color:#CCC5B9;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #D90429;
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .checkout-btn:hover {
-            background-color: #BA181B;
-        }
-    </style>
-</head>
-<body>
+@section('content')
 <div class="container">
     <div class="header">
         <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -204,6 +27,7 @@
                             <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
                         </div>
                         <div class="quantity-controls">
+                        {{--
                             <form action="{{ route('panier.update', ['id' => $item->id_panier]) }}" method="POST">
                                 @csrf
                                 @method('PUT')
@@ -211,11 +35,12 @@
                                 <span class="quantity-value">{{ $item->quantite }}</span>
                                 <button type="submit" name="action" value="increment" class="quantity-btn">+</button>
                             </form>
-                            <form action="{{ route('panier.destroy', ['id' => $item->id_panier]) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="delete-btn">&#128465;</button>
-                            </form>
+                            --}}
+                            <button type="button" 
+                                class="delete-btn"  
+                                data-url="{{ route('panier.destroy', ['id_panier_ligne' => $item->id_panier]) }}" 
+                                onclick="deleteItem(this)">&#128465;
+                            </button>
                         </div>
                     </div>
                 @endforeach
@@ -238,6 +63,4 @@
         </div>
     </div>
 </div>
-
-</body>
-</html>
+@endsection

@@ -135,13 +135,11 @@ class PanierLigneController extends Controller
         ], 200);
     }
 
-
-
-
-
     // Supprimer un élément du panier
     public function deleteCartItem($id_panier_ligne)
     {
+
+        return response()->json(['message' => 'Élément supprimé du panier']);
         $ligne = Panier_ligne::find($id_panier_ligne);
 
         if (!$ligne) {

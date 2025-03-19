@@ -31,6 +31,6 @@ Route::get('/best-seller', function () {
 Route::post('/ajouter-au-panier', [PanierController::class, 'ajouterAuPanier']);
 
 Route::get('/panier', [PanierController::class, 'voirLePanier'])->name('panier.index');
-
+/*
 Route::put('/panier/{id}', [PanierController::class, 'update'])->name('panier.update');
-Route::delete('/panier/{id}', [PanierController::class, 'destroy'])->name('panier.destroy');
+Route::delete('/panier/{id}', [PanierController::class, 'destroy'])->name('panier.destroy');*/
