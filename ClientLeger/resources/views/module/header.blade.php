@@ -21,7 +21,18 @@
             <a href="/panier" class="relative flex items-center justify-center text-[#CCC5B9] hover:text-[#FFFCF2] transition-all hover:scale-110">
                 <i class="fa-solid fa-shopping-cart fa-lg"></i>
                 <span class="absolute -top-2 -right-2 bg-[#D90429] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {{ isset($cartItemCount) ? $cartItemCount : (Session::has('cartItems') ? count(Session::get('cartItems')) : 0) }}
+                    @php
+                        $totalItems = 0;
+                        if (session('client')) {
+                            $panier = \App\Models\Panier::getPanier(session('client')->id_client);
+                            if (isset($panier['panier']) && is_array($panier['panier']) && count($panier['panier']) > 0) {
+                                foreach ($panier['panier'][0]->lignes as $ligne) {
+                                    $totalItems += $ligne->quantite;
+                                }
+                            }
+                        }
+                    @endphp
+                    {{ $totalItems }}
                 </span>
             </a>
         </div>
@@ -38,7 +49,7 @@
                 <div class="block px-4 py-2 text-sm border-b border-[#660708]">
                     Bonjour, {{ Session::get('client')->prenom }}
                 </div>
-                <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
+                <a href="{{ route('profil') }}" class="block px-4 py-2 hover:bg-[#660708]">Profil</a>
                 <a href="#" class="block px-4 py-2 hover:bg-[#660708]">Paramètre</a>
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf
@@ -71,7 +82,7 @@
     <a href="/panier" class="hover:text-[#FFFCF2] transition duration-300 flex items-center">
         <i class="fa-solid fa-shopping-cart mr-2"></i> Panier
         <span class="ml-2 bg-[#D90429] text-white text-sm font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {{ isset($cartItemCount) ? $cartItemCount : (Session::has('cartItems') ? count(Session::get('cartItems')) : 0) }}
+            {{ $totalItems }}
         </span>
     </a>
     

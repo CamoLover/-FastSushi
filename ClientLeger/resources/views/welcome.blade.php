@@ -64,7 +64,7 @@
     
     /* Ensure header is above everything else */
     #floatingHeader {
-        z-index: 999999 !important;
+        z-index: 49 !important;
     }
     
     /* Make scrolling smooth */

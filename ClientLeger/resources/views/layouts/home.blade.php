@@ -48,6 +48,28 @@
         </script>
         @endif
 
+        @if(session('error'))
+        <div id="error-notification" class="fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out">
+            <div class="flex items-center">
+                <div class="mr-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p>{{ session('error') }}</p>
+                <button onclick="document.getElementById('error-notification').style.display = 'none'" class="ml-4 text-red-700 hover:text-red-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <script>
+            setTimeout(() => {
+                const notification = document.getElementById('error-notification');
+                if (notification) {
+                    notification.style.display = 'none';
+                }
+            }, 5000);
+        </script>
+        @endif
+
         @include('module.header')
 
         <main class="flex-grow main-class">

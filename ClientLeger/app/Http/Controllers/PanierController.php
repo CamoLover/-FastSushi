@@ -9,6 +9,7 @@ use App\Models\Panier_ligne;
 use App\Models\PanierLigne;
 use App\Models\Produit;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class PanierController extends Controller
 {
@@ -53,9 +54,33 @@ class PanierController extends Controller
         return view('panier', compact('panier', 'total')); // Envoi des données à la vue
     }
 
-    public function voirLePanier() 
+    public function voirLePanier(Request $request) 
     {
-        return view('panier', Panier::getPanier(5)); // Envoi des données à la vue
+        // Récupérer le client depuis la session
+        $client = session('client');
+        
+        if (!$client) {
+            // Si pas de client connecté, rediriger vers la page de connexion
+            return redirect('/sign')->with('error', 'Veuillez vous connecter pour accéder à votre panier.');
+        }
+        
+        // Vérifier si le panier existe
+        $panierExists = Panier::where('id_client', $client->id_client)->exists();
+        
+        // Si le panier n'existe pas, en créer un nouveau vide
+        if (!$panierExists) {
+            Panier::create([
+                'id_client' => $client->id_client,
+                'id_session' => session()->getId(),
+                'date_panier' => now(),
+                'montant_tot' => 0
+            ]);
+        }
+        
+        // Récupérer le panier du client connecté
+        $result = Panier::getPanier($client->id_client);
+        
+        return view('panier', $result);
     }
 
 
