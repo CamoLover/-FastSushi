@@ -55,25 +55,7 @@ class PanierController extends Controller
 
     public function voirLePanier() 
     {
-        $clients = \App\Models\Client::find(5); // Utiliser un ID d'utilisateur fictif pour tester
-        $panier = Panier::where('id_client', $clients->id_client)->with('lignes.produit')->get(); // Récupérer le panier et les lignes avec les produits associés
-        //$panier = Panier::where('id_client', $clients->id_client)->with('lignes')->get(); // Récupérer le panier et les lignes avec les produits associés
-        //dd($panier[0]->lignes);
-        // Calcul du total en parcourant les lignes du panier
-        $total = $panier->sum(fn($item) => $item->lignes->sum(fn($ligne) => $ligne->prix_ttc * $ligne->quantite));
-        $total_ht = $panier->sum(fn($item) => $item->lignes->sum(fn($ligne) => $ligne->prix_ht * $ligne->quantite));
-
-        $panier[0]->lignes = $panier[0]->lignes->map(function ($item) {
-            $item->produit->photo = $item->produit->photo 
-                ? asset('media/' . $item->produit->photo) 
-                : asset('media/concombre.png');
-        
-            return $item; // Retourne l'objet tel quel, mais avec `photo` mis à jour
-        });
-
-        //dd($panier[0]->lignes);  
-        return view('panier', compact('panier', 'total', 'total_ht')); // Envoi des données à la vue
-
+        return view('panier', Panier::getPanier(5)); // Envoi des données à la vue
     }
 
 

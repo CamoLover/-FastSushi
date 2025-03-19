@@ -19,7 +19,7 @@ class Panier_ligne extends Model
 
     public function panier()
     {
-        return $this->belongsTo(Panier::class, 'id_panier');
+        return $this->belongsTo(Panier::class, 'id_panier','id_panier' );
     }
 
     public function produit(): HasOne

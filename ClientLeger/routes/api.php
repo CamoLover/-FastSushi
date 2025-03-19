@@ -28,7 +28,7 @@ Route::post('/signin-bdd', [SigninController::class, 'signin']);
 Route::get('/ingredient', [IngredientController::class, 'getIngredientsByCategory']);
 
 Route::post('/panier-update', [PanierLigneController::class, 'addToCart']);
-Route::put('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'updateCartItem']);
+Route::put('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'updateCartItem'])->name('panier.update');
 Route::delete('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'deleteCartItem'])->name('panier.destroy');
 
 Route::get('/panier-bdd/{id_panier}', [PanierController::class, 'getPanier']);
