@@ -1,7 +1,10 @@
 <header id="floatingHeader" class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-[#252422] py-4 px-8 flex justify-between items-center shadow-lg border-b border-[#D90429] rounded-xl transition-transform duration-300">
     <!-- Logo -->
     <div class="text-2xl font-bold tracking-wide transition-transform transform hover:scale-110 text-[#ce0006]">
-        <a href="/" class="hover:text-[#ce0006] transition duration-300">Fast Sushi</a>
+        <a href="/" class="hover:text-[#ce0006] transition duration-300 flex items-center">
+            <img src="{{asset('media/fastsushi.png')}}" alt="Fast Sushi Logo" class="w-10 h-10 mr-2">
+            <span>Fast Sushi</span>
+        </a>
     </div>
 
     <!-- Navigation -->
