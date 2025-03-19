@@ -98,47 +98,52 @@ class PanierLigneController extends Controller
 
     // Mettre à jour un élément du panier
     public function updateCartItem(Request $request, $id_panier_ligne)
-    {
-        // Validation des entrées
-        $validator = Validator::make($request->all(), [
-            'quantite'   => 'required|integer|min:1',
-        ]);
+{
+    // Validation des entrées
+    $validator = Validator::make($request->all(), [
+        'action' => 'required|string|in:increment,decrement',
+        'quantite' => 'required|integer|min:1',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        // Trouver la ligne du panier
-        $ligne = Panier_ligne::find($id_panier_ligne);
-
-        if (!$ligne) {
-            return response()->json(['error' => 'Ligne de panier introuvable'], 404);
-        }
-
-        // Mettre à jour la quantité
-        $ligne->quantite = $request->quantite;
-        $ligne->save();
-
-        // Recalculer le montant total du panier
-        $panier = $ligne->panier;
-        $montantTotal = $panier->panier_lignes->sum(function ($ligne) {
-            return $ligne->prix_ttc * $ligne->quantite;
-        });
-
-        // Mise à jour du montant total du panier
-        $panier->montant_tot = $montantTotal;
-        $panier->save();
-
-        return response()->json([
-            'message' => 'Produit mis à jour dans le panier.',
-            'montant_total' => $montantTotal
-        ], 200);
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 400);
     }
 
+    // Trouver la ligne du panier
+    $ligne = Panier_ligne::find($id_panier_ligne);
 
+    if (!$ligne) {
+        return response()->json(['error' => 'Ligne de panier introuvable'], 404);
+    }
 
+    // Modifier la quantité selon l'action (ajout ou diminution)
+    if ($request->action === 'increment') {
+        $ligne->quantite += $request->quantite;
+    } elseif ($request->action === 'decrement') {
+        $ligne->quantite -= $request->quantite;
 
+        // S'assurer que la quantité ne devienne pas négative
+        if ($ligne->quantite < 1) {
+            PanierLigneController::deleteCartItem($id_panier_ligne);
+        }
+    }
 
+    $ligne->save();
+
+    // Recalculer le montant total du panier
+    $panier = $ligne->panier;
+    $montantTotal = $panier->panier_lignes->sum(fn($ligne) => $ligne->prix_ttc * $ligne->quantite);
+
+    // Mise à jour du montant total du panier
+    $panier->montant_tot = $montantTotal;
+    $panier->save();
+
+    return response()->json([
+        'message' => 'Quantité mise à jour avec succès.',
+        'nouvelle_quantite' => $ligne->quantite,
+        'montant_total' => $montantTotal
+    ], 200);
+}
     // Supprimer un élément du panier
     public function deleteCartItem($id_panier_ligne)
     {
@@ -149,8 +154,12 @@ class PanierLigneController extends Controller
         }
 
         $ligne->delete();
+        $html = view('_panier', Panier::getPanier(5))->render();
 
-        return response()->json(['message' => 'Élément supprimé du panier']);
+        return response()->json([
+            'html' => $html,
+            'message' => 'Panier mis à jour avec succès'
+        ]);
     }
 
 
