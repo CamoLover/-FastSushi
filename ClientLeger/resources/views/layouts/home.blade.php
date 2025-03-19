@@ -17,6 +17,8 @@
             <script src="https://cdn.tailwindcss.com"></script>
         @endif
 
+        <script src="{{ asset('js/panier.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
 
