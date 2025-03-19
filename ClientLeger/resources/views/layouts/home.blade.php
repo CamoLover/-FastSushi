@@ -24,9 +24,31 @@
         @stack('styles')
     </head>
     <body class="font-sans antialiased bg-[#403D39] text-[#FFFCF2] min-h-screen flex flex-col">
+        @if(session('success'))
+        <div id="success-notification" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out">
+            <div class="flex items-center">
+                <div class="mr-2">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p>{{ session('success') }}</p>
+                <button onclick="document.getElementById('success-notification').style.display = 'none'" class="ml-4 text-green-700 hover:text-green-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <script>
+            setTimeout(() => {
+                const notification = document.getElementById('success-notification');
+                if (notification) {
+                    notification.style.display = 'none';
+                }
+            }, 5000);
+        </script>
+        @endif
+
         @include('module.header')
 
-        <main class="flex-grow">
+        <main class="flex-grow main-class">
             @yield('content')
         </main>
 
