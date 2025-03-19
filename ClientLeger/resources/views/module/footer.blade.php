@@ -5,7 +5,7 @@
             <div class="text-center md:text-left mb-6 md:mb-0">
                 <div class="text-2xl font-bold tracking-wide text-[#ce0006] mb-3">Fast Sushi</div>
                 <p class="max-w-md text-sm leading-relaxed">
-                    Chez FastSushi, chaque bouchée est une invitation au voyage.
+                    Chez FastSushi, chaque bouchée est une invitation au voyage. 
                     Entre tradition et créativité, nos sushis sont préparés avec passion
                     et des ingrédients d'exception. Installez-vous, savourez, et laissez la magie opérer.
                 </p>
