@@ -89,8 +89,9 @@
             </h2>
             
             <!-- Première ligne de sushis (3 colonnes) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <!-- Sushi Cards -->
+                <!-- Sushi Saumon -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-fish text-4xl text-red-600"></i>
@@ -104,7 +105,9 @@
                         </button>
                     </div>
                 </div>
-                
+                <!-- Sushi Saumon -->
+
+                <!-- Sushi Thon -->                
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-fish text-4xl text-red-600"></i>
@@ -118,7 +121,9 @@
                         </button>
                     </div>
                 </div>
+                <!-- Sushi Thon -->
                 
+                <!-- Sushi Crevettes -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-fish text-4xl text-red-600"></i>
@@ -132,11 +137,13 @@
                         </button>
                     </div>
                 </div>
+                <!-- Sushi Crevettes -->
+
             </div>
             
             <!-- Deuxième ligne de sushis (2 colonnes) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">                
-                <!-- Sushi Daurade Card -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">                
+                <!-- Sushi Daurade -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-fish text-4xl text-red-600"></i>
@@ -150,8 +157,9 @@
                         </button>
                     </div>
                 </div>
+                <!-- Sushi Daurade -->
                 
-                <!-- Sushi Anguille Card -->
+                <!-- Sushi Anguille -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-fish text-4xl text-red-600"></i>
@@ -165,6 +173,7 @@
                         </button>
                     </div>
                 </div>
+                <!-- Sushi Anguille -->                
             </div>
         </div>
              
@@ -176,8 +185,9 @@
                 <span class="border-b-2 border-white-600 pb-1">Desserts</span>
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <!-- Dessert Cards -->
+                <!-- Moelleux Chocolat --> 
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-cookie text-4xl text-red-600"></i>
@@ -191,7 +201,9 @@
                         </button>
                     </div>
                 </div>
+                <!-- Moelleux Chocolat -->
                 
+                <!-- Maki Nutella Banane -->                
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-candy-cane text-4xl text-red-600"></i>
@@ -205,7 +217,9 @@
                         </button>
                     </div>
                 </div>
+                <!-- Maki Nutella Banane -->
                 
+                <!-- Crispy Nutella pané -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
                         <i class="fas fa-ice-cream text-4xl text-red-600"></i>
@@ -219,6 +233,7 @@
                         </button>
                     </div>
                 </div>
+                <!-- Crispy Nutella pané -->
             </div>
         </div>
     </div>

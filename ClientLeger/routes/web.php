@@ -54,3 +54,7 @@ Route::delete('/panier/{id}', [PanierController::class, 'destroy'])->name('panie
 Route::get('/menu', function () {
     return view('menu');
 });
+
+Route::get('/compo', function () {
+    return view('module/composition');
+});
