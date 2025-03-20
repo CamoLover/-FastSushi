@@ -75,7 +75,18 @@
             @php
                 $items = collect();
                 foreach ($panier[0]->lignes as $ligne) {
-                    if (isset($ligne->produit) && $ligne->produit->type_produit === $categorie) {
+                    // Check if this is really a custom item for categorization
+                    $isItemCustom = (isset($ligne->is_custom) && $ligne->is_custom === true) ||
+                                   (isset($ligne->ingredients) && is_array($ligne->ingredients) && count($ligne->ingredients) > 0);
+                    
+                    // Only push to Customisation category if it's genuinely a custom item
+                    if ($categorie === 'Customisation') {
+                        if ($isItemCustom || (isset($ligne->produit) && $ligne->produit->type_produit === 'Customisation')) {
+                            $items->push($ligne);
+                        }
+                    }
+                    // For other categories, only include if it matches and is NOT a custom item
+                    else if (isset($ligne->produit) && $ligne->produit->type_produit === $categorie && !$isItemCustom) {
                         $items->push($ligne);
                     }
                 }
@@ -101,12 +112,15 @@
                             $photoPath = '/media/concombre.png';
                         }
                         
-                        // Check if this is a custom item
-                        $isCustomItem = isset($item->produit) && $item->produit->type_produit === 'Customisation';
+                        // Check if this is a custom item - check both DB-based and cookie-based custom items
+                        $isCustomItem = (isset($item->produit) && $item->produit->type_produit === 'Customisation') || 
+                                      (isset($item->is_custom) && $item->is_custom === true) ||
+                                      (isset($item->ingredients) && is_array($item->ingredients) && count($item->ingredients) > 0);
                         
                         // Get ingredients for custom items
                         $ingredients = [];
                         if ($isCustomItem) {
+                            // First try to get ingredients from the database
                             $ingredients = DB::table('compo_paniers')
                                 ->join('ingredients', 'compo_paniers.id_ingredient', '=', 'ingredients.id_ingredient')
                                 ->where('compo_paniers.id_panier_ligne', $item->id_panier_ligne)
@@ -132,19 +146,30 @@
                                                 // Debug output for seeing what's available
                                                 \Log::debug('Ingredients for item ' . $item->id_panier_ligne, [
                                                     'ingredients' => $ingredients,
-                                                    'count' => count($ingredients)
+                                                    'count' => count($ingredients),
+                                                    'has_direct_ingredients' => isset($item->ingredients),
+                                                    'direct_count' => isset($item->ingredients) ? count($item->ingredients) : 0
                                                 ]);
                                                 
-                                                // If no ingredients found from DB, try to check if it's a cookie cart item
-                                                if (count($ingredients) === 0 && !isset($item->produit)) {
+                                                // First check if we have direct ingredients on the item object (for cookie cart)
+                                                if (isset($item->ingredients) && is_array($item->ingredients) && count($item->ingredients) > 0) {
+                                                    $ingredients = collect($item->ingredients)->map(function($ing) {
+                                                        return (object) [
+                                                            'nom' => $ing['name'] ?? $ing['nom'] ?? 'Ingrédient',
+                                                            'prix' => $ing['price'] ?? $ing['prix'] ?? 0
+                                                        ];
+                                                    });
+                                                }
+                                                // If no direct ingredients but DB ingredients are empty, try to get from cookie
+                                                else if (count($ingredients) === 0 && !isset($item->produit)) {
                                                     $cookieCart = json_decode(request()->cookie('panier'), true) ?? [];
                                                     foreach ($cookieCart as $cookieItem) {
                                                         if (isset($cookieItem['id_panier_ligne']) && $cookieItem['id_panier_ligne'] == $item->id_panier_ligne) {
                                                             if (isset($cookieItem['ingredients']) && is_array($cookieItem['ingredients'])) {
                                                                 $ingredients = collect($cookieItem['ingredients'])->map(function($ing) {
                                                                     return (object) [
-                                                                        'nom' => $ing['name'],
-                                                                        'prix' => $ing['price']
+                                                                        'nom' => $ing['name'] ?? $ing['nom'] ?? 'Ingrédient',
+                                                                        'prix' => $ing['price'] ?? $ing['prix'] ?? 0
                                                                     ];
                                                                 });
                                                             }

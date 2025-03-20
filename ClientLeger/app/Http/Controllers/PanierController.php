@@ -287,22 +287,40 @@ class PanierController extends Controller
                 'items_count' => count($cookieCart)
             ]);
             
-            // First, consolidate items by product ID
-            $consolidatedCart = [];
+            // For custom items, we never want to consolidate them
+            $normalItems = [];
+            $customItems = [];
+            
             foreach ($cookieCart as $item) {
-                $productId = $item['id_produit'] ?? 0;
-                if (!isset($consolidatedCart[$productId])) {
-                    $consolidatedCart[$productId] = $item;
+                // Check if this is a custom item (has custom ingredients)
+                $isCustom = isset($item['is_custom']) && $item['is_custom'] === true;
+                
+                if ($isCustom) {
+                    // Custom items are never consolidated
+                    $customItems[] = $item;
                 } else {
-                    // If product already exists, just increase the quantity
-                    $consolidatedCart[$productId]['quantite'] += $item['quantite'];
+                    $productId = $item['id_produit'] ?? 0;
+                    if (!isset($normalItems[$productId])) {
+                        $normalItems[$productId] = $item;
+                    } else {
+                        // If product already exists, just increase the quantity
+                        $normalItems[$productId]['quantite'] += $item['quantite'];
+                    }
                 }
             }
             
             // Create a numerically indexed version for the view and for cookies
             $newCookieCart = [];
-            foreach ($consolidatedCart as $productId => $item) {
+            
+            // First add normal items
+            foreach ($normalItems as $productId => $item) {
                 // Add the id_panier_ligne so we can find it by this value in our controller
+                $item['id_panier_ligne'] = count($newCookieCart); // Sequential ID
+                $newCookieCart[] = $item;
+            }
+            
+            // Then add custom items
+            foreach ($customItems as $item) {
                 $item['id_panier_ligne'] = count($newCookieCart); // Sequential ID
                 $newCookieCart[] = $item;
             }
@@ -329,6 +347,9 @@ class PanierController extends Controller
             // Then convert to the lignes collection
             $lignes = collect();
             foreach ($newCookieCart as $index => $item) {
+                // Check if this is a custom item with ingredients
+                $isCustom = isset($item['is_custom']) && $item['is_custom'] === true;
+                
                 $ligne = (object)[
                     'id_panier_ligne' => $index,
                     'id_produit' => $item['id_produit'] ?? 0,
@@ -337,16 +358,33 @@ class PanierController extends Controller
                     'prix_ttc' => $item['prix_ttc'] ?? 0, 
                     'quantite' => $item['quantite'] ?? 0,
                     'produit' => (object)[
-                        'type_produit' => 'Plats', // Default category
+                        'type_produit' => 'Plats', // Default to Plats, will update below if we find product or it's custom
                         'photo' => '/media/concombre.png' // Default image
                     ]
                 ];
+                
+                // If it's a custom item, explicitly mark it
+                if ($isCustom) {
+                    $ligne->produit->type_produit = 'Customisation';
+                    $ligne->is_custom = true;
+                }
+                
+                // For custom items, store the ingredients in the object for easy access in the view
+                if ($isCustom && isset($item['ingredients']) && is_array($item['ingredients'])) {
+                    $ligne->ingredients = $item['ingredients'];
+                    \Log::debug('Added ingredients to ligne object for custom item:', [
+                        'id_panier_ligne' => $index,
+                        'ingredient_count' => count($item['ingredients'])
+                    ]);
+                }
                 
                 // Try to get actual product data
                 try {
                     $produit = Produit::find($item['id_produit']);
                     if ($produit) {
-                        $ligne->produit->type_produit = $produit->type_produit;
+                        if (!$isCustom) {
+                            $ligne->produit->type_produit = $produit->type_produit;
+                        }
                         // Fix photo path if needed
                         $photoPath = $produit->photo;
                         if ($photoPath && substr($photoPath, 0, 1) !== '/') {
@@ -364,7 +402,9 @@ class PanierController extends Controller
                     try {
                         $produit = DB::table('produits')->where('id_produit', $item['id_produit'])->first();
                         if ($produit) {
-                            $ligne->produit->type_produit = $produit->type_produit;
+                            if (!$isCustom) {
+                                $ligne->produit->type_produit = $produit->type_produit;
+                            }
                             // Fix photo path in the fallback too
                             $photoPath = $produit->photo;
                             if ($photoPath && substr($photoPath, 0, 1) !== '/') {
@@ -401,8 +441,6 @@ class PanierController extends Controller
             
             return view('panier', $result)->withCookie($cookie);
         }
-        
-        return view('panier', $result);
     }
 
 

@@ -426,6 +426,7 @@ Route::post('/basic-add-to-cart', function(Request $request) {
 
 // Add a route for custom sushi orders
 Route::post('/simple-add-to-cart', [PanierLigneController::class, 'addCustomToCart']);
+Route::post('/regular-add-to-cart', [PanierLigneController::class, 'addRegularToCart']);
 
 Route::get('/menu', [App\Http\Controllers\ProduitsController::class, 'menu']);
 

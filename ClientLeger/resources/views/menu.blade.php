@@ -167,7 +167,7 @@
             const priceHt = button.getAttribute('data-price-ht');
             
             // Send AJAX request to add to cart
-            fetch('/simple-add-to-cart', {
+            fetch('/regular-add-to-cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

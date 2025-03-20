@@ -918,4 +918,177 @@ class PanierLigneController extends Controller
         }
     }
 
+    /**
+     * Add a regular (non-custom) item to the cart
+     */
+    public function addRegularToCart(Request $request)
+    {
+        \Log::debug('Regular menu item request data:', $request->all());
+        
+        // Extract data from the request
+        $data = [
+            'id_produit' => (int) $request->input('id_produit'),
+            'nom' => $request->input('nom', 'Produit inconnu'),
+            'prix_ttc' => (float) $request->input('prix_ttc', 0),
+            'prix_ht' => (float) $request->input('prix_ht', 0),
+            'quantite' => (int) $request->input('quantite', 1)
+        ];
+        
+        // Validate basic fields
+        $validator = Validator::make($data, [
+            'id_produit' => 'required|integer|min:1',
+            'nom' => 'required|string|max:100',
+            'prix_ht' => 'required|numeric|min:0',
+            'prix_ttc' => 'required|numeric|min:0',
+            'quantite' => 'required|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            \Log::debug('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        
+        // Check for client session
+        $client = session('client');
+        
+        if ($client) {
+            // User is logged in - store in database
+            \Log::debug('User is logged in, storing regular item in database:', ['client_id' => $client->id_client]);
+            
+            // Find or create a cart for this client
+            $panier = Panier::firstOrCreate(
+                ['id_client' => $client->id_client],
+                [
+                    'id_session' => session()->getId(),
+                    'date_panier' => now(), 
+                    'montant_tot' => 0
+                ]
+            );
+            
+            // Check if product already exists in cart
+            $existingLine = Panier_ligne::where('id_panier', $panier->id_panier)
+                                     ->where('id_produit', $data['id_produit'])
+                                     ->first();
+            
+            if ($existingLine) {
+                // Update existing line
+                $existingLine->quantite += $data['quantite'];
+                $existingLine->save();
+                $lineId = $existingLine->id_panier_ligne;
+            } else {
+                // Create new line
+                $newLine = Panier_ligne::create([
+                    'id_panier'  => $panier->id_panier,
+                    'id_produit' => $data['id_produit'],
+                    'quantite'   => $data['quantite'],
+                    'nom'        => $data['nom'],
+                    'prix_ht'    => $data['prix_ht'],
+                    'prix_ttc'   => $data['prix_ttc'],
+                ]);
+                $lineId = $newLine->id_panier_ligne;
+            }
+            
+            // Recalculate the total cart amount
+            $lignes = Panier_ligne::where('id_panier', $panier->id_panier)->get();
+            $montantTotal = $lignes->sum(function ($ligne) {
+                return $ligne->prix_ttc * $ligne->quantite;
+            });
+
+            // Update the cart's total amount
+            $panier->montant_tot = $montantTotal;
+            $panier->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Produit ajouté au panier.',
+                'montant_total' => $montantTotal,
+                'count' => Panier_ligne::where('id_panier', $panier->id_panier)->sum('quantite')
+            ], 201);
+        } else {
+            // User is not logged in - store in cookie
+            \Log::debug('User is not logged in, storing regular item in cookie');
+            
+            // Get existing cart from cookie
+            $cookieCart = [];
+            $panierCookie = $request->cookie('panier');
+            
+            if (!empty($panierCookie)) {
+                try {
+                    $cookieCart = json_decode($panierCookie, true);
+                } catch (\Exception $e) {
+                    \Log::error('Error parsing panier cookie:', [
+                        'error' => $e->getMessage(),
+                        'cookie' => $panierCookie
+                    ]);
+                    $cookieCart = [];
+                }
+            }
+            
+            // Ensure cookieCart is an array
+            if (!is_array($cookieCart)) {
+                $cookieCart = [];
+            }
+            
+            // Check if product already exists in cart
+            $existingItemIndex = -1;
+            foreach ($cookieCart as $index => $item) {
+                if (isset($item['id_produit']) && $item['id_produit'] == $data['id_produit'] && 
+                    (!isset($item['is_custom']) || $item['is_custom'] !== true)) {
+                    $existingItemIndex = $index;
+                    break;
+                }
+            }
+            
+            if ($existingItemIndex >= 0) {
+                // Update existing item
+                $cookieCart[$existingItemIndex]['quantite'] += $data['quantite'];
+            } else {
+                // Generate a unique id for the cookie cart line
+                $id_panier_ligne = count($cookieCart) + 1;
+                
+                // Create the new item without marking it as custom
+                $newItem = [
+                    'id_produit' => $data['id_produit'],
+                    'nom' => $data['nom'],
+                    'quantite' => $data['quantite'],
+                    'prix_ht' => $data['prix_ht'],
+                    'prix_ttc' => $data['prix_ttc'],
+                    'id_panier_ligne' => $id_panier_ligne
+                    // Intentionally not setting is_custom flag so it's treated as regular item
+                ];
+                
+                // Add the new item to the cart
+                $cookieCart[] = $newItem;
+            }
+            
+            // Calculate total cart amount and count
+            $total = 0;
+            $count = 0;
+            foreach ($cookieCart as $item) {
+                $total += (float)$item['prix_ttc'] * (int)$item['quantite'];
+                $count += (int)$item['quantite'];
+            }
+            
+            // Create a cookie
+            $cookie = cookie(
+                'panier',
+                json_encode($cookieCart),
+                10080, // 7 days
+                '/',
+                null,
+                false,
+                false
+            );
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Produit ajouté au panier',
+                'count' => $count
+            ], 201)->cookie($cookie);
+        }
+    }
+
 }
