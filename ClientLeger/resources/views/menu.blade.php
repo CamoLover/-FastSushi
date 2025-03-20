@@ -1,19 +1,14 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Sushi - Menu</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-</head>
-<body class="bg-neutral-800 font-sans text-white">
+@extends('layouts.home')
+
+@section('title', 'Fast Sushi - Menu')
+
+@section('content')
 
     <!-- Menu Container -->
     <div class="max-w-6xl mx-auto my-8 px-4">
         <!-- Titre principal amélioré -->
         <h1 class="text-4xl font-bold mb-12 text-center relative">
-            <span class="bg-neutral-800 px-6 relative z-10">Notre Menu</span>
+            <span class="bg-[#403D39] px-6 relative z-10">Notre Menu</span>
             <span class="absolute left-0 right-0 h-0.5 bg-red-600 top-1/2 -translate-y-1/2 z-0"></span>
         </h1>
         
@@ -33,22 +28,42 @@
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Salades</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li class="flex justify-between items-center">
                                 <span>Salade Choux</span>
-                                <span class="text-red-600">4,50 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">4,50 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span>Salade Wakame</span>
-                                <span class="text-red-600">5,20 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">5,20 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span>Salade Fève de soja</span>
-                                <span class="text-red-600">4,80 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">4,80 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span>Salade Crevettes</span>
-                                <span class="text-red-600">6,50 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">6,50 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -61,18 +76,33 @@
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Soupes</h3>
-                        <ul class="space-y-2">
+                        <ul class="space-y-2 mb-4">
                             <li class="flex justify-between items-center">
                                 <span>Soupe Miso</span>
-                                <span class="text-red-600">3,80 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">3,80 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span>Soupe Ramen crevettes</span>
-                                <span class="text-red-600">8,90 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">8,90 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                             <li class="flex justify-between items-center">
                                 <span>Soupe Ramen Poulets</span>
-                                <span class="text-red-600">7,90 €</span>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-red-600">7,90 €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -142,7 +172,7 @@
             </div>
             
             <!-- Deuxième ligne de sushis (2 colonnes) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">                
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 pb-15">                
                 <!-- Sushi Daurade -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center">
@@ -175,7 +205,12 @@
                 </div>
                 <!-- Sushi Anguille -->                
             </div>
+            
+            
+
         </div>
+
+        @include('module.composition')
              
         <!-- Desserts Section -->
         <div class="mb-12">
@@ -237,5 +272,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+    @endsection
