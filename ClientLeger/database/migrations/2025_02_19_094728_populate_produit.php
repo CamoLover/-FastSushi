@@ -28,7 +28,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 5.5,
                 'description' => 'Salade d\'algues wakame marinées, riche en saveurs et en bienfaits nutritionnels.',
-                'photo' =>'concombre.png'
+                'photo' =>'saladewakame.png'
             ],
             [
                 'nom' => 'Salade Fève de soja',
@@ -37,7 +37,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 4.62,
                 'description' => 'Salade fraîche de fèves de soja avec une touche de sésame et de sauce soja.',
-                'photo' =>'concombre.png'
+                'photo' =>'saladefevedesoja.png'
             ],
             [
                 'nom' => 'Salade Crevettes',
@@ -46,7 +46,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
                 'description' => 'Salade de crevettes croquantes accompagnée d\'une vinaigrette citronnée.',
-                'photo' =>'concombre.png'
+                'photo' =>'saladecrevettejpg.png'
             ],
 
             // Soupes 5
@@ -57,7 +57,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 3.85,
                 'description' => 'Soupe japonaise traditionnelle à base de miso et de tofu.',
-                'photo' =>'concombre.png'
+                'photo' =>'soupemiso.png'
             ],
             [
                 'nom' => 'Soupe Ramen crevettes',
@@ -66,7 +66,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 7.7,
                 'description' => 'Ramen aux crevettes avec un bouillon riche et parfumé.',
-                'photo' =>'concombre.png'
+                'photo' =>'ramencrevette.png'
             ],
             [
                 'nom' => 'Soupe Ramen Poulet',
@@ -75,7 +75,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 7.15,
                 'description' => 'Ramen au poulet tendre dans un bouillon savoureux.',
-                'photo' =>'concombre.png'
+                'photo' =>'ramenpoulet.png'
             ],
 
             // Plats 8
@@ -86,7 +86,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 8.8,
                 'description' => 'Sushi frais au saumon avec du riz vinaigré.',
-                'photo' =>'concombre.png'
+                'photo' =>'sushisaumon.png'
             ],
             [
                 'nom' => 'Sushi Thon',
@@ -95,7 +95,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 9.35,
                 'description' => 'Sushi savoureux au thon rouge.',
-                'photo' =>'concombre.png'
+                'photo' =>'sushithon.png'
             ],
             [
                 'nom' => 'Sushi Crevettes',
@@ -104,7 +104,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 8.25,
                 'description' => 'Sushi délicat aux crevettes décortiquées.',
-                'photo' =>'concombre.png'
+                'photo' =>'sushicrevette.png'
             ],
             [
                 'nom' => 'Sushi Daurade',
@@ -113,7 +113,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 9.9,
                 'description' => 'Sushi raffiné à la daurade tendre.',
-                'photo' =>'concombre.png'
+                'photo' =>'sushidaurade.png'
             ],
             [
                 'nom' => 'Sushi Anguille',
@@ -122,7 +122,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 11.0,
                 'description' => 'Sushi unique à l\'anguille grillée et caramélisée.',
-                'photo' =>'concombre.png'
+                'photo' =>'sushianguille.png'
             ],
 
             // Customisations
@@ -133,7 +133,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
                 'description' => 'Rouleaux de riz garnis d\'ingrédients frais et enroulés dans des feuilles de nori.',
-                'photo' =>'concombre.png'
+                'photo' =>'maki.png'
             ],
             [
                 'nom' => 'California Rolls',
@@ -142,7 +142,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 7.15,
                 'description' => 'Makis inversés garnis de crabe et d\'avocat.',
-                'photo' =>'concombre.png'
+                'photo' =>'californiarolls.png'
             ],
             [
                 'nom' => 'Spring Rolls',
@@ -151,7 +151,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 7.48,
                 'description' => 'Rouleaux de printemps frais et légers.',
-                'photo' =>'concombre.png'
+                'photo' =>'springrolls.png'
             ],
 
             // Desserts
@@ -162,7 +162,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 5.5,
                 'description' => 'Gâteau fondant au chocolat avec un cœur coulant.',
-                'photo' =>'concombre.png'
+                'photo' =>'fondantchocolat.png'
             ],
             [
                 'nom' => 'Maki Nutella banane',
@@ -171,7 +171,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 6.05,
                 'description' => 'Makis sucrés garnis de Nutella et de banane.',
-                'photo' =>'concombre.png'
+                'photo' =>'makinutellabanane.png'
             ],
             [
                 'nom' => 'Crispy Nutella pané',
@@ -180,7 +180,7 @@ return new class extends Migration {
                 'tva' => 0.10,
                 'prix_ttc' => 6.6,
                 'description' => 'Délice croustillant au Nutella pané.',
-                'photo' =>'concombre.png'
+                'photo' =>'croustibananenutella.png'
             ],
         ]);
     }

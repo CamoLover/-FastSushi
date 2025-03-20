@@ -43,24 +43,24 @@
         
         <!-- Sélection des plats -->
         <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
-            <div class="md:col-span-2 bg-sushi-box rounded-lg border border-gray-700 relative p-4 flex flex-col justify-center items-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 plat" data-plat="1" data-price="6.90">
-                <div class="pt-12 text-center">
-                    <span class="block">Maki</span>
-                    <div class="text-sushi-red font-bold mt-2">6,90 €</div>
+            @foreach($customisations as $index => $customisation)
+            <div class="md:col-span-2 bg-sushi-box rounded-lg border border-gray-700 relative p-4 flex flex-col justify-center items-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 plat" 
+                 data-plat="{{ $index + 1 }}" 
+                 data-price="{{ $customisation->prix_ttc }}"
+                 data-id="{{ $customisation->id_produit }}"
+                 data-name="{{ $customisation->nom }}"
+                 data-price-ht="{{ $customisation->prix_ht }}">
+                @if($customisation->photo)
+                    <img src="/media/{{ $customisation->photo }}" alt="{{ $customisation->nom }}" class="w-16 h-16 object-cover rounded-full mb-2">
+                @else
+                    <i class="fas fa-fish text-sushi-red text-2xl absolute top-4"></i>
+                @endif
+                <div class="pt-2 text-center">
+                    <span class="block">{{ $customisation->nom }}</span>
+                    <div class="text-sushi-red font-bold mt-2">{{ number_format($customisation->prix_ttc, 2, ',', ' ') }} €</div>
                 </div>
             </div>
-            <div class="md:col-span-2 bg-sushi-box rounded-lg border border-gray-700 relative p-4 flex flex-col justify-center items-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 plat" data-plat="2" data-price="7.50">
-                <div class="pt-12 text-center">
-                    <span class="block">California Rolls</span>
-                    <div class="text-sushi-red font-bold mt-2">7,50 €</div>
-                </div>
-            </div>
-            <div class="md:col-span-2 bg-sushi-box rounded-lg border border-gray-700 relative p-4 flex flex-col justify-center items-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 plat" data-plat="3" data-price="6.90">
-                <div class="pt-12 text-center">
-                    <span class="block">Spring Rolls</span>
-                    <div class="text-sushi-red font-bold mt-2">6,90 €</div>
-                </div>
-            </div>
+            @endforeach
         </div>
         
         <!-- Zone de sélection active -->
@@ -87,15 +87,17 @@
 
         <!-- Grille des ingrédients -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Fromage</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Concombre</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Avocat</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Thon</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Saumon</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Crevettes</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Daurade</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Mangue</div>
-            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient" draggable="true">Boursin</div>
+            @foreach($ingredients as $ingredient)
+            <div class="bg-sushi-box rounded-lg border border-gray-700 p-4 text-center cursor-pointer transition-all hover:bg-sushi-hover hover:-translate-y-1 ingredient flex flex-col items-center justify-center" draggable="true" 
+                 data-id="{{ $ingredient->id_ingredient }}" 
+                 data-name="{{ $ingredient->nom }}" 
+                 data-price="{{ $ingredient->prix_ht }}">
+                @if($ingredient->photo)
+                    <img src="/media/{{ $ingredient->photo }}" alt="{{ $ingredient->nom }}" class="w-10 h-10 object-cover rounded-full mb-2">
+                @endif
+                {{ $ingredient->nom }}
+            </div>
+            @endforeach
         </div>
 
         <!-- Bouton de réinitialisation -->
@@ -117,16 +119,21 @@
 
             // Données globales pour suivre la sélection
             let selectedPlatData = {
+                id: 0,
                 name: '',
                 price: 0,
+                price_ht: 0,
                 ingredients: []
             };
 
             // Ajouter les icônes de poisson aux plats
             plats.forEach(plat => {
-                const icon = document.createElement('i');
-                icon.className = 'fas fa-fish text-sushi-red text-2xl absolute top-4';
-                plat.prepend(icon);
+                // Check if the plat already has an image, only add icon if it doesn't
+                if (!plat.querySelector('img')) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-fish text-sushi-red text-2xl absolute top-4';
+                    plat.prepend(icon);
+                }
             });
 
             // Gérer la sélection du plat
@@ -134,10 +141,15 @@
                 plat.addEventListener('click', () => {
                     const platName = plat.querySelector('span').textContent.trim();
                     const platPrice = plat.getAttribute('data-price');
+                    const platId = plat.getAttribute('data-id');
+                    const platPriceHt = plat.getAttribute('data-price-ht');
+                    const platImg = plat.querySelector('img');
                     
                     // Mettre à jour les données du plat sélectionné
+                    selectedPlatData.id = platId;
                     selectedPlatData.name = platName;
                     selectedPlatData.price = platPrice;
+                    selectedPlatData.price_ht = platPriceHt;
                     selectedPlatData.ingredients = [];
                     
                     // Afficher la zone de sélection
@@ -147,11 +159,19 @@
                     addToCartButton.classList.remove('hidden');
                     
                     // Définir le contenu du plat sélectionné
-                    selectedPlat.innerHTML = `
-                        <i class="fas fa-fish text-sushi-red text-2xl mb-4"></i>
-                        <div class="text-center">${platName}</div>
-                        <div class="text-sushi-red font-bold mt-2">${platPrice} €</div>
-                    `;
+                    if (platImg) {
+                        selectedPlat.innerHTML = `
+                            <img src="${platImg.src}" alt="${platName}" class="w-20 h-20 object-cover rounded-full mb-4">
+                            <div class="text-center">${platName}</div>
+                            <div class="text-sushi-red font-bold mt-2">${parseFloat(platPrice).toFixed(2).replace('.', ',')} €</div>
+                        `;
+                    } else {
+                        selectedPlat.innerHTML = `
+                            <i class="fas fa-fish text-sushi-red text-2xl mb-4"></i>
+                            <div class="text-center">${platName}</div>
+                            <div class="text-sushi-red font-bold mt-2">${parseFloat(platPrice).toFixed(2).replace('.', ',')} €</div>
+                        `;
+                    }
                     
                     // Cacher les autres plats
                     const platContainer = document.querySelector('.grid:not(#selection-zone)');
@@ -165,6 +185,9 @@
             ingredients.forEach(ingredient => {
                 ingredient.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('text/plain', ingredient.textContent);
+                    e.dataTransfer.setData('id', ingredient.getAttribute('data-id'));
+                    e.dataTransfer.setData('name', ingredient.getAttribute('data-name'));
+                    e.dataTransfer.setData('price', ingredient.getAttribute('data-price'));
                 });
                 
                 // Pour mobile - ajouter au clic
@@ -175,14 +198,20 @@
                     // Vérifier si on a déjà 3 ingrédients
                     if (customZone.querySelectorAll('.selected-ingredient').length >= 3) return;
                     
-                    addIngredient(ingredient.textContent);
+                    const id = ingredient.getAttribute('data-id');
+                    const name = ingredient.getAttribute('data-name');
+                    const price = ingredient.getAttribute('data-price');
+                    
+                    addIngredient(name, id, price);
                 });
             });
 
             // Fonction pour ajouter un ingrédient à la zone de customisation
-            function addIngredient(ingredientName) {
+            function addIngredient(ingredientName, ingredientId, ingredientPrice) {
                 const newIngredient = document.createElement('div');
                 newIngredient.classList.add('bg-sushi-hover', 'border', 'border-gray-600', 'rounded-lg', 'p-3', 'm-1', 'relative', 'selected-ingredient', 'hover:bg-sushi-red', 'cursor-pointer');
+                newIngredient.setAttribute('data-id', ingredientId);
+                newIngredient.setAttribute('data-price', ingredientPrice);
                 
                 // Créer un span pour le texte de l'ingrédient
                 const textSpan = document.createElement('span');
@@ -196,12 +225,16 @@
                 newIngredient.appendChild(deleteIcon);
 
                 // Ajouter l'ingrédient aux données sélectionnées
-                selectedPlatData.ingredients.push(ingredientName);
+                selectedPlatData.ingredients.push({
+                    id: ingredientId,
+                    name: ingredientName,
+                    price: ingredientPrice
+                });
 
                 // Supprimer l'ingrédient au clic
                 newIngredient.addEventListener('click', () => {
                     // Supprimer l'ingrédient des données sélectionnées
-                    const index = selectedPlatData.ingredients.indexOf(ingredientName);
+                    const index = selectedPlatData.ingredients.findIndex(i => i.id === ingredientId);
                     if (index > -1) {
                         selectedPlatData.ingredients.splice(index, 1);
                     }
@@ -225,7 +258,10 @@
                 if (customZone.querySelectorAll('.selected-ingredient').length >= 3) return;
                 
                 const ingredientName = e.dataTransfer.getData('text/plain');
-                addIngredient(ingredientName);
+                const ingredientId = e.dataTransfer.getData('id');
+                const ingredientPrice = e.dataTransfer.getData('price');
+                
+                addIngredient(ingredientName, ingredientId, ingredientPrice);
             });
 
             // Fonction pour gérer l'affichage du texte dans la zone de drop
@@ -239,19 +275,53 @@
 
             // Gérer l'ajout au panier
             addToCartButton.addEventListener('click', () => {
-                // Récupérer les ingrédients sélectionnés
-                const ingredientsList = selectedPlatData.ingredients.join(', ');
+                // Créer l'objet à envoyer
+                const cartItem = {
+                    id_produit: selectedPlatData.id,
+                    nom: selectedPlatData.name + ' personnalisé',
+                    prix_ttc: parseFloat(selectedPlatData.price),
+                    prix_ht: parseFloat(selectedPlatData.price_ht),
+                    quantite: 1,
+                    ingredients: selectedPlatData.ingredients
+                };
                 
-                // Créer un message de confirmation
-                const messageContent = `${selectedPlatData.name} ajouté au panier:
-                ${ingredientsList.length > 0 ? '- Avec ' + ingredientsList : '- Sans personnalisation'}
-                Prix: ${selectedPlatData.price} €`;
-                
-                // Afficher un message de confirmation
-                alert(messageContent);
-                
-                // Réinitialiser comme si on avait cliqué sur reset
-                resetButton.click();
+                // Envoyer la requête AJAX
+                fetch('/simple-add-to-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify(cartItem)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Récupérer les ingrédients sélectionnés
+                        const ingredientsList = selectedPlatData.ingredients.map(ing => ing.name).join(', ');
+                        
+                        // Créer un message de confirmation
+                        const messageContent = `${selectedPlatData.name} ajouté au panier:
+                        ${ingredientsList.length > 0 ? '- Avec ' + ingredientsList : '- Sans personnalisation'}
+                        Prix: ${parseFloat(selectedPlatData.price).toFixed(2).replace('.', ',')} €`;
+                        
+                        // Afficher un message de confirmation
+                        alert(messageContent);
+                        
+                        // Mettre à jour le compteur du panier si présent
+                        const cartCount = document.getElementById('cart-count');
+                        if (cartCount) {
+                            cartCount.textContent = data.count || 0;
+                        }
+                        
+                        // Réinitialiser comme si on avait cliqué sur reset
+                        resetButton.click();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'ajout au panier:', error);
+                    alert('Une erreur est survenue lors de l\'ajout au panier');
+                });
             });
 
             // Réinitialiser l'ensemble de la customisation
@@ -275,8 +345,10 @@
                 
                 // Réinitialiser les données sélectionnées
                 selectedPlatData = {
+                    id: 0,
                     name: '',
                     price: 0,
+                    price_ht: 0,
                     ingredients: []
                 };
             });

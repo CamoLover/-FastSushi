@@ -24,47 +24,27 @@
                 <!-- Salades Card -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-48 bg-neutral-800 flex items-center justify-center overflow-hidden">
-                        <img src="/api/placeholder/400/300" alt="Salade japonaise" class="w-full h-full object-cover" />
+                        <img src="/media/saladechoux.png" alt="Salade japonaise" class="w-full h-full object-cover" />
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Salades</h3>
                         <ul class="space-y-2 mb-4">
+                            @foreach($entrees as $entree)
                             <li class="flex justify-between items-center">
-                                <span>Salade Choux</span>
+                                <span>{{ $entree->nom }}</span>
                                 <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">4,50 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                    <span class="text-red-600">{{ number_format($entree->prix_ttc, 2, ',', ' ') }} €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition"
+                                            data-id="{{ $entree->id_produit }}" 
+                                            data-name="{{ $entree->nom }}" 
+                                            data-price="{{ $entree->prix_ttc }}" 
+                                            data-price-ht="{{ $entree->prix_ht }}"
+                                            onclick="addToCart(this)">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </li>
-                            <li class="flex justify-between items-center">
-                                <span>Salade Wakame</span>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">5,20 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <span>Salade Fève de soja</span>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">4,80 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <span>Salade Crevettes</span>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">6,50 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </li>
+                            @endforeach
                         </ul>
                     </div>
                 </div>
@@ -72,38 +52,27 @@
                 <!-- Soupes Card -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-48 bg-neutral-800 flex items-center justify-center overflow-hidden">
-                        <img src="/api/placeholder/400/300" alt="Soupe japonaise" class="w-full h-full object-cover" />
+                        <img src="/media/soupemiso.png" alt="Soupe japonaise" class="w-full h-full object-cover" />
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Soupes</h3>
                         <ul class="space-y-2 mb-4">
+                            @foreach($soupes as $soupe)
                             <li class="flex justify-between items-center">
-                                <span>Soupe Miso</span>
+                                <span>{{ $soupe->nom }}</span>
                                 <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">3,80 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
+                                    <span class="text-red-600">{{ number_format($soupe->prix_ttc, 2, ',', ' ') }} €</span>
+                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition"
+                                            data-id="{{ $soupe->id_produit }}" 
+                                            data-name="{{ $soupe->nom }}" 
+                                            data-price="{{ $soupe->prix_ttc }}" 
+                                            data-price-ht="{{ $soupe->prix_ht }}"
+                                            onclick="addToCart(this)">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </li>
-                            <li class="flex justify-between items-center">
-                                <span>Soupe Ramen crevettes</span>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">8,90 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <span>Soupe Ramen Poulets</span>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-red-600">7,90 €</span>
-                                    <button class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </li>
+                            @endforeach
                         </ul>
                     </div>
                 </div>
@@ -118,96 +87,33 @@
                 <span class="border-b-2 border-white-600 pb-1">Plats</span>
             </h2>
             
-            <!-- Première ligne de sushis (3 colonnes) -->
+            <!-- Grid pour les sushis -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <!-- Sushi Cards -->
-                <!-- Sushi Saumon -->
+                @foreach($plats as $plat)
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-fish text-4xl text-red-600"></i>
+                    <div class="h-40 bg-neutral-800 flex items-center justify-center overflow-hidden">
+                        @if($plat->photo)
+                            <img src="/media/{{ $plat->photo }}" alt="{{ $plat->nom }}" class="w-full h-full object-cover">
+                        @else
+                            <i class="fas fa-fish text-4xl text-red-600"></i>
+                        @endif
                     </div>
                     <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Sushi Saumon</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">6,90 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
+                        <h3 class="text-xl font-bold text-center">{{ $plat->nom }}</h3>
+                        <p class="text-center text-neutral-400 mt-2">{{ $plat->description }}</p>
+                        <p class="text-center text-red-600 font-bold mt-2">{{ number_format($plat->prix_ttc, 2, ',', ' ') }} €</p>
+                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition"
+                                data-id="{{ $plat->id_produit }}" 
+                                data-name="{{ $plat->nom }}" 
+                                data-price="{{ $plat->prix_ttc }}" 
+                                data-price-ht="{{ $plat->prix_ht }}"
+                                onclick="addToCart(this)">
                             <i class="fas fa-plus mr-2"></i>Ajouter
                         </button>
                     </div>
                 </div>
-                <!-- Sushi Saumon -->
-
-                <!-- Sushi Thon -->                
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-fish text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Sushi Thon</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">7,50 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Sushi Thon -->
-                
-                <!-- Sushi Crevettes -->
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-fish text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Sushi Crevettes</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">6,90 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Sushi Crevettes -->
-
+                @endforeach
             </div>
-            
-            <!-- Deuxième ligne de sushis (2 colonnes) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 pb-15">                
-                <!-- Sushi Daurade -->
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-fish text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Sushi Daurade</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">7,20 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Sushi Daurade -->
-                
-                <!-- Sushi Anguille -->
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-fish text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Sushi Anguille</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">8,50 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Sushi Anguille -->                
-            </div>
-            
-            
-
         </div>
 
         @include('module.composition')
@@ -221,55 +127,73 @@
             </h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <!-- Dessert Cards -->
-                <!-- Moelleux Chocolat --> 
+                @foreach($desserts as $dessert)
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-cookie text-4xl text-red-600"></i>
+                    <div class="h-40 bg-neutral-800 flex items-center justify-center overflow-hidden">
+                        @if($dessert->photo)
+                            <img src="/media/{{ $dessert->photo }}" alt="{{ $dessert->nom }}" class="w-full h-full object-cover">
+                        @else
+                            <i class="fas fa-ice-cream text-4xl text-red-600"></i>
+                        @endif
                     </div>
                     <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Moelleux Chocolat</h3>
-                        <p class="text-center text-neutral-400 mt-2">Servi avec crème anglaise</p>
-                        <p class="text-center text-red-600 font-bold mt-2">5,90 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
+                        <h3 class="text-xl font-bold text-center">{{ $dessert->nom }}</h3>
+                        <p class="text-center text-neutral-400 mt-2">{{ $dessert->description }}</p>
+                        <p class="text-center text-red-600 font-bold mt-2">{{ number_format($dessert->prix_ttc, 2, ',', ' ') }} €</p>
+                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition"
+                                data-id="{{ $dessert->id_produit }}" 
+                                data-name="{{ $dessert->nom }}" 
+                                data-price="{{ $dessert->prix_ttc }}" 
+                                data-price-ht="{{ $dessert->prix_ht }}"
+                                onclick="addToCart(this)">
                             <i class="fas fa-plus mr-2"></i>Ajouter
                         </button>
                     </div>
                 </div>
-                <!-- Moelleux Chocolat -->
-                
-                <!-- Maki Nutella Banane -->                
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-candy-cane text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Maki Nutella banane</h3>
-                        <p class="text-center text-neutral-400 mt-2">6 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">6,50 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Maki Nutella Banane -->
-                
-                <!-- Crispy Nutella pané -->
-                <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
-                    <div class="h-40 bg-neutral-800 flex items-center justify-center">
-                        <i class="fas fa-ice-cream text-4xl text-red-600"></i>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-center">Crispy Nutella pané</h3>
-                        <p class="text-center text-neutral-400 mt-2">4 pièces</p>
-                        <p class="text-center text-red-600 font-bold mt-2">5,90 €</p>
-                        <button class="w-full bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Ajouter
-                        </button>
-                    </div>
-                </div>
-                <!-- Crispy Nutella pané -->
+                @endforeach
             </div>
         </div>
     </div>
+    
+    <script>
+        function addToCart(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const price = button.getAttribute('data-price');
+            const priceHt = button.getAttribute('data-price-ht');
+            
+            // Send AJAX request to add to cart
+            fetch('/simple-add-to-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    id_produit: id,
+                    nom: name,
+                    prix_ttc: price,
+                    prix_ht: priceHt,
+                    quantite: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    // Show success message
+                    alert(`${name} ajouté au panier`);
+                    
+                    // Update cart count if element exists
+                    const cartCount = document.getElementById('cart-count');
+                    if(cartCount) {
+                        cartCount.textContent = data.count || 0;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                alert('Une erreur est survenue lors de l\'ajout au panier');
+            });
+        }
+    </script>
     @endsection

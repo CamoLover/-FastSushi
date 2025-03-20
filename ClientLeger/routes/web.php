@@ -425,10 +425,11 @@ Route::post('/simple-add-to-cart', function(Request $request) {
 });
 
 
-Route::get('/menu', function () {
-    return view('menu');
-});
+Route::get('/menu', [App\Http\Controllers\ProduitsController::class, 'menu']);
 
 Route::get('/compo', function () {
-    return view('module/composition');
+    $customisations = App\Models\Produit::where('type_produit', 'Customisation')->get();
+    $ingredients = App\Models\Ingredient::all();
+    
+    return view('module.composition', compact('customisations', 'ingredients'));
 });
