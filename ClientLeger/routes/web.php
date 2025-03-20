@@ -35,11 +35,6 @@ Route::get('/about', function () {
     return view('about');
 });
 
-Route::get('/composition-sushi', function () {
-    return view('composition-sushi');
-});
-
-
 Route::get('/signup', function () {
     return view('signup');
 });
@@ -54,3 +49,12 @@ Route::get('/panier', [PanierController::class, 'voirLePanier'])->name('panier.i
 /*
 Route::put('/panier/{id}', [PanierController::class, 'update'])->name('panier.update');
 Route::delete('/panier/{id}', [PanierController::class, 'destroy'])->name('panier.destroy');*/
+
+
+Route::get('/menu', function () {
+    return view('menu');
+});
+
+Route::get('/compo', function () {
+    return view('module/composition');
+});
