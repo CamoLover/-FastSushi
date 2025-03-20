@@ -14,8 +14,17 @@ class CommandeController extends Controller
     public function createOrder(Request $request)
     {
         try {
+            // Log the request for debugging
+            \Log::debug('Command creation request:', [
+                'request' => $request->all(),
+                'has_client_session' => session()->has('client'),
+                'session_data' => session()->all(),
+                'client_id' => session()->has('client') ? session('client')->id_client : null
+            ]);
+
             // Vérifier si l'utilisateur est connecté
             if (!session()->has('client')) {
+                \Log::warning('User not logged in when trying to create an order');
                 return response()->json([
                     'success' => false,
                     'message' => 'Veuillez vous connecter pour passer une commande.'
@@ -28,6 +37,7 @@ class CommandeController extends Controller
             $panier = Panier::where('id_client', $client->id_client)->first();
             
             if (!$panier) {
+                \Log::warning('No cart found for client:', ['client_id' => $client->id_client]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Votre panier est vide.'
@@ -38,11 +48,19 @@ class CommandeController extends Controller
             $lignesPanier = Panier_ligne::where('id_panier', $panier->id_panier)->get();
             
             if ($lignesPanier->isEmpty()) {
+                \Log::warning('Empty cart for client:', ['client_id' => $client->id_client, 'cart_id' => $panier->id_panier]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Votre panier est vide.'
                 ]);
             }
+
+            \Log::debug('Creating order with data:', [
+                'client_id' => $client->id_client,
+                'cart_total' => $panier->montant_tot,
+                'cart_items' => $lignesPanier->count(),
+                'items' => $lignesPanier->toArray()
+            ]);
 
             // Créer la commande
             $commande = Commande::create([
@@ -69,12 +87,22 @@ class CommandeController extends Controller
             $panier->montant_tot = 0;
             $panier->save();
 
+            \Log::info('Order created successfully:', [
+                'order_id' => $commande->id_commande,
+                'client_id' => $client->id_client
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Commande confirmée avec succès!'
             ]);
 
         } catch (\Exception $e) {
+            \Log::error('Error creating order:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Une erreur est survenue lors de la création de la commande: ' . $e->getMessage()

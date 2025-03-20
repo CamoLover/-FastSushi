@@ -22,6 +22,32 @@
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
 
+        <!-- Setup CSRF token for all AJAX requests -->
+        <script>
+            // Set up CSRF token for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            
+            // Add CSRF token to all fetch requests
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options = {}) {
+                // Only add for same-origin requests
+                if (url && (url.startsWith('/') || url.startsWith(window.location.origin))) {
+                    options = options || {};
+                    options.headers = options.headers || {};
+                    
+                    // Don't override if already set
+                    if (!options.headers['X-CSRF-TOKEN'] && !options.headers['x-csrf-token']) {
+                        options.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    }
+                }
+                
+                return originalFetch(url, options);
+            };
+        </script>
 
         @stack('styles')
     </head>
@@ -79,5 +105,48 @@
         @include('module.footer')
 
         @stack('scripts')
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Update cart count from cookie on page load
+                const panierCookie = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('panier='));
+                
+                if (panierCookie) {
+                    try {
+                        const decodedCookie = decodeURIComponent(panierCookie.split('=')[1]);
+                        let cookieData;
+                        
+                        // Try to parse as JSON
+                        try {
+                            cookieData = JSON.parse(decodedCookie);
+                        } catch (jsonError) {
+                            // If parsing fails, it might be an encrypted cookie
+                            console.warn('Could not parse cookie as JSON, might be encrypted:', jsonError);
+                            
+                            // Stop processing this cookie - we'll rely on the server-side count
+                            return;
+                        }
+                        
+                        const cartCount = document.getElementById('cart-count');
+                        
+                        if (cartCount && Array.isArray(cookieData)) {
+                            // Calculate total quantity
+                            let totalQuantity = 0;
+                            cookieData.forEach(item => {
+                                totalQuantity += Number(item.quantite || 0);
+                            });
+                            
+                            // Update cart count in header
+                            cartCount.textContent = totalQuantity;
+                            console.log('Updated cart count from cookie:', totalQuantity);
+                        }
+                    } catch (e) {
+                        console.error('Error processing panier cookie:', e);
+                    }
+                }
+            });
+        </script>
     </body>
 </html> 

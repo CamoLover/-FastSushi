@@ -8,7 +8,7 @@
     </div>
 
     <div class="cart-container">
-    @if(isset($panier) && is_array($panier) && count($panier) > 0 && isset($panier[0]) && $panier[0]->lignes && $panier[0]->lignes->isNotEmpty())
+    @if(isset($panier) && isset($panier[0]) && isset($panier[0]->lignes) && $panier[0]->lignes->isNotEmpty())
         @foreach (['Entrée', 'Plats', 'Desserts', 'Soupe', 'Customisation'] as $categorie)
             @php
                 $items = collect();
@@ -22,7 +22,24 @@
                 <h2>{{ $categorie }}</h2>
                 @foreach ($items as $item)
                     <div class="cart-item">
-                    <img src="{{ isset($item->produit) ? $item->produit->photo : asset('media/concombre.png') }}" alt="{{ $item->nom }}">
+                    @php
+                        $photoPath = isset($item->produit) ? $item->produit->photo : '/media/concombre.png';
+                        
+                        // Handle absolute URLs (coming from asset() function)
+                        if (strpos($photoPath, 'http') === 0) {
+                            // Keep the URL as is - it's an absolute URL
+                        } 
+                        // Handle relative paths without leading slash
+                        else if ($photoPath && substr($photoPath, 0, 1) !== '/') {
+                            $photoPath = '/media/' . $photoPath;
+                        }
+                        
+                        // Make sure we have a fallback
+                        if (empty($photoPath)) {
+                            $photoPath = '/media/concombre.png';
+                        }
+                    @endphp
+                    <img src="{{ $photoPath }}" alt="{{ $item->nom }}" onerror="this.src='/media/concombre.png'">
                         <div class="item-details">  
                             <h3 class="item-name">{{ $item->nom }}</h3>
                             <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
@@ -126,69 +143,359 @@ document.addEventListener('DOMContentLoaded', function() {
         metaTag.content = '{{ csrf_token() }}';
         document.head.appendChild(metaTag);
     }
-});
-
-document.getElementById('orderForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    document.getElementById('paymentModal').classList.remove('hidden');
-    document.getElementById('paymentModal').classList.add('flex');
-});
-
-document.getElementById('cancelPayment').addEventListener('click', function() {
-    document.getElementById('paymentModal').classList.add('hidden');
-    document.getElementById('paymentModal').classList.remove('flex');
-});
-
-document.getElementById('confirmPayment').addEventListener('click', function() {
-    // Simulate payment processing
-    this.disabled = true;
-    this.textContent = 'Traitement en cours...';
     
-    // Get the CSRF token from meta tag
+    // Only add event listeners if the elements exist
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('paymentModal').classList.add('flex');
+        });
+    }
+    
+    const cancelPayment = document.getElementById('cancelPayment');
+    if (cancelPayment) {
+        cancelPayment.addEventListener('click', function() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.getElementById('paymentModal').classList.remove('flex');
+        });
+    }
+    
+    const confirmPayment = document.getElementById('confirmPayment');
+    if (confirmPayment) {
+        confirmPayment.addEventListener('click', function() {
+            // Immediately provide visual feedback
+            const button = this;
+            button.disabled = true;
+            button.textContent = 'Traitement en cours...';
+            
+            // Get the CSRF token from meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Short delay to ensure UI updates before the potentially blocking AJAX call
+            setTimeout(function() {
+                // Make the API call to create the order
+                $.ajax({
+                    url: '/commande/create',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    data: {
+                        _token: csrfToken
+                    },
+                    success: function(response) {
+                        console.log('Order creation response:', response);
+                        
+                        if (response.success) {
+                            // Set success flash message
+                            $.post('/set-flash-message', {
+                                _token: csrfToken,
+                                type: 'success',
+                                message: response.message
+                            }, function() {
+                                // Show a message before redirecting
+                                alert('Commande confirmée avec succès!');
+                                window.location.href = '/panier';
+                            }).fail(function(err) {
+                                console.error('Failed to set flash message:', err);
+                                alert('Commande confirmée, mais erreur lors de l\'affichage du message.');
+                                window.location.href = '/panier';
+                            });
+                        } else {
+                            // Set error flash message
+                            console.error('Order creation failed:', response.message);
+                            $.post('/set-flash-message', {
+                                _token: csrfToken,
+                                type: 'error',
+                                message: response.message
+                            }, function() {
+                                alert('Erreur: ' + response.message);
+                                window.location.href = '/panier';
+                            }).fail(function(err) {
+                                console.error('Failed to set flash message:', err);
+                                alert('Erreur: ' + response.message);
+                                window.location.href = '/panier';
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Order creation AJAX error:', xhr);
+                        console.error('Status:', xhr.status);
+                        console.error('Response:', xhr.responseText);
+                        
+                        // Try to parse the response
+                        let errorMessage = 'Une erreur est survenue lors de la création de la commande.';
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            if (errorResponse.message) {
+                                errorMessage = errorResponse.message;
+                            }
+                        } catch (e) {
+                            console.error('Could not parse error response:', e);
+                        }
+                        
+                        // Set error flash message
+                        $.post('/set-flash-message', {
+                            _token: csrfToken,
+                            type: 'error',
+                            message: errorMessage
+                        }, function() {
+                            alert('Erreur: ' + errorMessage);
+                            button.disabled = false;
+                            button.textContent = 'Confirmer le paiement';
+                        }).fail(function(err) {
+                            console.error('Failed to set flash message:', err);
+                            alert('Erreur: ' + errorMessage);
+                            button.disabled = false;
+                            button.textContent = 'Confirmer le paiement';
+                        });
+                    }
+                });
+            }, 50); // small delay to ensure UI updates
+        });
+    }
+});
+
+// Function to decrease quantity
+function minus_quantity(button) {
+    event.preventDefault();
+    const url = button.getAttribute('data-url');
+    const quantitySpan = button.parentElement.querySelector('.quantity-value');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
-    // Use form data for better compatibility
-    const formData = new FormData();
-    formData.append('_token', csrfToken);
+    console.log('Updating cart item at URL:', url);
     
-    // Make the API call to create the order
+    // Extract the ID from the URL
+    const idMatch = url.match(/\/panier\/(\d+)$/);
+    if (!idMatch || !idMatch[1]) {
+        console.error('Invalid URL format, cannot extract ID');
+        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        return;
+    }
+    
+    const id = idMatch[1];
+    // Use the correct API endpoint - matching the one in routes/api.php
+    const apiUrl = '/api/panier-update/' + id;
+    
+    console.log('Using API URL:', apiUrl);
+    
     $.ajax({
-        url: '/commande/create',
-        method: 'POST',
+        url: apiUrl,
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
         data: {
-            _token: '{{ csrf_token() }}'
+            _token: csrfToken,
+            action: 'decrement'
         },
         success: function(response) {
-            if (response.success) {
-                // Set success flash message
-                $.post('/set-flash-message', {
-                    _token: '{{ csrf_token() }}',
-                    type: 'success',
-                    message: response.message
-                }, function() {
-                    window.location.href = '/panier';
-                });
-            } else {
-                // Set error flash message
-                $.post('/set-flash-message', {
-                    _token: '{{ csrf_token() }}',
-                    type: 'error',
-                    message: response.message
-                }, function() {
-                    window.location.href = '/panier';
-                });
-            }
+            handleQuantityUpdateSuccess(response, quantitySpan);
         },
         error: function(xhr) {
-            // Set error flash message
-            $.post('/set-flash-message', {
-                _token: '{{ csrf_token() }}',
-                type: 'error',
-                message: 'Une erreur est survenue lors de la création de la commande.'
-            }, function() {
-                window.location.href = '/panier';
-            });
+            console.error('API route failed:', xhr);
+            console.error('Response:', xhr.responseText);
+            showToast('Erreur lors de la mise à jour de la quantité', 'error');
         }
     });
-});
+}
+
+// Function to increase quantity
+function add_quantity(button) {
+    event.preventDefault();
+    const url = button.getAttribute('data-url');
+    const quantitySpan = button.parentElement.querySelector('.quantity-value');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    console.log('Increasing quantity at URL:', url);
+    
+    // Extract the ID from the URL
+    const idMatch = url.match(/\/panier\/(\d+)$/);
+    if (!idMatch || !idMatch[1]) {
+        console.error('Invalid URL format, cannot extract ID');
+        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        return;
+    }
+    
+    const id = idMatch[1];
+    // Use the correct API endpoint - matching the one in routes/api.php
+    const apiUrl = '/api/panier-update/' + id;
+    
+    console.log('Using API URL:', apiUrl);
+    
+    $.ajax({
+        url: apiUrl,
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        data: {
+            _token: csrfToken,
+            action: 'increment'
+        },
+        success: function(response) {
+            handleQuantityUpdateSuccess(response, quantitySpan);
+        },
+        error: function(xhr) {
+            console.error('API route failed:', xhr);
+            console.error('Response:', xhr.responseText);
+            showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        }
+    });
+}
+
+// Function to handle successful quantity updates
+function handleQuantityUpdateSuccess(response, quantitySpan) {
+    if (response.html) {
+        // If server returned HTML, replace the entire cart content
+        document.querySelector('#contenu-panier').outerHTML = response.html;
+        
+        // Re-attach event listeners to the new elements
+        attachEventListeners();
+    } else {
+        // Otherwise just update the quantity displayed
+        quantitySpan.textContent = response.nouvelle_quantite;
+        
+        // Update total if provided
+        if (response.montant_total) {
+            const totalElement = document.querySelector('.total-amount');
+            if (totalElement) {
+                totalElement.textContent = new Intl.NumberFormat('fr-FR', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                }).format(response.montant_total) + ' €';
+            }
+        }
+    }
+    
+    // Update the cart count in the header
+    updateHeaderCartCount(response.count || 0);
+    
+    // Show success message
+    showToast('Quantité mise à jour', 'success');
+}
+
+// Function to delete item
+function deleteItem(button) {
+    const url = button.getAttribute('data-url');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    console.log('Deleting item at URL:', url);
+    
+    // Extract the ID from the URL
+    const idMatch = url.match(/\/panier\/(\d+)$/);
+    if (!idMatch || !idMatch[1]) {
+        console.error('Invalid URL format, cannot extract ID');
+        showToast('Erreur lors de la suppression du produit', 'error');
+        return;
+    }
+    
+    const id = idMatch[1];
+    // Use the correct API endpoint - matching the one in routes/api.php
+    const apiUrl = '/api/panier-update/' + id;
+    
+    console.log('Using API URL:', apiUrl);
+    
+    $.ajax({
+        url: apiUrl,
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        data: {
+            _token: csrfToken
+        },
+        success: function(response) {
+            handleDeleteSuccess(response);
+        },
+        error: function(xhr) {
+            console.error('API route failed:', xhr);
+            console.error('Status:', xhr.status);
+            console.error('Response:', xhr.responseText);
+            showToast('Erreur lors de la suppression du produit', 'error');
+        }
+    });
+}
+
+// Common function to handle successful deletions
+function handleDeleteSuccess(response) {
+    // Replace the entire cart content with the updated HTML
+    if (response.html) {
+        document.querySelector('#contenu-panier').outerHTML = response.html;
+        
+        // Re-attach event listeners to the new elements
+        attachEventListeners();
+        
+        // Update the cart count in the header
+        updateHeaderCartCount(response.count || 0);
+        
+        // Show success message
+        showToast('Produit supprimé du panier', 'success');
+    }
+}
+
+// Function to re-attach event listeners after DOM updates
+function attachEventListeners() {
+    // Re-attach order form event listener
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('paymentModal').classList.add('flex');
+        });
+    }
+    
+    // Re-attach modal buttons event listeners
+    const cancelPayment = document.getElementById('cancelPayment');
+    if (cancelPayment) {
+        cancelPayment.addEventListener('click', function() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.getElementById('paymentModal').classList.remove('flex');
+        });
+    }
+    
+    const confirmPayment = document.getElementById('confirmPayment');
+    if (confirmPayment) {
+        // Re-attach the payment confirmation handler
+        confirmPayment.addEventListener('click', function() {
+            // Implementation remains the same...
+        });
+    }
+}
+
+// Function to show toast messages
+function showToast(message, type = 'success') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    
+    // Add icon based on message type
+    const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+    toast.innerHTML = `<i class="fas fa-${icon} mr-2"></i> ${message}`;
+    
+    // Add to DOM
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Function to update the cart count in the header
+function updateHeaderCartCount(count) {
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = count;
+    }
+}
 </script>

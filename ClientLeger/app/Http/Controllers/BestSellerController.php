@@ -49,12 +49,13 @@ class BestSellerController extends Controller
                 'commande_lignes.id_produit',
                 'produits.nom',
                 'produits.description',
+                'produits.prix_ht',
                 'produits.prix_ttc',
                 'produits.photo',
                 DB::raw('SUM(quantite) as total_quantite_vendue')
             )
             ->join('produits', 'commande_lignes.id_produit', '=', 'produits.id_produit')
-            ->groupBy('commande_lignes.id_produit', 'produits.nom', 'produits.description', 'produits.prix_ttc', 'produits.photo')
+            ->groupBy('commande_lignes.id_produit', 'produits.nom', 'produits.description', 'produits.prix_ht', 'produits.prix_ttc', 'produits.photo')
             ->orderByDesc('total_quantite_vendue')
             ->limit(3)
             ->get();
@@ -65,6 +66,7 @@ class BestSellerController extends Controller
                 'id_produit' => $product->id_produit,
                 'nom' => $product->nom,
                 'description' => $product->description,
+                'prix_ht' => $product->prix_ht,
                 'prix_ttc' => $product->prix_ttc,
                 'photo' => $product->photo ?: 'concombre.png',
             ];
@@ -75,6 +77,7 @@ class BestSellerController extends Controller
                 'id_produit',
                 'nom',
                 'description', 
+                'prix_ht',
                 'prix_ttc',
                 'photo'
             )
@@ -88,6 +91,7 @@ class BestSellerController extends Controller
                 'id_produit' => $product->id_produit,
                 'nom' => $product->nom,
                 'description' => $product->description,
+                'prix_ht' => $product->prix_ht,
                 'prix_ttc' => $product->prix_ttc,
                 'photo' => $product->photo ?: 'concombre.png',
             ];

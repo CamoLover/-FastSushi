@@ -10,6 +10,8 @@ use App\Models\PanierLigne;
 use App\Models\Produit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 
 class PanierController extends Controller
 {
@@ -40,6 +42,57 @@ class PanierController extends Controller
         }
     }
 
+    // Helper method to add an item to a panier (used when converting cookie to DB)
+    protected function addItemToPanier($item, $panier, $clientId)
+    {
+        // If $item is not an array or doesn't have required fields, return
+        if (!is_array($item) || !isset($item['id_produit'])) {
+            \Log::error('Invalid item data:', ['item' => $item]);
+            return false;
+        }
+        
+        // Try to find the product
+        $produit = Produit::find($item['id_produit']);
+        
+        // Set default values if product not found
+        $productData = [
+            'nom' => $item['nom'] ?? 'Produit inconnu',
+            'prix_ht' => $item['prix_ht'] ?? 0,
+            'prix_ttc' => $item['prix_ttc'] ?? 0,
+            'quantite' => $item['quantite'] ?? 1
+        ];
+        
+        // If product exists, use its data
+        if ($produit) {
+            $productData['nom'] = $produit->nom;
+            $productData['prix_ht'] = $produit->prix_ht;
+            $productData['prix_ttc'] = $produit->prix_ttc;
+        }
+        
+        // Find or create a new line
+        $existingLine = Panier_ligne::where('id_panier', $panier->id_panier)
+                                   ->where('id_produit', $item['id_produit'])
+                                   ->first();
+                                   
+        if ($existingLine) {
+            // Update existing line
+            $existingLine->quantite += $productData['quantite'];
+            $existingLine->save();
+        } else {
+            // Create new line
+            Panier_ligne::create([
+                'id_panier' => $panier->id_panier,
+                'id_produit' => $item['id_produit'],
+                'quantite' => $productData['quantite'],
+                'nom' => $productData['nom'],
+                'prix_ht' => $productData['prix_ht'],
+                'prix_ttc' => $productData['prix_ttc']
+            ]);
+        }
+        
+        return true;
+    }
+
     public function index()
     {
         $user = Auth::user(); // Récupérer l'utilisateur connecté
@@ -54,31 +107,270 @@ class PanierController extends Controller
         return view('panier', compact('panier', 'total')); // Envoi des données à la vue
     }
 
-    public function voirLePanier(Request $request) 
+    public function voirLePanier(Request $request)
     {
-        // Récupérer le client depuis la session
+        // Check if user is logged in via session
         $client = session('client');
         
-        if (!$client) {
-            // Si pas de client connecté, rediriger vers la page de connexion
-            return redirect('/sign')->with('error', 'Veuillez vous connecter pour accéder à votre panier.');
-        }
+        // Add debug output for all cookies
+        \Log::debug('All request cookies:', [
+            'cookies' => $request->cookies->all(),
+            'has_panier' => $request->hasCookie('panier'),
+            'panier_value' => $request->cookie('panier')
+        ]);
         
-        // Vérifier si le panier existe
-        $panierExists = Panier::where('id_client', $client->id_client)->exists();
-        
-        // Si le panier n'existe pas, en créer un nouveau vide
-        if (!$panierExists) {
-            Panier::create([
-                'id_client' => $client->id_client,
-                'id_session' => session()->getId(),
-                'date_panier' => now(),
-                'montant_tot' => 0
+        if ($client) {
+            try {
+                // Logged in user - get cart from database
+                $result = Panier::getPanier($client->id_client);
+                
+                // If the user has a panier cookie, merge it with the database panier
+                if ($request->hasCookie('panier')) {
+                    $cookieCart = json_decode($request->cookie('panier'), true);
+                    if ($cookieCart && is_array($cookieCart) && count($cookieCart) > 0) {
+                        // Load the user's cart from database
+                        $userPanier = Panier::firstOrCreate(
+                            ['id_client' => $client->id_client],
+                            [
+                                'id_session' => session()->getId(),
+                                'date_panier' => now(),
+                                'montant_tot' => 0
+                            ]
+                        );
+                        
+                        // For each item in the cookie cart, add it to the database cart
+                        foreach ($cookieCart as $item) {
+                            $this->addItemToPanier($item, $userPanier, $client->id_client);
+                        }
+                        
+                        // Clear the cookie after merging
+                        Cookie::queue(Cookie::forget('panier'));
+                        
+                        // Refresh the result with the merged cart
+                        $result = Panier::getPanier($client->id_client);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error in voirLePanier for logged user:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                
+                // If there's an error, return an empty cart view
+                $result = [
+                    'panier' => [
+                        (object)[
+                            'lignes' => collect() 
+                        ]
+                    ],
+                    'total_ht' => 0,
+                    'total' => 0
+                ];
+            }
+            
+            return view('panier', $result);
+        } else {
+            // Not logged in - use cookie cart
+            $cookieCart = [];
+            $panierCookie = $request->cookie('panier');
+            
+            \Log::debug('Cookie cart raw:', [
+                'cookie_value' => $panierCookie
             ]);
+            
+            if (!empty($panierCookie)) {
+                try {
+                    $cookieCart = json_decode($panierCookie, true);
+                    \Log::debug('Parsed cookie cart:', [
+                        'parsed' => $cookieCart,
+                        'is_array' => is_array($cookieCart),
+                        'count' => is_array($cookieCart) ? count($cookieCart) : 0
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Error parsing panier cookie:', [
+                        'error' => $e->getMessage(),
+                        'cookie' => $panierCookie
+                    ]);
+                }
+            } else {
+                \Log::debug('No panier cookie found in request');
+                
+                // Try to get it directly from $_COOKIE
+                if (isset($_COOKIE['panier'])) {
+                    try {
+                        $cookieCart = json_decode($_COOKIE['panier'], true);
+                        \Log::debug('Parsed cookie from $_COOKIE:', [
+                            'parsed' => $cookieCart,
+                            'is_array' => is_array($cookieCart),
+                            'count' => is_array($cookieCart) ? count($cookieCart) : 0
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Error parsing panier from $_COOKIE:', [
+                            'error' => $e->getMessage(),
+                            'cookie' => $_COOKIE['panier']
+                        ]);
+                    }
+                }
+                
+                // Try to get directly from headers
+                $headers = $request->headers->all();
+                $cookieHeader = $request->headers->get('cookie');
+                \Log::debug('Cookie header:', [
+                    'cookie_header' => $cookieHeader
+                ]);
+                
+                // Try to use the direct panier cookie
+                if (isset($_COOKIE['panier_direct'])) {
+                    try {
+                        $decodedCookie = urldecode($_COOKIE['panier_direct']);
+                        $cookieCart = json_decode($decodedCookie, true);
+                        \Log::debug('Using direct panier cookie:', [
+                            'value' => $decodedCookie,
+                            'parsed' => $cookieCart
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Error parsing direct panier:', [
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+            
+            // Ensure cookieCart is an array
+            if (!is_array($cookieCart)) {
+                $cookieCart = [];
+                \Log::warning('Cookie cart is not an array, using empty array instead');
+            }
+            
+            $total = 0;
+            $total_ht = 0;
+            
+            // Calculate totals
+            foreach ($cookieCart as $item) {
+                $total += floatval($item['prix_ttc'] ?? 0) * intval($item['quantite'] ?? 0);
+                $total_ht += floatval($item['prix_ht'] ?? 0) * intval($item['quantite'] ?? 0);
+            }
+            
+            \Log::debug('Cart totals calculated:', [
+                'total' => $total,
+                'total_ht' => $total_ht,
+                'items_count' => count($cookieCart)
+            ]);
+            
+            // First, consolidate items by product ID
+            $consolidatedCart = [];
+            foreach ($cookieCart as $item) {
+                $productId = $item['id_produit'] ?? 0;
+                if (!isset($consolidatedCart[$productId])) {
+                    $consolidatedCart[$productId] = $item;
+                } else {
+                    // If product already exists, just increase the quantity
+                    $consolidatedCart[$productId]['quantite'] += $item['quantite'];
+                }
+            }
+            
+            // Create a numerically indexed version for the view and for cookies
+            $newCookieCart = [];
+            foreach ($consolidatedCart as $productId => $item) {
+                // Add the id_panier_ligne so we can find it by this value in our controller
+                $item['id_panier_ligne'] = count($newCookieCart); // Sequential ID
+                $newCookieCart[] = $item;
+            }
+            
+            // Save the consolidated cart back to cookie
+            $cookie = cookie(
+                'panier',                      // name
+                json_encode($newCookieCart),   // value
+                10080,                         // minutes
+                '/',                           // path
+                null,                          // domain (null = current domain)
+                false,                         // secure
+                false                          // httpOnly
+            );
+            
+            // Log the cookie creation for debugging
+            \Log::debug('Creating cookie in PanierController:', [
+                'name' => 'panier',
+                'value_length' => strlen(json_encode($newCookieCart)),
+                'items_count' => count($newCookieCart),
+                'expires' => '+10080 minutes'
+            ]);
+            
+            // Then convert to the lignes collection
+            $lignes = collect();
+            foreach ($newCookieCart as $index => $item) {
+                $ligne = (object)[
+                    'id_panier_ligne' => $index,
+                    'id_produit' => $item['id_produit'] ?? 0,
+                    'nom' => $item['nom'] ?? 'Produit inconnu',
+                    'prix_ht' => $item['prix_ht'] ?? 0,
+                    'prix_ttc' => $item['prix_ttc'] ?? 0, 
+                    'quantite' => $item['quantite'] ?? 0,
+                    'produit' => (object)[
+                        'type_produit' => 'Plats', // Default category
+                        'photo' => '/media/concombre.png' // Default image
+                    ]
+                ];
+                
+                // Try to get actual product data
+                try {
+                    $produit = Produit::find($item['id_produit']);
+                    if ($produit) {
+                        $ligne->produit->type_produit = $produit->type_produit;
+                        // Fix photo path if needed
+                        $photoPath = $produit->photo;
+                        if ($photoPath && substr($photoPath, 0, 1) !== '/') {
+                            $photoPath = '/media/' . $photoPath;
+                        }
+                        $ligne->produit->photo = $photoPath;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error getting product:', [
+                        'id' => $item['id_produit'],
+                        'error' => $e->getMessage()
+                    ]);
+                    
+                    // Try with a direct DB query as a fallback
+                    try {
+                        $produit = DB::table('produits')->where('id_produit', $item['id_produit'])->first();
+                        if ($produit) {
+                            $ligne->produit->type_produit = $produit->type_produit;
+                            // Fix photo path in the fallback too
+                            $photoPath = $produit->photo;
+                            if ($photoPath && substr($photoPath, 0, 1) !== '/') {
+                                $photoPath = '/media/' . $photoPath;
+                            }
+                            $ligne->produit->photo = $photoPath;
+                        }
+                    } catch (\Exception $e2) {
+                        \Log::error('Error getting product via DB:', [
+                            'id' => $item['id_produit'],
+                            'error' => $e2->getMessage()
+                        ]);
+                    }
+                }
+                
+                $lignes->push($ligne);
+            }
+            
+            $result = [
+                'panier' => [
+                    (object)[
+                        'lignes' => $lignes
+                    ]
+                ],
+                'total_ht' => $total_ht,
+                'total' => $total
+            ];
+            
+            \Log::debug('Final result structure:', [
+                'has_lignes' => isset($result['panier'][0]->lignes),
+                'lignes_count' => isset($result['panier'][0]->lignes) ? $result['panier'][0]->lignes->count() : 0,
+                'total' => $result['total']
+            ]);
+            
+            return view('panier', $result)->withCookie($cookie);
         }
-        
-        // Récupérer le panier du client connecté
-        $result = Panier::getPanier($client->id_client);
         
         return view('panier', $result);
     }
@@ -108,4 +400,58 @@ class PanierController extends Controller
 
     }
     
+    /**
+     * Convertit le panier cookie en panier base de données lorsqu'un utilisateur se connecte
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function convertCookieCartToDatabase(Request $request)
+    {
+        // Vérifier si l'utilisateur est connecté
+        $client = session('client');
+        
+        if (!$client) {
+            return response()->json(['error' => 'Utilisateur non connecté'], 401);
+        }
+        
+        // Récupérer le panier stocké dans le cookie
+        $cookieCart = json_decode($request->cookie('panier'), true) ?? [];
+        
+        if (empty($cookieCart)) {
+            return response()->json(['message' => 'Aucun panier temporaire à convertir']);
+        }
+        
+        // Chercher ou créer un panier pour ce client
+        $panier = Panier::firstOrCreate(
+            ['id_client' => $client->id_client],
+            [
+                'id_session' => session()->getId(),
+                'date_panier' => now(),
+                'montant_tot' => 0
+            ]
+        );
+        
+        // Transférer les éléments du cookie vers la base de données
+        foreach ($cookieCart as $item) {
+            $this->addItemToPanier($item, $panier, $client->id_client);
+        }
+        
+        // Recalculer le montant total du panier
+        $montantTotal = $panier->panier_lignes->sum(function ($ligne) {
+            return $ligne->prix_ttc * $ligne->quantite;
+        });
+        
+        // Mise à jour du montant total du panier
+        $panier->montant_tot = $montantTotal;
+        $panier->save();
+        
+        // Vider le cookie du panier
+        $cookie = cookie('panier', '', -1);
+        
+        return response()->json([
+            'message' => 'Panier temporaire converti avec succès',
+            'panier_id' => $panier->id_panier
+        ])->withCookie($cookie);
+    }
 }

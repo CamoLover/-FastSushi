@@ -11,7 +11,7 @@
     <nav id="navMenu" class="hidden lg:flex justify-center flex-1 text-lg font-semibold text-[#CCC5B9]">
         <ul class="flex space-x-8">
             <li><a href="/" class="hover:text-[#FFFCF2] transition duration-300">Accueil</a></li>
-            <li><a href="#" class="hover:text-[#FFFCF2] transition duration-300">Menu</a></li>
+            <li><a href="{{ url('/menu') }}" class="hover:text-[#FFFCF2] transition duration-300">Menu</a></li>
             <li><a href="{{ url('/about') }}" class="hover:text-[#FFFCF2] transition duration-300">À propos</a></li>
             <li><a href="{{ url('/contact') }}" class="hover:text-[#FFFCF2] transition duration-300">Contact</a></li>
         </ul>
@@ -21,16 +21,31 @@
     <div class="flex items-center space-x-4">
         <!-- Cart Icon -->
         <div class="relative">
-            <a href="/panier" class="relative flex items-center justify-center text-[#CCC5B9] hover:text-[#FFFCF2] transition-all hover:scale-110">
+            <a href="{{ url('/panier') }}" class="relative flex items-center justify-center text-[#CCC5B9] hover:text-[#FFFCF2] transition-all hover:scale-110">
                 <i class="fa-solid fa-shopping-cart fa-lg"></i>
-                <span class="absolute -top-2 -right-2 bg-[#D90429] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-[#D90429] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     @php
                         $totalItems = 0;
                         if (session('client')) {
-                            $panier = \App\Models\Panier::getPanier(session('client')->id_client);
-                            if (isset($panier['panier']) && is_array($panier['panier']) && count($panier['panier']) > 0) {
-                                foreach ($panier['panier'][0]->lignes as $ligne) {
-                                    $totalItems += $ligne->quantite;
+                            // Get cart for authenticated user
+                            $panier = \App\Models\Panier::where('id_client', session('client')->id_client)->first();
+                            if ($panier) {
+                                $lignes = \App\Models\Panier_ligne::where('id_panier', $panier->id_panier)->get();
+                                $totalItems = $lignes->sum('quantite');
+                            }
+                        } else {
+                            // Try to get cart from cookie
+                            $panierCookie = request()->cookie('panier');
+                            if (!empty($panierCookie)) {
+                                try {
+                                    $cookieCart = json_decode($panierCookie, true);
+                                    if (is_array($cookieCart)) {
+                                        foreach ($cookieCart as $item) {
+                                            $totalItems += $item['quantite'] ?? 0;
+                                        }
+                                    }
+                                } catch (\Exception $e) {
+                                    // Error parsing cookie, keep total at 0
                                 }
                             }
                         }

@@ -27,8 +27,14 @@ Route::post('/signin-bdd', [SigninController::class, 'signin']);
 
 Route::get('/ingredient', [IngredientController::class, 'getIngredientsByCategory']);
 
-Route::post('/panier-update', [PanierLigneController::class, 'addToCart']);
-Route::put('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'updateCartItem'])->name('panier.update');
-Route::delete('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'deleteCartItem'])->name('panier.destroy');
+Route::post('/panier-update', [PanierLigneController::class, 'addToCart'])->middleware('api');
+Route::put('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'updateCartItem'])->name('panier.update')->middleware('api');
+Route::delete('/panier-update/{id_panier_ligne}', [PanierLigneController::class, 'deleteCartItem'])->name('panier.destroy')->middleware('api');
 
 Route::get('/panier-bdd/{id_panier}', [PanierController::class, 'getPanier']);
+
+// Add a route to convert cookie cart to database when user logs in
+Route::post('/panier-convert', [PanierController::class, 'convertCookieCartToDatabase']);
+
+// Add routes for the new controller method
+Route::post('/panier/{id_produit}', [PanierLigneController::class, 'addToCart'])->name('api.panier.add')->middleware('api');

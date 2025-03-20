@@ -117,7 +117,11 @@
                                     </div>
                                     <div class="flex justify-between items-center mt-auto">
                                         <span class="text-[#FFFCF2] font-bold text-lg">${parseFloat(product.prix_ttc).toFixed(2)} €</span>
-                                        <button class="bg-[#D90429] hover:bg-[#ce0006] text-white px-4 py-2 rounded-lg transition duration-300 flex items-center">
+                                        <button class="bg-[#D90429] hover:bg-[#ce0006] text-white px-4 py-2 rounded-lg transition duration-300 flex items-center add-to-cart-btn"
+                                                data-id="${product.id_produit}"
+                                                data-name="${product.nom}"
+                                                data-price-ht="${product.prix_ht || (product.prix_ttc ? (product.prix_ttc / 1.1).toFixed(4) : 0)}"
+                                                data-price-ttc="${product.prix_ttc || 0}">
                                             <i class="fa-solid fa-cart-plus mr-2"></i> Ajouter
                                         </button>
                                     </div>
@@ -150,7 +154,11 @@
                                     </div>
                                     <div class="flex justify-between items-center mt-auto">
                                         <span class="text-[#FFFCF2] font-bold text-lg">${parseFloat(product.prix_ttc).toFixed(2)} €</span>
-                                        <button class="bg-[#D90429] hover:bg-[#ce0006] text-white px-4 py-2 rounded-lg transition duration-300 flex items-center">
+                                        <button class="bg-[#D90429] hover:bg-[#ce0006] text-white px-4 py-2 rounded-lg transition duration-300 flex items-center add-to-cart-btn"
+                                                data-id="${product.id_produit}"
+                                                data-name="${product.nom}"
+                                                data-price-ht="${product.prix_ht || (product.prix_ttc ? (product.prix_ttc / 1.1).toFixed(4) : 0)}"
+                                                data-price-ttc="${product.prix_ttc || 0}">
                                             <i class="fa-solid fa-cart-plus mr-2"></i> Ajouter
                                         </button>
                                     </div>
@@ -458,6 +466,178 @@
             window.addEventListener('resize', () => {
                 setSlidePosition(false);
             });
+
+            // Add event listener for add to cart buttons after data is loaded
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Debug logging to see what data attributes are available
+                    console.log('Button clicked:', this);
+                    console.log('Button data attributes:', {
+                        id: this.getAttribute('data-id'),
+                        name: this.getAttribute('data-name'),
+                        priceHt: this.getAttribute('data-price-ht'),
+                        priceTtc: this.getAttribute('data-price-ttc')
+                    });
+                    
+                    const productData = {
+                        id_produit: parseInt(this.getAttribute('data-id')) || 0,
+                        nom: this.getAttribute('data-name') || 'Produit',
+                        prix_ht: parseFloat(this.getAttribute('data-price-ht')) || 0,
+                        prix_ttc: parseFloat(this.getAttribute('data-price-ttc')) || 0,
+                        quantite: 1
+                    };
+                    
+                    addToCart(productData);
+                });
+            });
+        }
+
+        // Add to cart function
+        function addToCart(productData) {
+            // Format the data properly - ensure numbers are sent as numbers, not strings
+            const formattedData = {
+                id_produit: parseInt(productData.id_produit) || 0,
+                nom: productData.nom || 'Produit',
+                prix_ht: parseFloat(productData.prix_ht) || 0,
+                prix_ttc: parseFloat(productData.prix_ttc) || 0,
+                quantite: parseInt(productData.quantite) || 1
+            };
+            
+            // Log formatted data for debugging
+            console.log('Adding product to cart:', formattedData);
+            
+            // Add CSRF token to headers if available
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                headers['X-CSRF-TOKEN'] = csrfToken;
+            }
+            
+            // Try the first route with improved error handling
+            tryAddToCart('/mock-add-to-cart', formattedData, headers)
+                .catch(error => {
+                    console.log('First route failed, trying backup route:', error);
+                    return tryAddToCart('/simple-add-to-cart', formattedData, headers);
+                })
+                .catch(error => {
+                    console.log('Backup route failed, trying final route:', error);
+                    return tryAddToCart('/api/panier-update', formattedData, headers);
+                })
+                .then(data => {
+                    // Update the cart counter in the header
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement && data) {
+                        // Use the count from the server response if available
+                        if (data.count !== undefined) {
+                            cartCountElement.textContent = data.count;
+                        } else {
+                            // Fallback to the old way if count not provided
+                            let currentCount = parseInt(cartCountElement.textContent.trim()) || 0;
+                            currentCount += formattedData.quantite;
+                            cartCountElement.textContent = currentCount;
+                        }
+                    }
+                    
+                    // Show success message
+                    showToast(`${productData.nom} ajouté au panier`, 'success');
+                })
+                .catch(error => {
+                    console.error('All cart routes failed:', error);
+                    showToast(error.message || 'Erreur lors de l\'ajout au panier', 'error');
+                    
+                    // Last resort - submit as a form directly
+                    submitCartAsForm(formattedData);
+                });
+        }
+        
+        // Function to try adding to cart using a specific URL
+        function tryAddToCart(url, formattedData, headers) {
+            return new Promise((resolve, reject) => {
+                fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(formattedData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            try {
+                                const jsonError = JSON.parse(text);
+                                console.error(`Error from ${url}:`, jsonError);
+                                reject(new Error(jsonError.message || `Failed with status ${response.status}`));
+                            } catch (e) {
+                                console.error(`Text response from ${url}:`, text);
+                                reject(new Error(`Failed with status ${response.status}`));
+                            }
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => resolve(data))
+                .catch(error => reject(error));
+            });
+        }
+        
+        // Function to submit cart as a form as last resort
+        function submitCartAsForm(formattedData) {
+            console.log('Using form submission as last resort');
+            
+            // Create a form element
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/api/panier-update';
+            form.style.display = 'none';
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+            }
+            
+            // Add product data fields
+            Object.entries(formattedData).forEach(([key, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            });
+            
+            // Append form to body and submit it
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Function to show toast messages
+        function showToast(message, type = 'success') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white`;
+            
+            // Add icon based on message type
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            toast.innerHTML = `<i class="fas fa-${icon} mr-2"></i> ${message}`;
+            
+            // Add to DOM
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
     });
 </script> 
