@@ -3,7 +3,11 @@
 @section('title', 'Fast Sushi - Menu')
 
 @section('content')
-
+    <style>
+    #floatingHeader {
+        z-index: 49 !important;
+    }
+    </style>
     <!-- Menu Container -->
     <div class="max-w-6xl mx-auto my-8 px-4">
         <!-- Titre principal amélioré -->
