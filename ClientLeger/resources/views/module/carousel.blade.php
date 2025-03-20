@@ -1,6 +1,6 @@
 <!-- Best Sellers Carousel -->
 <div class="w-full relative bg-[#252422] py-12">
-    <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-center justify-center mb-10">
             <div class="h-0.5 w-12 bg-[#D90429] mr-4"></div>
             <h2 class="text-3xl md:text-4xl font-bold text-center text-[#FFFCF2]">Nos Best-Sellers</h2>

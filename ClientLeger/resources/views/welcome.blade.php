@@ -102,7 +102,7 @@
     
     <!-- Intro Section -->
     <div id="intro" class="bg-[#252422] py-20">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-8 text-[#FFFCF2]">Bienvenue chez Fast Sushi</h2>
                 <p class="text-xl text-[#CCC5B9] mb-12 leading-relaxed">
@@ -142,7 +142,7 @@
     
     <!-- Menu Preview Section -->
     <div id="menu" class="py-16 bg-[#403D39]">
-        <div class="container mx-auto px-4 mb-16">
+        <div class="max-w-6xl mx-auto px-4 mb-16">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-[#FFFCF2]">Notre Menu</h2>
                 <p class="text-xl text-[#CCC5B9] max-w-3xl mx-auto">
@@ -222,7 +222,7 @@
     
     <!-- App Promo Section -->
     <div class="py-20 bg-[#252422]">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="flex flex-col lg:flex-row items-center gap-10">
                 <div class="lg:w-1/2">
                     <h2 class="text-4xl font-bold mb-6 text-[#FFFCF2]">Téléchargez notre application</h2>
@@ -283,7 +283,7 @@
     
     <!-- Testimonials Section -->
     <div class="py-20 bg-[#403D39]">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-[#FFFCF2]">Ce que nos clients disent</h2>
                 <p class="text-xl text-[#CCC5B9] max-w-3xl mx-auto">
