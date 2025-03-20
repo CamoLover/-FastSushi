@@ -3,6 +3,9 @@
 @section('title', 'Fast Sushi - Profil')
 
 @section('content')
+@php
+    use Illuminate\Support\Facades\DB;
+@endphp
 <div class="container mx-auto px-4 py-8">
     <!-- User Profile Information -->
     <div class="bg-[#252422] rounded-lg shadow-lg p-6 mb-8">
@@ -154,7 +157,35 @@
                                             <tbody class="divide-y divide-gray-600">
                                                 @foreach($commande->lignes as $ligne)
                                                 <tr>
-                                                    <td class="px-4 py-2">{{ $ligne->nom }}</td>
+                                                    <td class="px-4 py-2">
+                                                        {{ $ligne->nom }}
+                                                        
+                                                        @php
+                                                            // Check if this is a custom item with ingredients
+                                                            $isCustomItem = strpos($ligne->nom, 'personnalisé') !== false;
+                                                            
+                                                            // Load ingredients for this order line
+                                                            $ingredients = [];
+                                                            if ($isCustomItem) {
+                                                                $ingredients = DB::table('compo_commandes')
+                                                                    ->join('ingredients', 'compo_commandes.id_ingredient', '=', 'ingredients.id_ingredient')
+                                                                    ->where('compo_commandes.id_commande_ligne', $ligne->id_commande_ligne)
+                                                                    ->select('ingredients.nom', 'compo_commandes.prix')
+                                                                    ->get();
+                                                            }
+                                                        @endphp
+                                                        
+                                                        @if($isCustomItem && count($ingredients) > 0)
+                                                            <div class="mt-1 ml-2 text-xs text-gray-400">
+                                                                <div class="font-semibold mb-1">Ingrédients:</div>
+                                                                <ul class="list-disc list-inside">
+                                                                    @foreach($ingredients as $ing)
+                                                                        <li>{{ $ing->nom }} <span class="text-gray-500">(+{{ number_format($ing->prix, 2, ',', ' ') }} €)</span></li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </td>
                                                     <td class="px-4 py-2">{{ $ligne->quantite }}</td>
                                                     <td class="px-4 py-2">{{ number_format($ligne->prix_ttc, 2, ',', ' ') }} €</td>
                                                     <td class="px-4 py-2">{{ number_format($ligne->prix_ttc * $ligne->quantite, 2, ',', ' ') }} €</td>

@@ -1,4 +1,66 @@
 <div class="container" id="contenu-panier">
+@php
+    use Illuminate\Support\Facades\DB;
+@endphp
+
+<style>
+    /* Custom items styles */
+    .ingredients-list {
+        background-color: #2a2a2a;
+        border-radius: 4px;
+        padding: 8px;
+    }
+    
+    .ingredients-list ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+    
+    .quantity-fixed {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #2a2a2a;
+        border-radius: 4px;
+        padding: 4px 12px;
+        min-width: 70px;
+    }
+    
+    .toggle-ingredients {
+        text-align: left;
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: #3a3a3a;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+        border: 1px solid #4a4a4a;
+    }
+    
+    .toggle-ingredients:hover {
+        color: #ffffff;
+        background-color: #e22028;
+        border-color: #e22028;
+    }
+    
+    /* Add this to ensure the toggle button is visible */
+    .toggle-ingredients i {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .toggle-ingredients:not(.active) i {
+        transform: rotate(0deg);
+    }
+    
+    .toggle-ingredients.active i {
+        transform: rotate(180deg);
+    }
+</style>
+
     <div class="header">
         <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
@@ -38,14 +100,79 @@
                         if (empty($photoPath)) {
                             $photoPath = '/media/concombre.png';
                         }
+                        
+                        // Check if this is a custom item
+                        $isCustomItem = isset($item->produit) && $item->produit->type_produit === 'Customisation';
+                        
+                        // Get ingredients for custom items
+                        $ingredients = [];
+                        if ($isCustomItem) {
+                            $ingredients = DB::table('compo_paniers')
+                                ->join('ingredients', 'compo_paniers.id_ingredient', '=', 'ingredients.id_ingredient')
+                                ->where('compo_paniers.id_panier_ligne', $item->id_panier_ligne)
+                                ->select('ingredients.nom', 'compo_paniers.prix')
+                                ->get();
+                        }
                     @endphp
                     <img src="{{ $photoPath }}" alt="{{ $item->nom }}" onerror="this.src='/media/concombre.png'">
                         <div class="item-details">  
                             <h3 class="item-name">{{ $item->nom }}</h3>
                             <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
+                            
+                            @if($isCustomItem)
+                                <div class="mt-2">
+                                    <button type="button" class="text-blue-500 text-sm toggle-ingredients" 
+                                            data-target="ingredients-{{ $item->id_panier_ligne }}"
+                                            onclick="toggleIngredients(this)">
+                                        <i class="fas fa-chevron-down mr-1"></i> Voir les ingrédients
+                                    </button>
+                                    <div id="ingredients-{{ $item->id_panier_ligne }}" class="ingredients-list hidden mt-2 pl-3 text-sm">
+                                        <ul class="list-disc">
+                                            @php
+                                                // Debug output for seeing what's available
+                                                \Log::debug('Ingredients for item ' . $item->id_panier_ligne, [
+                                                    'ingredients' => $ingredients,
+                                                    'count' => count($ingredients)
+                                                ]);
+                                                
+                                                // If no ingredients found from DB, try to check if it's a cookie cart item
+                                                if (count($ingredients) === 0 && !isset($item->produit)) {
+                                                    $cookieCart = json_decode(request()->cookie('panier'), true) ?? [];
+                                                    foreach ($cookieCart as $cookieItem) {
+                                                        if (isset($cookieItem['id_panier_ligne']) && $cookieItem['id_panier_ligne'] == $item->id_panier_ligne) {
+                                                            if (isset($cookieItem['ingredients']) && is_array($cookieItem['ingredients'])) {
+                                                                $ingredients = collect($cookieItem['ingredients'])->map(function($ing) {
+                                                                    return (object) [
+                                                                        'nom' => $ing['name'],
+                                                                        'prix' => $ing['price']
+                                                                    ];
+                                                                });
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                            
+                                            @if(count($ingredients) > 0)
+                                                @foreach($ingredients as $ing)
+                                                    <li>{{ $ing->nom }} <span class="text-gray-400">(+{{ number_format($ing->prix, 2, ',', ' ') }} €)</span></li>
+                                                @endforeach
+                                            @else
+                                                <li>Aucun ingrédient spécifié</li>
+                                            @endif
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         <div class="quantity-controls">
-                    
+                        @if($isCustomItem)
+                            <!-- Custom items can't have their quantity changed -->
+                            <div class="quantity-fixed">
+                                <span class="quantity-value">{{ $item->quantite }}</span>
+                            </div>
+                        @else
                             <form>
                                 @csrf
                                 @method('PUT')
@@ -56,8 +183,8 @@
                                 <button type="submit" name="action" value="increment" class="quantity-btn"
                                 data-url="{{ route('panier.update', ['id_panier_ligne' => $item->id_panier_ligne]) }}"
                                 onclick="add_quantity(this)">+</button>
-
                             </form>
+                        @endif
                         
                             <button type="button" 
                                 class="delete-btn"  
@@ -468,6 +595,11 @@ function attachEventListeners() {
             // Implementation remains the same...
         });
     }
+    
+    // Re-attach ingredients toggle handlers - use the onclick attribute approach instead
+    document.querySelectorAll('.toggle-ingredients').forEach(button => {
+        button.setAttribute('onclick', 'toggleIngredients(this)');
+    });
 }
 
 // Function to show toast messages
@@ -498,4 +630,40 @@ function updateHeaderCartCount(count) {
         cartCountElement.textContent = count;
     }
 }
+
+// Function to toggle ingredient lists
+function toggleIngredients(button) {
+    console.log('Toggle button clicked:', button);
+    const targetId = button.getAttribute('data-target');
+    console.log('Target ID:', targetId);
+    const targetElement = document.getElementById(targetId);
+    console.log('Target element:', targetElement);
+    
+    if (targetElement) {
+        if (targetElement.classList.contains('hidden')) {
+            console.log('Showing ingredients list');
+            targetElement.classList.remove('hidden');
+            button.classList.add('active');
+            button.innerHTML = '<i class="fas fa-chevron-up mr-1"></i> Masquer les ingrédients';
+        } else {
+            console.log('Hiding ingredients list');
+            targetElement.classList.add('hidden');
+            button.classList.remove('active');
+            button.innerHTML = '<i class="fas fa-chevron-down mr-1"></i> Voir les ingrédients';
+        }
+    } else {
+        console.error('Target element not found:', targetId);
+    }
+}
+
+// Toggle ingredients list for custom items
+document.addEventListener('DOMContentLoaded', function() {
+    // Add onclick attribute directly to toggle-ingredients buttons
+    document.querySelectorAll('.toggle-ingredients').forEach(button => {
+        button.setAttribute('onclick', 'toggleIngredients(this)');
+    });
+    
+    // Make sure we also attach this event to any new toggle buttons added via AJAX
+    attachEventListeners();
+});
 </script>

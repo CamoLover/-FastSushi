@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>FastSushi - Compo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -315,9 +316,9 @@
 
                 // Ajouter l'ingrédient aux données sélectionnées
                 selectedPlatData.ingredients.push({
-                    id: ingredientId,
+                    id: parseInt(ingredientId, 10),
                     name: ingredientName,
-                    price: ingredientPrice
+                    price: parseFloat(ingredientPrice)
                 });
                 
                 // Mettre à jour le prix total des suppléments
@@ -327,7 +328,7 @@
                 // Supprimer l'ingrédient au clic
                 newIngredient.addEventListener('click', () => {
                     // Supprimer l'ingrédient des données sélectionnées
-                    const index = selectedPlatData.ingredients.findIndex(i => i.id === ingredientId);
+                    const index = selectedPlatData.ingredients.findIndex(i => i.id === parseInt(ingredientId, 10));
                     if (index > -1) {
                         selectedPlatData.ingredients.splice(index, 1);
                         // Soustraire le prix du supplément
@@ -376,7 +377,7 @@
                 const ingredientPrice = e.dataTransfer.getData('price');
                 
                 // Vérifier si cet ingrédient est déjà dans la sélection
-                if (selectedPlatData.ingredients.some(i => i.id === ingredientId)) {
+                if (selectedPlatData.ingredients.some(i => i.id === parseInt(ingredientId, 10))) {
                     return;
                 }
                 
@@ -404,14 +405,20 @@
                 // Calculer le prix total (base + suppléments)
                 const totalPrice = parseFloat(selectedPlatData.price) + selectedPlatData.supplementsTotal;
                 
+                // Log the ingredients data before sending
+                console.log('Sending ingredients data:', selectedPlatData.ingredients);
+                
                 // Créer l'objet à envoyer
                 const cartItem = {
                     id_produit: selectedPlatData.id,
                     nom: selectedPlatData.name + ' personnalisé',
                     prix_ttc: totalPrice,
                     prix_ht: parseFloat(selectedPlatData.price_ht) + selectedPlatData.supplementsTotal,
-                    quantite: 1,
-                    ingredients: selectedPlatData.ingredients
+                    ingredients: selectedPlatData.ingredients.map(ing => ({
+                        id: ing.id,
+                        name: ing.name,
+                        price: ing.price
+                    }))
                 };
                 
                 // Envoyer la requête AJAX

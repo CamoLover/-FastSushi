@@ -51,6 +51,9 @@ class PanierController extends Controller
             return false;
         }
         
+        // Check if this is a custom item
+        $isCustomItem = isset($item['is_custom']) && $item['is_custom'] === true;
+        
         // Try to find the product
         $produit = Produit::find($item['id_produit']);
         
@@ -64,30 +67,57 @@ class PanierController extends Controller
         
         // If product exists, use its data
         if ($produit) {
-            $productData['nom'] = $produit->nom;
-            $productData['prix_ht'] = $produit->prix_ht;
-            $productData['prix_ttc'] = $produit->prix_ttc;
+            $productData['nom'] = $isCustomItem ? ($produit->nom . ' personnalisé') : $produit->nom;
+            
+            if (!$isCustomItem) {
+                $productData['prix_ht'] = $produit->prix_ht;
+                $productData['prix_ttc'] = $produit->prix_ttc;
+            }
         }
         
-        // Find or create a new line
-        $existingLine = Panier_ligne::where('id_panier', $panier->id_panier)
-                                   ->where('id_produit', $item['id_produit'])
-                                   ->first();
-                                   
-        if ($existingLine) {
-            // Update existing line
-            $existingLine->quantite += $productData['quantite'];
-            $existingLine->save();
-        } else {
-            // Create new line
-            Panier_ligne::create([
+        // For custom items, always create a new entry (no stacking)
+        if ($isCustomItem) {
+            // Create new line for custom item
+            $newLine = Panier_ligne::create([
                 'id_panier' => $panier->id_panier,
                 'id_produit' => $item['id_produit'],
-                'quantite' => $productData['quantite'],
+                'quantite' => 1, // Custom items always have quantity of 1
                 'nom' => $productData['nom'],
                 'prix_ht' => $productData['prix_ht'],
                 'prix_ttc' => $productData['prix_ttc']
             ]);
+            
+            // If the item has ingredients, add them to compo_paniers
+            if (isset($item['ingredients']) && is_array($item['ingredients']) && !empty($item['ingredients'])) {
+                foreach ($item['ingredients'] as $ingredient) {
+                    DB::table('compo_paniers')->insert([
+                        'id_panier_ligne' => $newLine->id_panier_ligne,
+                        'id_ingredient' => $ingredient['id'],
+                        'prix' => $ingredient['price']
+                    ]);
+                }
+            }
+        } else {
+            // Regular product - find or create a new line
+            $existingLine = Panier_ligne::where('id_panier', $panier->id_panier)
+                                       ->where('id_produit', $item['id_produit'])
+                                       ->first();
+                                       
+            if ($existingLine) {
+                // Update existing line
+                $existingLine->quantite += $productData['quantite'];
+                $existingLine->save();
+            } else {
+                // Create new line
+                Panier_ligne::create([
+                    'id_panier' => $panier->id_panier,
+                    'id_produit' => $item['id_produit'],
+                    'quantite' => $productData['quantite'],
+                    'nom' => $productData['nom'],
+                    'prix_ht' => $productData['prix_ht'],
+                    'prix_ttc' => $productData['prix_ttc']
+                ]);
+            }
         }
         
         return true;

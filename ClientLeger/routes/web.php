@@ -315,7 +315,7 @@ Route::post('/mock-add-to-cart', function(Request $request) {
 });
 
 // Add a super basic cart handler as backup in case the other route fails
-Route::post('/simple-add-to-cart', function(Request $request) {
+Route::post('/basic-add-to-cart', function(Request $request) {
     $data = $request->all();
 
     // Validate basic fields
@@ -424,6 +424,8 @@ Route::post('/simple-add-to-cart', function(Request $request) {
     return $response;
 });
 
+// Add a route for custom sushi orders
+Route::post('/simple-add-to-cart', [PanierLigneController::class, 'addCustomToCart']);
 
 Route::get('/menu', [App\Http\Controllers\ProduitsController::class, 'menu']);
 

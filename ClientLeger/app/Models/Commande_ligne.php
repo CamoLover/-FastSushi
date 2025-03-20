@@ -31,4 +31,12 @@ class Commande_ligne extends Model
     {
         return $this->belongsTo(Produit::class, 'id_produit', 'id_produit');
     }
+
+    /**
+     * Get the custom ingredients for this order line.
+     */
+    public function ingredients()
+    {
+        return $this->hasMany('App\Models\CompoCommande', 'id_commande_ligne', 'id_commande_ligne');
+    }
 }

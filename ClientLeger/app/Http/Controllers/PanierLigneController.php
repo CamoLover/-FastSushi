@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 
 class PanierLigneController extends Controller
 {
@@ -717,6 +718,204 @@ class PanierLigneController extends Controller
         }
     }
 
+    public function addCustomToCart(Request $request)
+    {
+        \Log::debug('Custom sushi order request data:', $request->all());
+        
+        // Extract data from the request
+        $data = [
+            'id_produit' => (int) $request->input('id_produit'),
+            'nom' => $request->input('nom', 'Produit personnalisé'),
+            'prix_ttc' => (float) $request->input('prix_ttc', 0),
+            'prix_ht' => (float) $request->input('prix_ht', 0),
+            'quantite' => 1, // Custom items always have quantity of 1
+            'ingredients' => $request->input('ingredients', [])
+        ];
+        
+        // Log ingredients data for debugging
+        \Log::debug('Ingredients data:', [
+            'ingredients' => $data['ingredients'],
+            'type' => gettype($data['ingredients']),
+            'is_array' => is_array($data['ingredients']),
+            'count' => is_array($data['ingredients']) ? count($data['ingredients']) : 0
+        ]);
+        
+        if (!empty($data['ingredients'])) {
+            \Log::debug('First ingredient:', [
+                'data' => $data['ingredients'][0] ?? 'No first element',
+                'keys' => is_array($data['ingredients'][0]) ? array_keys($data['ingredients'][0]) : 'Not an array'
+            ]);
+        }
+        
+        // Validate basic fields
+        $validator = Validator::make($data, [
+            'id_produit' => 'required|integer|min:1',
+            'nom' => 'required|string|max:100',
+            'prix_ht' => 'required|numeric|min:0',
+            'prix_ttc' => 'required|numeric|min:0',
+        ]);
 
+        if ($validator->fails()) {
+            \Log::debug('Validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        
+        // Check for client session
+        $client = session('client');
+        
+        if ($client) {
+            // User is logged in - store in database
+            \Log::debug('User is logged in, storing custom item in database:', ['client_id' => $client->id_client]);
+            
+            // Find or create a cart for this client
+            $panier = Panier::firstOrCreate(
+                ['id_client' => $client->id_client],
+                [
+                    'id_session' => session()->getId(),
+                    'date_panier' => now(), 
+                    'montant_tot' => 0
+                ]
+            );
+            
+            // For custom items, always create a new entry (no stacking)
+            $newLine = Panier_ligne::create([
+                'id_panier'  => $panier->id_panier,
+                'id_produit' => $data['id_produit'],
+                'quantite'   => 1,
+                'nom'        => $data['nom'],
+                'prix_ht'    => $data['prix_ht'],
+                'prix_ttc'   => $data['prix_ttc'],
+            ]);
+            
+            \Log::debug('Created new cart line for custom item:', [
+                'product_id' => $data['id_produit'],
+                'line_id' => $newLine->id_panier_ligne
+            ]);
+            
+            // Store ingredients in compo_paniers table
+            if (!empty($data['ingredients'])) {
+                \Log::debug('About to store ingredients, count:', [count($data['ingredients'])]);
+                
+                foreach ($data['ingredients'] as $ingredient) {
+                    \Log::debug('Processing ingredient:', [
+                        'ingredient' => $ingredient,
+                        'type' => gettype($ingredient),
+                        'is_array' => is_array($ingredient),
+                        'keys' => is_array($ingredient) ? array_keys($ingredient) : 'Not an array'
+                    ]);
+                    
+                    if (is_array($ingredient) && isset($ingredient['id']) && isset($ingredient['price'])) {
+                        DB::table('compo_paniers')->insert([
+                            'id_panier_ligne' => $newLine->id_panier_ligne,
+                            'id_ingredient' => $ingredient['id'],
+                            'prix' => $ingredient['price']
+                        ]);
+                        
+                        \Log::debug('Inserted ingredient into compo_paniers:', [
+                            'id_ingredient' => $ingredient['id'],
+                            'prix' => $ingredient['price']
+                        ]);
+                    } else {
+                        \Log::warning('Skipping invalid ingredient format:', [
+                            'ingredient' => $ingredient
+                        ]);
+                    }
+                }
+                
+                \Log::debug('Added ingredients to compo_paniers for custom item', [
+                    'count' => count($data['ingredients'])
+                ]);
+            } else {
+                \Log::warning('No ingredients found for custom item');
+            }
+
+            // Recalculate the total cart amount
+            $lignes = Panier_ligne::where('id_panier', $panier->id_panier)->get();
+            $montantTotal = $lignes->sum(function ($ligne) {
+                return $ligne->prix_ttc * $ligne->quantite;
+            });
+
+            // Update the cart's total amount
+            $panier->montant_tot = $montantTotal;
+            $panier->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Plat personnalisé ajouté au panier.',
+                'montant_total' => $montantTotal,
+                'count' => Panier_ligne::where('id_panier', $panier->id_panier)->sum('quantite')
+            ], 201);
+        } else {
+            // User is not logged in - store in cookie
+            \Log::debug('User is not logged in, storing custom item in cookie');
+            
+            // Get existing cart from cookie
+            $cookieCart = [];
+            $panierCookie = $request->cookie('panier');
+            
+            if (!empty($panierCookie)) {
+                try {
+                    $cookieCart = json_decode($panierCookie, true);
+                } catch (\Exception $e) {
+                    \Log::error('Error parsing panier cookie:', [
+                        'error' => $e->getMessage(),
+                        'cookie' => $panierCookie
+                    ]);
+                    $cookieCart = [];
+                }
+            }
+            
+            // Ensure cookieCart is an array
+            if (!is_array($cookieCart)) {
+                $cookieCart = [];
+            }
+            
+            // Generate a unique id for the cookie cart line
+            $id_panier_ligne = count($cookieCart) + 1;
+            
+            // Create the new custom item with ingredients 
+            $newItem = [
+                'id_produit' => $data['id_produit'],
+                'nom' => $data['nom'],
+                'quantite' => 1,
+                'prix_ht' => $data['prix_ht'],
+                'prix_ttc' => $data['prix_ttc'],
+                'id_panier_ligne' => $id_panier_ligne,
+                'is_custom' => true,
+                'ingredients' => $data['ingredients']
+            ];
+            
+            // Add the new item to the cart
+            $cookieCart[] = $newItem;
+            
+            // Calculate total cart amount and count
+            $total = 0;
+            $count = 0;
+            foreach ($cookieCart as $item) {
+                $total += (float)$item['prix_ttc'] * (int)$item['quantite'];
+                $count += (int)$item['quantite'];
+            }
+            
+            // Create a cookie
+            $cookie = cookie(
+                'panier',
+                json_encode($cookieCart),
+                10080, // 7 days
+                '/',
+                null,
+                false,
+                false
+            );
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Plat personnalisé ajouté au panier',
+                'count' => $count
+            ], 201)->cookie($cookie);
+        }
+    }
 
 }
