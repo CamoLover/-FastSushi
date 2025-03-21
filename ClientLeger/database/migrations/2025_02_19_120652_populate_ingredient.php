@@ -13,15 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('ingredients')->insert([
-            ['nom' => 'Fromage', 'photo' => 'fromage.jpg', 'prix_ht' => 2.50, 'type_ingredient' => 'fromage'],
-            ['nom' => 'Concombre', 'photo' => 'concombre.jpg', 'prix_ht' => 1.00, 'type_ingredient' => 'légume'],
-            ['nom' => 'Avocat', 'photo' => 'avocat.jpg', 'prix_ht' => 2.00, 'type_ingredient' => 'fruit'],
-            ['nom' => 'Thon', 'photo' => 'thon.jpg', 'prix_ht' => 3.50, 'type_ingredient' => 'poisson'],
-            ['nom' => 'Saumon', 'photo' => 'saumon.jpg', 'prix_ht' => 4.00, 'type_ingredient' => 'poisson'],
-            ['nom' => 'Crevettes', 'photo' => 'crevettes.jpg', 'prix_ht' => 5.00, 'type_ingredient' => 'poisson'],
-            ['nom' => 'Daurade', 'photo' => 'daurade.jpg', 'prix_ht' => 4.50, 'type_ingredient' => 'poisson'],
-            ['nom' => 'Mangue', 'photo' => 'mangue.jpg', 'prix_ht' => 2.50, 'type_ingredient' => 'fruit'],
-            ['nom' => 'Boursin', 'photo' => 'boursin.jpg', 'prix_ht' => 3.00, 'type_ingredient' => 'fromage'],
+            ['nom' => 'Fromage', 'photo' => 'fromage.png', 'prix_ht' => 2.50, 'type_ingredient' => 'fromage'],
+            ['nom' => 'Concombre', 'photo' => 'concombre.png', 'prix_ht' => 1.00, 'type_ingredient' => 'légume'],
+            ['nom' => 'Avocat', 'photo' => 'avocat.png', 'prix_ht' => 2.00, 'type_ingredient' => 'fruit'],
+            ['nom' => 'Thon', 'photo' => 'thon.png', 'prix_ht' => 3.50, 'type_ingredient' => 'poisson'],
+            ['nom' => 'Saumon', 'photo' => 'saumon.png', 'prix_ht' => 4.00, 'type_ingredient' => 'poisson'],
+            ['nom' => 'Crevettes', 'photo' => 'crevette.png', 'prix_ht' => 5.00, 'type_ingredient' => 'poisson'],
+            ['nom' => 'Daurade', 'photo' => 'daurade.png', 'prix_ht' => 4.50, 'type_ingredient' => 'poisson'],
+            ['nom' => 'Mangue', 'photo' => 'mangue.png', 'prix_ht' => 2.50, 'type_ingredient' => 'fruit'],
+            ['nom' => 'Boursin', 'photo' => 'boursin.png', 'prix_ht' => 3.00, 'type_ingredient' => 'fromage'],
         ]);
     }
 };
