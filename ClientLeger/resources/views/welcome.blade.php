@@ -64,7 +64,7 @@
     
     /* Ensure header is above everything else */
     #floatingHeader {
-        z-index: 999999 !important;
+        z-index: 49 !important;
     }
     
     /* Make scrolling smooth */
@@ -86,7 +86,7 @@
             <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">Fast Sushi</h1>
             <p class="text-xl md:text-2xl text-white mb-10 max-w-2xl">L'authenticité japonaise livrée en un temps record</p>
             <div class="flex flex-col sm:flex-row gap-4">
-                <a href="#menu" class="bg-[#D90429] hover:bg-[#ce0006] text-white px-8 py-3 rounded-lg font-bold text-lg transition duration-300 transform hover:scale-105">
+                <a href="/menu" class="bg-[#D90429] hover:bg-[#ce0006] text-white px-8 py-3 rounded-lg font-bold text-lg transition duration-300 transform hover:scale-105">
                     Découvrir le menu
                 </a>
                 <a href="/panier" class="bg-white hover:bg-gray-100 text-[#D90429] px-8 py-3 rounded-lg font-bold text-lg transition duration-300 transform hover:scale-105">
@@ -102,7 +102,7 @@
     
     <!-- Intro Section -->
     <div id="intro" class="bg-[#252422] py-20">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-8 text-[#FFFCF2]">Bienvenue chez Fast Sushi</h2>
                 <p class="text-xl text-[#CCC5B9] mb-12 leading-relaxed">
@@ -142,7 +142,7 @@
     
     <!-- Menu Preview Section -->
     <div id="menu" class="py-16 bg-[#403D39]">
-        <div class="container mx-auto px-4 mb-16">
+        <div class="max-w-6xl mx-auto px-4 mb-16">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-[#FFFCF2]">Notre Menu</h2>
                 <p class="text-xl text-[#CCC5B9] max-w-3xl mx-auto">
@@ -160,7 +160,7 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Sushis</h3>
                         <p class="text-[#CCC5B9] mb-4">Des pièces délicatement préparées sur un lit de riz vinaigré.</p>
-                        <a href="#" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
                             Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
@@ -174,7 +174,7 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Makis</h3>
                         <p class="text-[#CCC5B9] mb-4">Des rouleaux enveloppés dans une feuille d'algue nori croustillante.</p>
-                        <a href="#" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
                             Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
@@ -188,7 +188,7 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Sashimis</h3>
                         <p class="text-[#CCC5B9] mb-4">De fines tranches de poisson cru d'une fraîcheur exceptionnelle.</p>
-                        <a href="#" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
                             Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
@@ -202,7 +202,7 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Plats Chauds</h3>
                         <p class="text-[#CCC5B9] mb-4">Des ramens aux gyozas, découvrez nos spécialités chaudes.</p>
-                        <a href="#" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
                             Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
@@ -210,7 +210,7 @@
             </div>
             
             <div class="text-center mt-12">
-                <a href="#" class="inline-block bg-[#D90429] hover:bg-[#ce0006] text-white px-8 py-3 rounded-lg font-semibold text-lg transition duration-300">
+                <a href="/menu" class="inline-block bg-[#D90429] hover:bg-[#ce0006] text-white px-8 py-3 rounded-lg font-semibold text-lg transition duration-300">
                     Voir tout le menu
                 </a>
             </div>
@@ -222,7 +222,7 @@
     
     <!-- App Promo Section -->
     <div class="py-20 bg-[#252422]">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="flex flex-col lg:flex-row items-center gap-10">
                 <div class="lg:w-1/2">
                     <h2 class="text-4xl font-bold mb-6 text-[#FFFCF2]">Téléchargez notre application</h2>
@@ -283,7 +283,7 @@
     
     <!-- Testimonials Section -->
     <div class="py-20 bg-[#403D39]">
-        <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-[#FFFCF2]">Ce que nos clients disent</h2>
                 <p class="text-xl text-[#CCC5B9] max-w-3xl mx-auto">

@@ -26,4 +26,16 @@ class IngredientController extends Controller
         
         return response()->json($ingredients);
     }
+    
+    /**
+     * Récupérer tous les ingrédients.
+     *
+     * @return JsonResponse
+     */
+    public function getAllIngredients(): JsonResponse
+    {
+        $ingredients = Ingredient::all();
+        
+        return response()->json($ingredients);
+    }
 }

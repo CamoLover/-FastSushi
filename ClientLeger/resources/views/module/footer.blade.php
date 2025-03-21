@@ -1,5 +1,5 @@
 <footer class="bg-[#252422] text-[#CCC5B9] py-10 border-t border-[#D90429]">
-    <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4">
         <!-- Top Section with Logo and Description -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-8">
             <div class="text-center md:text-left mb-6 md:mb-0">
