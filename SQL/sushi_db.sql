@@ -244,9 +244,9 @@ CREATE TABLE `employes` (
 --
 
 INSERT INTO `employes` (`id_employe`, `nom`, `prenom`, `email`, `mdp`, `statut_emp`) VALUES
-(1, 'Bernard', 'Luc', 'luc.bernard@example.com', '$2y$12$u4DdfzJpts/MDCgL5BrPZelPngAsyv64gubPv9Rv6FCGq1PUSeyS6', 'Manager'),
-(2, 'Moreau', 'Elise', 'elise.moreau@example.com', '$2y$12$u3WIvVkqYnldPItwnX2IO.2UfoY/h0HTTEE0ZTWkmnLIkqT0yIYaa', 'Assistant'),
-(3, 'Rousseau', 'Nicolas', 'nicolas.rousseau@example.com', '$2y$12$Yk0zKEMAlUw6483AMf5PFeUqJjtNwtkpV9YqVQXF88mTRamZmJOBC', 'Technicien');
+(1, 'Bernard', 'Luc', 'luc.bernard@example.com', '$2y$12$u4DdfzJpts/MDCgL5BrPZelPngAsyv64gubPv9Rv6FCGq1PUSeyS6', 'Preparateur'),
+(2, 'Moreau', 'Elise', 'elise.moreau@example.com', '$2y$12$u3WIvVkqYnldPItwnX2IO.2UfoY/h0HTTEE0ZTWkmnLIkqT0yIYaa', 'Preparateur'),
+(3, 'Rousseau', 'Nicolas', 'nicolas.rousseau@example.com', '$2y$12$Yk0zKEMAlUw6483AMf5PFeUqJjtNwtkpV9YqVQXF88mTRamZmJOBC', 'Administrateur');
 
 -- --------------------------------------------------------
 
