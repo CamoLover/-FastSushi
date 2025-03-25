@@ -1,1 +1,30 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.root {
+    -fx-font-family: "System";
+    -fx-background-color: #252422;
+}
+
+.title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F0EFE7;
+}
+
+.button {
+    -fx-background-color: #D90429;
+    -fx-text-fill: #F0EFE7;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #A4161A;
+}
+
+.text-field, .password-field {
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #ccc;
+    -fx-padding: 8px;
+}
