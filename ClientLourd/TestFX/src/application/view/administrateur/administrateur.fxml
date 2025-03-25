@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="application.view.administrateur.AdministrateurViewController">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Interface Administrateur" style="-fx-font-size: 24;"/>
+    
+    <Label text="Bienvenue dans l'interface d'administration"/>
+    
+    <Button text="Déconnexion" onAction="#handleLogoutButton"/>
+    
+</VBox> 
