@@ -1,3 +1,4 @@
 {
-    "vscode-as-git-mergetool.settingsAssistantOnStartup": false
+    "vscode-as-git-mergetool.settingsAssistantOnStartup": false,
+    "liveServer.settings.port": 5501
 }
