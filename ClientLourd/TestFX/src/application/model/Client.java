@@ -20,9 +20,9 @@ public class Client {
     }
 
     public int getId() { return id_client; }
-    public String getNom() { return nom; }
-    public String getPrenom() { return prenom; }
-    public String getEmail() { return email; }
-    public String getTel() { return tel; }
-    public String getVille() { return ville; }
+    public String getNom() { return (nom == null) ? "" : nom; }
+    public String getPrenom() { return (prenom == null) ? "" : prenom; }
+    public String getEmail() { return (email == null) ? "" : email; }
+    public String getTel() { return (tel == null) ? "" : tel; }
+    public String getVille() { return (ville == null) ? "" : ville; }
 }
