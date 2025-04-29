@@ -265,30 +265,6 @@ Pour les modifications API :
 ////////////////////////////////
 //////////////////////////////// -->
 
-### Exemple 5: Layout Principal
-**Tâche** : Modifier la structure principale du site
-- **Fichier** : `resources/views/layouts/home.blade.php`
-- **Éléments clés** :
-  ```php
-  <!DOCTYPE html>
-  <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-      <head>
-          <!-- Meta tags et CSS -->
-      </head>
-      <body class="font-sans antialiased bg-[#403D39] text-[#FFFCF2]">
-          @include('module.header')
-          <main class="flex-grow">
-              @yield('content')
-          </main>
-          @include('module.footer')
-      </body>
-  </html>
-  ```
-
-<!-- ////////////////////////////////
-////////////////////////////////
-//////////////////////////////// -->
-
 ### Exemple 6: Système de Notifications
 **Tâche** : Personnaliser les notifications utilisateur
 - **Fichier** : `resources/views/layouts/home.blade.php`
@@ -307,6 +283,3 @@ Pour les modifications API :
 <!-- ////////////////////////////////
 ////////////////////////////////
 //////////////////////////////// -->
-
-
-Je peux fournir des exemples encore plus détaillés une fois que j'aurai accès aux contrôleurs, modèles et middleware correspondants. Cela me permettra d'inclure des exemples de logique métier, de validation et de gestion des données.
