@@ -20,9 +20,9 @@ class FixCompoCommandesForeignKeyConstraint extends Migration
         // Clear any existing data in the compo_commandes table
         DB::table('compo_commandes')->truncate();
 
-        // Drop the incorrect foreign key constraint
+        // Drop the incorrect foreign key constraint if it exists
         Schema::table('compo_commandes', function (Blueprint $table) {
-            $table->dropForeign('compo_commandes_id_commande_ligne_foreign');
+            $table->dropForeign(['id_commande_ligne']);
         });
 
         // Add the correct foreign key constraint
@@ -44,23 +44,7 @@ class FixCompoCommandesForeignKeyConstraint extends Migration
      */
     public function down()
     {
-        // Disable foreign key checks for the rollback
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        
-        // Drop the corrected foreign key
-        Schema::table('compo_commandes', function (Blueprint $table) {
-            $table->dropForeign('compo_commandes_id_commande_ligne_foreign');
-        });
-
-        // Restore the original foreign key (though it was incorrect)
-        Schema::table('compo_commandes', function (Blueprint $table) {
-            $table->foreign('id_commande_ligne')
-                  ->references('id_commande')
-                  ->on('commande_lignes')
-                  ->onDelete('cascade');
-        });
-        
-        // Re-enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        // This migration fixes a bug, so we don't want to reverse it
+        return;
     }
 } 

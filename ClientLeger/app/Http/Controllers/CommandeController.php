@@ -62,82 +62,93 @@ class CommandeController extends Controller
                 'items' => $lignesPanier->toArray()
             ]);
 
-            // Créer la commande
-            $commande = Commande::create([
-                'id_client' => $client->id_client,
-                'date_panier' => now()->format('Y-m-d'),
-                'montant_tot' => $panier->montant_tot,
-                'statut' => 'En attente'
-            ]);
+            // Wrap everything in a transaction
+            return DB::transaction(function() use ($client, $panier, $lignesPanier) {
+                try {
+                    // Créer la commande
+                    $commande = Commande::create([
+                        'id_client' => $client->id_client,
+                        'date_panier' => now()->format('Y-m-d'),
+                        'montant_tot' => $panier->montant_tot,
+                        'statut' => 'En attente'
+                    ]);
 
-            // Create mapping to track which commande_ligne corresponds to which panier_ligne
-            $ligneMapping = [];
+                    // Create mapping to track which commande_ligne corresponds to which panier_ligne
+                    $ligneMapping = [];
 
-            // Créer les lignes de commande
-            foreach ($lignesPanier as $ligne) {
-                $commandeLigne = Commande_ligne::create([
-                    'id_commande' => $commande->id_commande,
-                    'id_produit' => $ligne->id_produit,
-                    'quantite' => $ligne->quantite,
-                    'nom' => $ligne->nom,
-                    'prix_ht' => $ligne->prix_ht,
-                    'prix_ttc' => $ligne->prix_ttc
-                ]);
-                
-                // Store mapping between panier_ligne and commande_ligne
-                $ligneMapping[$ligne->id_panier_ligne] = $commandeLigne->id_commande_ligne;
-            }
-            
-            // Transfer custom ingredients from compo_panier to compo_commande
-            // First, get all compo_panier entries for this cart
-            $compoItems = DB::table('compo_paniers')
-                ->whereIn('id_panier_ligne', array_keys($ligneMapping))
-                ->get();
-                
-            \Log::debug('Found custom ingredients to transfer:', [
-                'count' => $compoItems->count(), 
-                'items' => $compoItems->toArray()
-            ]);
-            
-            // Now transfer each ingredient to compo_commande
-            foreach ($compoItems as $compo) {
-                if (isset($ligneMapping[$compo->id_panier_ligne])) {
-                    DB::table('compo_commandes')->insert([
-                        'id_commande_ligne' => $ligneMapping[$compo->id_panier_ligne],
-                        'id_ingredient' => $compo->id_ingredient,
-                        'prix' => $compo->prix
+                    // Créer les lignes de commande
+                    foreach ($lignesPanier as $ligne) {
+                        $commandeLigne = Commande_ligne::create([
+                            'id_commande' => $commande->id_commande,
+                            'id_produit' => $ligne->id_produit,
+                            'quantite' => $ligne->quantite,
+                            'nom' => $ligne->nom,
+                            'prix_ht' => $ligne->prix_ht,
+                            'prix_ttc' => $ligne->prix_ttc
+                        ]);
+                        
+                        // Store mapping between panier_ligne and commande_ligne
+                        $ligneMapping[$ligne->id_panier_ligne] = $commandeLigne->id_commande_ligne;
+                    }
+                    
+                    // Transfer custom ingredients from compo_panier to compo_commande
+                    $compoItems = DB::table('compo_paniers')
+                        ->whereIn('id_panier_ligne', array_keys($ligneMapping))
+                        ->get();
+                        
+                    \Log::debug('Found custom ingredients to transfer:', [
+                        'count' => $compoItems->count(), 
+                        'items' => $compoItems->toArray()
                     ]);
                     
-                    \Log::debug('Transferred ingredient to order:', [
-                        'from_panier_ligne' => $compo->id_panier_ligne,
-                        'to_commande_ligne' => $ligneMapping[$compo->id_panier_ligne],
-                        'ingredient_id' => $compo->id_ingredient,
-                        'price' => $compo->prix
+                    // Now transfer each ingredient to compo_commande
+                    foreach ($compoItems as $compo) {
+                        if (isset($ligneMapping[$compo->id_panier_ligne])) {
+                            DB::table('compo_commandes')->insert([
+                                'id_commande_ligne' => $ligneMapping[$compo->id_panier_ligne],
+                                'id_ingredient' => $compo->id_ingredient,
+                                'prix' => $compo->prix
+                            ]);
+                            
+                            \Log::debug('Transferred ingredient to order:', [
+                                'from_panier_ligne' => $compo->id_panier_ligne,
+                                'to_commande_ligne' => $ligneMapping[$compo->id_panier_ligne],
+                                'ingredient_id' => $compo->id_ingredient,
+                                'price' => $compo->prix
+                            ]);
+                        }
+                    }
+
+                    // Vider le panier (including compo_panier entries)
+                    DB::table('compo_paniers')
+                        ->whereIn('id_panier_ligne', array_keys($ligneMapping))
+                        ->delete();
+                        
+                    Panier_ligne::where('id_panier', $panier->id_panier)->delete();
+                    $panier->montant_tot = 0;
+                    $panier->save();
+
+                    \Log::info('Order created successfully:', [
+                        'order_id' => $commande->id_commande,
+                        'client_id' => $client->id_client
                     ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Commande confirmée avec succès!'
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Error during order creation transaction:', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    // Re-throw to trigger transaction rollback
+                    throw $e;
                 }
-            }
-
-            // Vider le panier (including compo_panier entries)
-            DB::table('compo_paniers')
-                ->whereIn('id_panier_ligne', array_keys($ligneMapping))
-                ->delete();
-                
-            Panier_ligne::where('id_panier', $panier->id_panier)->delete();
-            $panier->montant_tot = 0;
-            $panier->save();
-
-            \Log::info('Order created successfully:', [
-                'order_id' => $commande->id_commande,
-                'client_id' => $client->id_client
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Commande confirmée avec succès!'
-            ]);
-
+            });
         } catch (\Exception $e) {
-            \Log::error('Error creating order:', [
+            \Log::error('Failed to create order:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
