@@ -349,11 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 message: response.message
                             }, function() {
                                 // Show a message before redirecting
-                                alert('Commande confirmée avec succès!');
+                                showNotification('Commande confirmée avec succès!', 'success');
                                 window.location.href = '/panier';
                             }).fail(function(err) {
                                 console.error('Failed to set flash message:', err);
-                                alert('Commande confirmée, mais erreur lors de l\'affichage du message.');
+                                showNotification('Commande confirmée, mais erreur lors de l\'affichage du message.', 'error');
                                 window.location.href = '/panier';
                             });
                         } else {
@@ -364,11 +364,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 type: 'error',
                                 message: response.message
                             }, function() {
-                                alert('Erreur: ' + response.message);
+                                showNotification(response.message, 'error');
                                 window.location.href = '/panier';
                             }).fail(function(err) {
                                 console.error('Failed to set flash message:', err);
-                                alert('Erreur: ' + response.message);
+                                showNotification(response.message, 'error');
                                 window.location.href = '/panier';
                             });
                         }
@@ -395,12 +395,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             type: 'error',
                             message: errorMessage
                         }, function() {
-                            alert('Erreur: ' + errorMessage);
+                            showNotification(errorMessage, 'error');
                             button.disabled = false;
                             button.textContent = 'Confirmer le paiement';
                         }).fail(function(err) {
                             console.error('Failed to set flash message:', err);
-                            alert('Erreur: ' + errorMessage);
+                            showNotification(errorMessage, 'error');
                             button.disabled = false;
                             button.textContent = 'Confirmer le paiement';
                         });
@@ -424,7 +424,7 @@ function minus_quantity(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         return;
     }
     
@@ -451,7 +451,7 @@ function minus_quantity(button) {
         error: function(xhr) {
             console.error('API route failed:', xhr);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la mise à jour de la quantité', 'error');
+            showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         }
     });
 }
@@ -469,7 +469,7 @@ function add_quantity(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         return;
     }
     
@@ -496,7 +496,7 @@ function add_quantity(button) {
         error: function(xhr) {
             console.error('API route failed:', xhr);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la mise à jour de la quantité', 'error');
+            showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         }
     });
 }
@@ -529,7 +529,7 @@ function handleQuantityUpdateSuccess(response, quantitySpan) {
     updateHeaderCartCount(response.count || 0);
     
     // Show success message
-    showToast('Quantité mise à jour', 'success');
+    showNotification('Quantité mise à jour', 'success');
 }
 
 // Function to delete item
@@ -543,7 +543,7 @@ function deleteItem(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la suppression du produit', 'error');
+        showNotification('Erreur lors de la suppression du produit', 'error');
         return;
     }
     
@@ -570,7 +570,7 @@ function deleteItem(button) {
             console.error('API route failed:', xhr);
             console.error('Status:', xhr.status);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la suppression du produit', 'error');
+            showNotification('Erreur lors de la suppression du produit', 'error');
         }
     });
 }
@@ -588,7 +588,7 @@ function handleDeleteSuccess(response) {
         updateHeaderCartCount(response.count || 0);
         
         // Show success message
-        showToast('Produit supprimé du panier', 'success');
+        showNotification('Produit supprimé du panier', 'success');
     }
 }
 
@@ -628,7 +628,7 @@ function attachEventListeners() {
 }
 
 // Function to show toast messages
-function showToast(message, type = 'success') {
+function showNotification(message, type = 'success') {
     // Create toast element
     const toast = document.createElement('div');
     toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${

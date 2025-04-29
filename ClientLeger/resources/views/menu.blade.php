@@ -185,7 +185,7 @@
             .then(data => {
                 if(data.success) {
                     // Show success message
-                    alert(`${name} ajouté au panier`);
+                    showNotification(`${name} ajouté au panier`, 'success');
                     
                     // Update cart count if element exists
                     const cartCount = document.getElementById('cart-count');
@@ -196,7 +196,7 @@
             })
             .catch(error => {
                 console.error('Error adding to cart:', error);
-                alert('Une erreur est survenue lors de l\'ajout au panier');
+                showNotification('Une erreur est survenue lors de l\'ajout au panier', 'error');
             });
         }
 

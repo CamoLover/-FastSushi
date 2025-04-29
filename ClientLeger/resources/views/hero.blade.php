@@ -35,12 +35,12 @@
                             tableBody.appendChild(productDiv);
                         });
                     } else {
-                        alert("Erreur lors du chargement des produits.");
+                        showNotification("Erreur lors du chargement des produits.", "error");
                     }
                 })
                 .catch(error => {
                     console.error("Erreur API:", error);
-                    alert("Une erreur est survenue lors de la récupération des produits.");
+                    showNotification("Une erreur est survenue lors de la récupération des produits.", "error");
                 });
         });
     </script>
