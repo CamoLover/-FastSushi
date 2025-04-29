@@ -17,7 +17,7 @@
         </h1>
         
         <!-- Entrée Section -->
-        <div class="mb-12">
+        <div class="mb-12" id="entrees">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-utensils mr-3"></i>
@@ -84,7 +84,7 @@
         </div>
         
         <!-- Plats Section -->
-        <div class="mb-12">
+        <div class="mb-12" id="plats">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-fish mr-3"></i>
@@ -123,7 +123,7 @@
         @include('module.composition')
              
         <!-- Desserts Section -->
-        <div class="mb-12">
+        <div class="mb-12 mt-12" id="desserts">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-ice-cream mr-3"></i>
@@ -199,5 +199,42 @@
                 alert('Une erreur est survenue lors de l\'ajout au panier');
             });
         }
+
+        // Handle smooth scrolling to sections
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to scroll to element with offset for fixed header
+            function scrollToElement(elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const headerOffset = 100; // Adjust this value based on your header height
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            // Check if there's a hash in the URL when page loads
+            if (window.location.hash) {
+                // Remove the '#' from the hash
+                const sectionId = window.location.hash.substring(1);
+                // Add a small delay to ensure the page is fully loaded
+                setTimeout(() => {
+                    scrollToElement(sectionId);
+                }, 100);
+            }
+
+            // Handle clicks on anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('href').substring(1);
+                    scrollToElement(sectionId);
+                });
+            });
+        });
     </script>
     @endsection
