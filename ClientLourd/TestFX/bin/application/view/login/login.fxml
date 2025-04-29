@@ -17,7 +17,7 @@
          <children>
             <ImageView fitHeight="150.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@fastSushi_blackOutline.png" />
+                  <Image url="@../../fastSushi_blackOutline.png" />
                </image>
             </ImageView>
             <Label maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="115.0" styleClass="title" text="Email">
