@@ -436,3 +436,8 @@ Route::get('/compo', function () {
     
     return view('module.composition', compact('customisations', 'ingredients'));
 });
+
+// Ajout de la route fallback pour gérer toutes les routes non attribuées
+Route::fallback(function () {
+    return response()->view('404', [], 404);
+});
