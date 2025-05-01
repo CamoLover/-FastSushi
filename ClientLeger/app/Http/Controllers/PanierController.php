@@ -359,7 +359,8 @@ class PanierController extends Controller
                     'quantite' => $item['quantite'] ?? 0,
                     'produit' => (object)[
                         'type_produit' => 'Plats', // Default to Plats, will update below if we find product or it's custom
-                        'photo' => '/media/concombre.png' // Default image
+                        'photo' => '/media/concombre.png', // Default image
+                        'photo_type' => null
                     ]
                 ];
                 
@@ -385,12 +386,9 @@ class PanierController extends Controller
                         if (!$isCustom) {
                             $ligne->produit->type_produit = $produit->type_produit;
                         }
-                        // Fix photo path if needed
-                        $photoPath = $produit->photo;
-                        if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                            $photoPath = '/media/' . $photoPath;
-                        }
-                        $ligne->produit->photo = $photoPath;
+                        // Fix photo handling
+                        $ligne->produit->photo = $produit->photo;
+                        $ligne->produit->photo_type = $produit->photo_type;
                     }
                 } catch (\Exception $e) {
                     \Log::error('Error getting product:', [
@@ -405,12 +403,9 @@ class PanierController extends Controller
                             if (!$isCustom) {
                                 $ligne->produit->type_produit = $produit->type_produit;
                             }
-                            // Fix photo path in the fallback too
-                            $photoPath = $produit->photo;
-                            if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                                $photoPath = '/media/' . $photoPath;
-                            }
-                            $ligne->produit->photo = $photoPath;
+                            // Fix photo handling
+                            $ligne->produit->photo = $produit->photo;
+                            $ligne->produit->photo_type = $produit->photo_type;
                         }
                     } catch (\Exception $e2) {
                         \Log::error('Error getting product via DB:', [

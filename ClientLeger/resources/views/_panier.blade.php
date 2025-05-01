@@ -96,20 +96,34 @@
                 @foreach ($items as $item)
                     <div class="cart-item">
                     @php
-                        $photoPath = isset($item->produit) ? $item->produit->photo : '/media/concombre.png';
+                        // Get photo data with proper null checks
+                        $photoData = null;
+                        $photoType = 'image/png'; // Default MIME type
+                        $placeholderUrl = "https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi";
                         
-                        // Handle absolute URLs (coming from asset() function)
-                        if (strpos($photoPath, 'http') === 0) {
-                            // Keep the URL as is - it's an absolute URL
-                        } 
-                        // Handle relative paths without leading slash
-                        else if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                            $photoPath = '/media/' . $photoPath;
-                        }
-                        
-                        // Make sure we have a fallback
-                        if (empty($photoPath)) {
-                            $photoPath = '/media/concombre.png';
+                        if (isset($item->produit)) {
+                            // Debug the data
+                            \Log::debug('Product photo data:', [
+                                'product_id' => $item->produit->id_produit ?? 'unknown',
+                                'has_photo' => isset($item->produit->photo),
+                                'photo_length' => isset($item->produit->photo) ? strlen($item->produit->photo) : 0,
+                                'photo_type' => $item->produit->photo_type ?? 'not set'
+                            ]);
+                            
+                            if (!empty($item->produit->photo)) {
+                                // Check if the photo is already a URL (starts with 'data:' or 'http')
+                                if (preg_match('/^(data:|http)/i', $item->produit->photo)) {
+                                    $photoUrl = $item->produit->photo;
+                                } else {
+                                    // Assume it's a base64 string from the database
+                                    $photoType = $item->produit->photo_type ?? 'image/png';
+                                    $photoUrl = "data:{$photoType};base64," . $item->produit->photo;
+                                }
+                            } else {
+                                $photoUrl = $placeholderUrl;
+                            }
+                        } else {
+                            $photoUrl = $placeholderUrl;
                         }
                         
                         // Check if this is a custom item - check both DB-based and cookie-based custom items
@@ -128,7 +142,10 @@
                                 ->get();
                         }
                     @endphp
-                    <img src="{{ $photoPath }}" alt="{{ $item->nom }}" onerror="this.src='/media/concombre.png'">
+                    <img src="{{ $photoUrl }}" 
+                         alt="{{ $item->nom }}" 
+                         class="w-24 h-24 object-cover rounded-lg"
+                         onerror="this.onerror=null; this.src='{{ $placeholderUrl }}';">
                         <div class="item-details">  
                             <h3 class="item-name">{{ $item->nom }}</h3>
                             <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>

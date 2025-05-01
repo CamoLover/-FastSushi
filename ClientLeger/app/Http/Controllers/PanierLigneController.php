@@ -447,12 +447,9 @@ class PanierLigneController extends Controller
                             $produit = Produit::find($ligne->id_produit);
                             if ($produit) {
                                 $ligne->produit->type_produit = $produit->type_produit;
-                                // Fix photo path if needed
-                                $photoPath = $produit->photo;
-                                if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                                    $photoPath = '/media/' . $photoPath;
-                                }
-                                $ligne->produit->photo = $photoPath;
+                                // Fix photo handling
+                                $ligne->produit->photo = $produit->photo;
+                                $ligne->produit->photo_type = $produit->photo_type;
                             }
                         } catch (\Exception $e) {
                             \Log::error('Error finding product:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);
@@ -666,12 +663,9 @@ class PanierLigneController extends Controller
                             $produit = Produit::find($ligne->id_produit);
                             if ($produit) {
                                 $ligne->produit->type_produit = $produit->type_produit;
-                                // Fix photo path if needed
-                                $photoPath = $produit->photo;
-                                if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                                    $photoPath = '/media/' . $photoPath;
-                                }
-                                $ligne->produit->photo = $photoPath;
+                                // Fix photo handling
+                                $ligne->produit->photo = $produit->photo;
+                                $ligne->produit->photo_type = $produit->photo_type;
                             }
                         } catch (\Exception $e) {
                             \Log::error('Error finding product in delete:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);

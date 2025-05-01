@@ -78,7 +78,10 @@
                  data-name="{{ $customisation->nom }}"
                  data-price-ht="{{ $customisation->prix_ht }}">
                 @if($customisation->photo)
-                    <img src="/media/{{ $customisation->photo }}" alt="{{ $customisation->nom }}" class="w-16 h-16 object-cover rounded-full mb-2">
+                    <img src="data:{{ $customisation->photo_type ?? 'image/png' }};base64,{{ $customisation->photo }}" 
+                         alt="{{ $customisation->nom }}" 
+                         class="w-16 h-16 object-cover rounded-full mb-2"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x400/252422/FFFCF2?text=Fast+Sushi'">
                 @else
                     <i class="fas fa-fish text-sushi-red text-2xl absolute top-4"></i>
                 @endif
@@ -135,7 +138,10 @@
                     data-name="{{ $ingredient->nom }}" 
                     data-price="{{ $ingredient->prix_ht }}">
                     @if($ingredient->photo)
-                        <img src="/media/{{ $ingredient->photo }}" alt="{{ $ingredient->nom }}" class="w-10 h-10 object-cover rounded-full mb-2">
+                        <img src="data:{{ $ingredient->photo_type ?? 'image/png' }};base64,{{ $ingredient->photo }}" 
+                             alt="{{ $ingredient->nom }}" 
+                             class="w-10 h-10 object-cover rounded-full mb-2"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x400/252422/FFFCF2?text=Fast+Sushi'">
                     @endif
                     {{ $ingredient->nom }}
                 </div>
