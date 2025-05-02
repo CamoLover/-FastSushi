@@ -8,12 +8,11 @@ public class Employe {
     private String mdp;
     private String statut_emp;
 
-    public Employe(int id, String nom, String prenom, String email, String mdp, String statut_emp) {
+    public Employe(int id, String nom, String prenom, String email, String statut_emp) {
         this.id_employe = id;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
-        this.mdp = mdp;
         this.statut_emp = statut_emp;
     }
 

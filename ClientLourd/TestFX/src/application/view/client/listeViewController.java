@@ -63,7 +63,8 @@ public class listeViewController {
     public void initialize() {
         refreshData();
         
-        //Affectation des types de fcellules dans les colonnes
+        //Affectation des types de fcellules dans les colonnes 
+        System.out.println("id:"+ new PropertyValueFactory<>("id"));
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));

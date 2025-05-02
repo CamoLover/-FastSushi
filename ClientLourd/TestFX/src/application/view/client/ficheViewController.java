@@ -151,7 +151,6 @@ public class ficheViewController {
             }
         });
 
-        // 🔧 Ajoute ce listener ici !
         tableCommandes.getSelectionModel().selectedItemProperty().addListener(tableListener);
     }
     

@@ -11,6 +11,8 @@ import java.io.IOException;
 import application.LoginController;
 import application.headerController;
 import application.view.client.listeViewController;
+import application.view.admin.AdminViewController;
+
 
 public class AdministrateurViewController {
 
@@ -24,6 +26,22 @@ public class AdministrateurViewController {
     private void handleListeClients(ActionEvent event) {   
         try {	
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/client/liste.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void handleListeEmployes(ActionEvent event) {   
+        try {	
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/admin/admin.fxml"));
             Parent root = loader.load();
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

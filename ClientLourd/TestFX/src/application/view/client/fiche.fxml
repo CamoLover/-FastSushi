@@ -38,7 +38,7 @@
                           </rowConstraints>
                            <children>
                               <Label text="NOM :" />
-                              <Label text="PRENOM" GridPane.columnIndex="1" />
+                              <Label text="PRENOM :" GridPane.columnIndex="1" />
                               <Label text="EMAIL :" GridPane.rowIndex="2" />
                               <Label text="TELEPHONE :" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label text="VILLE :" GridPane.rowIndex="4" />

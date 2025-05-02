@@ -1,0 +1,112 @@
+package application.view.admin;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import application.model.Commande;
+import application.model.Commande_ligne;
+import application.model.Modele;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+
+public class FicheadminViewController {
+
+    @FXML
+    private Button cancel;
+
+    @FXML
+    private TextField email;
+
+    @FXML
+    private Button enregistrer;
+
+    @FXML
+    private TextField mdp;
+
+    @FXML
+    private TextField nom;
+
+    @FXML
+    private TextField prenom;
+
+    @FXML
+    private TextField statut_emp;
+    
+    private int idEmploye;
+
+    @FXML 
+    private void initialize() {
+    	System.out.println("FicheadminViewController est initialisé.");
+    }
+    
+    @FXML
+    private void close(ActionEvent event) {
+    	 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	     stage.close();
+    }
+
+    @FXML
+    private void enregistrer(ActionEvent event) {
+    	Connection conn;
+    	
+		try {
+			conn = Modele.getInstance().getConnection();
+
+	        String sql = "UPDATE employes SET nom = ?, prenom = ?, email = ?, statut_emp = ? WHERE id_employe = ?";
+	        PreparedStatement pstmt;
+			pstmt = conn.prepareStatement(sql);
+		
+
+	        // On "bind" les valeurs dans l'ordre des '?'
+	        pstmt.setString(1, nom.getText());      // 1er ?
+	        pstmt.setString(2, prenom.getText());   // 2e ?
+	        pstmt.setString(3, email.getText());    // 3e ?
+	        pstmt.setString(4, statut_emp.getText());      // 4e ?
+	        pstmt.setInt(6, idEmploye);              // 6e ? -> idEmploye pour la condition WHERE
+	
+	        // Exécuter la requête
+	        int rowsUpdated = pstmt.executeUpdate();
+	
+	        if (rowsUpdated > 0) {
+	            System.out.println("Employe mis à jour avec succès !");
+	        } else {
+	            System.out.println("Aucune mise à jour effectuée (id non trouvé).");
+	        }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    @FXML
+   
+    
+    public void initData(int idEmploye) {
+    	this.idEmploye = idEmploye;
+    	//Récupération de la fiche de l'employe
+    	Connection conn;
+		try {
+			conn = Modele.getInstance().getConnection();
+	        String sql = "SELECT * FROM clients WHERE id_client="+idEmploye;
+	        Statement stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sql);
+	        rs.next();
+	        nom.setText(rs.getString("nom"));
+	        prenom.setText(rs.getString("prenom"));
+	        email.setText(rs.getString("email"));
+	        statut_emp.setText(rs.getString("statut_emp"));
+	        
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+}
