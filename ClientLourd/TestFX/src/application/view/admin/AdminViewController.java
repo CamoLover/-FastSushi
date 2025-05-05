@@ -91,89 +91,96 @@ public class AdminViewController {
 	    
 	    private boolean isRefreshing = false;
 	    
+	    private boolean openPopup(int idEmploye) {
+	    	if (isRefreshing) return false; 
+        	if (idEmploye > 0) {
+        		Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+        		String tabTitle = selectedTab.getText();
+        		System.out.println("click "+tabTitle);
+        		//Desactive l'event
+        		if (tabTitle.equals("Administrateurs")) {
+        			tableAdmin.getSelectionModel().selectedItemProperty().removeListener(tableListener);
+        		} else if (tabTitle.equals("Préparateurs")) {
+        		    tablePrep.getSelectionModel().selectedItemProperty().removeListener(tableListener);
+        		}
+        		
+                //int idEmploye = newSelection.getId(); // si ton modèle Client a un getId()
+
+	        	//Ouvrir la fiche du client en popup
+	        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/admin/ficheadmin.fxml"));
+	            Parent root;
+				try {
+
+					root = loader.load();
+		            // Récupérer le contrôleur associé
+		            FicheadminViewController popupController = loader.getController();
+	
+		            // Passer le paramètre
+		            popupController.initData(idEmploye);
+	
+		            // Créer une nouvelle fenêtre (Stage)
+		            Stage stage = new Stage();
+		            stage.setTitle("Fiche Employe");
+		            stage.initModality(Modality.APPLICATION_MODAL);  // Bloque l'accès aux autres fenêtres tant que celle-ci est ouverte
+		            stage.setScene(new Scene(root));
+		            stage.showAndWait();
+		            boolean estValide = popupController.isValid();
+		            
+		            System.out.println("Close");
+		            //On rafraichis les donnéees si elles ont été modifié
+		            isRefreshing = true;
+		            
+		            //CORRIGE le probleme de double lancement de l'event
+		            PauseTransition pause = new PauseTransition(Duration.millis(100)); // 100 ms de pause
+		            pause.setOnFinished(event -> {isRefreshing = false; refreshData();});
+		            pause.play();
+		            //Reactive l'event
+		            
+		            if (tabTitle.equals("Administrateurs")) {
+		            	tableAdmin.getSelectionModel().selectedItemProperty().addListener(tableListener);
+	        		} else if (tabTitle.equals("Préparateurs")) {
+	        			tablePrep.getSelectionModel().selectedItemProperty().addListener(tableListener);
+	        		}
+		            return estValide;
+		            
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return false;
+				}
+        	} else {
+        		return false;
+        	}
+	    }
 	    @FXML
 	    private void initialize() {
 	    	refreshData();
 	        
 	     // Affectation des types de cellules dans les colonnes du tableau
-	     			colIdadmin.setCellValueFactory(new PropertyValueFactory<>("id"));
-	     			colNomadmin.setCellValueFactory(new PropertyValueFactory<>("nom"));
-	     			colPrenomadmin.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-	     			colEmailadmin.setCellValueFactory(new PropertyValueFactory<>("email"));
-	     			
-	     			
-	     			colIdprep.setCellValueFactory(new PropertyValueFactory<>("id"));
-	     			colNomprep.setCellValueFactory(new PropertyValueFactory<>("nom"));
-	     			colPrenomprep.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-	     			colEmailprep.setCellValueFactory(new PropertyValueFactory<>("email"));
+ 			colIdadmin.setCellValueFactory(new PropertyValueFactory<>("id"));
+ 			colNomadmin.setCellValueFactory(new PropertyValueFactory<>("nom"));
+ 			colPrenomadmin.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+ 			colEmailadmin.setCellValueFactory(new PropertyValueFactory<>("email"));
+ 			
+ 			
+ 			colIdprep.setCellValueFactory(new PropertyValueFactory<>("id"));
+ 			colNomprep.setCellValueFactory(new PropertyValueFactory<>("nom"));
+ 			colPrenomprep.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+ 			colEmailprep.setCellValueFactory(new PropertyValueFactory<>("email"));
 
 
-	     		// Détermine quel Observable le TableView commandes doit utiliser pour s'afficher
-	    	        tableAdmin.setItems(adminListFilter);
-	    	        tablePrep.setItems(prepListFilter);
+ 		// Détermine quel Observable le TableView commandes doit utiliser pour s'afficher
+	        tableAdmin.setItems(adminListFilter);
+	        tablePrep.setItems(prepListFilter);
 
 	        tableListener = ((obs, oldSelection, newSelection) -> {
-	        	if (isRefreshing) return; 
-	        	if (newSelection != null) {
-	        		Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-	        		String tabTitle = selectedTab.getText();
-	        		//Desactive l'event
-	        		if (tabTitle.equals("Administrateurs")) {
-	        			tableAdmin.getSelectionModel().selectedItemProperty().removeListener(tableListener);
-	        		} else if (tabTitle.equals("Préparateurs")) {
-	        		    tablePrep.getSelectionModel().selectedItemProperty().removeListener(tableListener);
-	        		}
-	        		
-	                int idEmploye = newSelection.getId(); // si ton modèle Client a un getId()
-
-		        	//Ouvrir la fiche du client en popup
-		        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/admin/ficheadmin.fxml"));
-		            Parent root;
-					try {
-						System.out.println("OPEN");
-						root = loader.load();
-			            // Récupérer le contrôleur associé
-			            FicheadminViewController popupController = loader.getController();
-		
-			            // Passer le paramètre
-			            popupController.initData(idEmploye);
-		
-			            // Créer une nouvelle fenêtre (Stage)
-			            Stage stage = new Stage();
-			            stage.setTitle("Fiche Employe");
-			            stage.initModality(Modality.APPLICATION_MODAL);  // Bloque l'accès aux autres fenêtres tant que celle-ci est ouverte
-			            stage.setScene(new Scene(root));
-			            stage.showAndWait();
-			            
-			            System.out.println("Close");
-			            //On rafraichis les donnéees si elles ont été modifié
-			            isRefreshing = true;
-			            
-			            //CORRIGE le probleme de double lancement de l'event
-			            PauseTransition pause = new PauseTransition(Duration.millis(100)); // 100 ms de pause
-			            pause.setOnFinished(event -> {isRefreshing = false; refreshData();});
-			            pause.play();
-			            //Reactive l'event
-			            
-			            if (tabTitle.equals("Administrateurs")) {
-			            	tableAdmin.getSelectionModel().selectedItemProperty().addListener(tableListener);
-		        		} else if (tabTitle.equals("Préparateurs")) {
-		        			tablePrep.getSelectionModel().selectedItemProperty().addListener(tableListener);
-		        		}
-			            
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	        	}
+        		int idEmploye = (newSelection != null ? newSelection.getId() : -1);
+        		openPopup(idEmploye);
 	        });
 	        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
     		String tabTitle = selectedTab.getText();
-	        if (tabTitle.equals("Administrateurs")) {
-            	tableAdmin.getSelectionModel().selectedItemProperty().addListener(tableListener);
-    		} else if (tabTitle.equals("Préparateurs")) {
-    			tablePrep.getSelectionModel().selectedItemProperty().addListener(tableListener);
-    		}
+    		tableAdmin.getSelectionModel().selectedItemProperty().addListener(tableListener);
+    		tablePrep.getSelectionModel().selectedItemProperty().addListener(tableListener);
 	    }
 	    
 	    @FXML
@@ -250,8 +257,54 @@ public class AdminViewController {
 					||  e.getStatut().indexOf(filterString) != -1
 				) {
 	    			adminListFilter.add(e);
+	    			
+	    		}
+	    	}
+	    	for(Employe e : prepList) {
+	    		if(		filterString == null  
+					||  filterString.isEmpty()  
+					||  e.getNom().indexOf(filterString) != -1 
+					||  e.getPrenom().indexOf(filterString) != -1 
+					||  e.getEmail().indexOf(filterString) != -1 
+					||  e.getStatut().indexOf(filterString) != -1
+				) {
+
 	    			prepListFilter.add(e);
 	    		}
 	    	}
+	    	
+	    }
+	    
+	    @FXML
+	    private void addclick(ActionEvent event) {
+     
+    		try {
+	    		adminList.clear();
+	    		prepList.clear();
+	    		Connection conn = Modele.getInstance().getConnection();
+		     
+		
+		        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+	    		String tabTitle = selectedTab.getText();
+	    		String sql = "";
+	    		if (tabTitle.equals("Administrateurs")) {
+	    			sql = "INSERT INTO employes (nom, prenom, email, mdp, statut_emp) VALUES ('nom', 'prenom', 'email', 'fictifbdd1.', 'Administrateur' )";
+	    		} else if (tabTitle.equals("Préparateurs")) {
+	    			sql = "INSERT INTO employes (nom, prenom, email, mdp, statut_emp) VALUES ('nom', 'prenom', 'email', 'fictifbdd1.', 'Preparateur' )";
+	    		}
+	    		Statement stmt = conn.createStatement();
+	    		stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+		        ResultSet rs = stmt.getGeneratedKeys();
+		        if (rs.next()) {
+		            int insertedId = rs.getInt(1); // La première colonne contient la clé générée
+		            boolean isValid = openPopup(insertedId);
+		            if(!isValid) {
+		            	sql = "DELETE FROM employes where id_employe="+insertedId;
+		            	stmt.execute(sql);
+		            }
+		        }        
+	    	} catch (SQLException e) {
+		        e.printStackTrace();
+		    }
 	    }
 }

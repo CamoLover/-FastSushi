@@ -9,10 +9,12 @@ import java.sql.Statement;
 import application.model.Commande;
 import application.model.Commande_ligne;
 import application.model.Modele;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -38,13 +40,17 @@ public class FicheadminViewController {
     private TextField prenom;
 
     @FXML
-    private TextField statut_emp;
+    private ComboBox<String> statut_emp;
     
     private int idEmploye;
-
+    private boolean valid = false;
+    public boolean isValid() {
+        return valid;
+    }
     @FXML 
     private void initialize() {
     	System.out.println("FicheadminViewController est initialisé.");
+    	statut_emp.setItems(FXCollections.observableArrayList("Administrateur", "Preparateur"));
     }
     
     @FXML
@@ -69,8 +75,8 @@ public class FicheadminViewController {
 	        pstmt.setString(1, nom.getText());      // 1er ?
 	        pstmt.setString(2, prenom.getText());   // 2e ?
 	        pstmt.setString(3, email.getText());    // 3e ?
-	        pstmt.setString(4, statut_emp.getText());      // 4e ?
-	        pstmt.setInt(6, idEmploye);              // 6e ? -> idEmploye pour la condition WHERE
+	        pstmt.setString(4, statut_emp.getSelectionModel().getSelectedItem());      // 4e ?
+	        pstmt.setInt(5, idEmploye);              // 5e ? -> idEmploye pour la condition WHERE
 	
 	        // Exécuter la requête
 	        int rowsUpdated = pstmt.executeUpdate();
@@ -80,6 +86,7 @@ public class FicheadminViewController {
 	        } else {
 	            System.out.println("Aucune mise à jour effectuée (id non trouvé).");
 	        }
+	        valid = true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,18 +102,35 @@ public class FicheadminViewController {
     	Connection conn;
 		try {
 			conn = Modele.getInstance().getConnection();
-	        String sql = "SELECT * FROM clients WHERE id_client="+idEmploye;
+	        String sql = "SELECT * FROM employes WHERE id_employe="+idEmploye;
 	        Statement stmt = conn.createStatement();
 	        ResultSet rs = stmt.executeQuery(sql);
 	        rs.next();
 	        nom.setText(rs.getString("nom"));
 	        prenom.setText(rs.getString("prenom"));
 	        email.setText(rs.getString("email"));
-	        statut_emp.setText(rs.getString("statut_emp"));
+	        statut_emp.getSelectionModel().select(rs.getString("statut_emp"));
 	        
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    @FXML
+    private void supprimer(ActionEvent event) {
+ 
+		try {
+    		Connection conn = Modele.getInstance().getConnection();
+    		Statement stmt = conn.createStatement();
+    		
+    		String sql = "UPDATE employes SET statut_emp = 'Inactif' WHERE id_employe = " + idEmploye;
+	        stmt.execute(sql);  
+    	} catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		
+		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	     stage.close();
     }
 }
