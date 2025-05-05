@@ -1,4 +1,4 @@
-# Documentation Fast Sushi
+# Documentation Fast Sushi v1
 
 ## Structure du Projet
 Le projet Fast Sushi est une application Laravel qui suit l'architecture MVC (Modèle-Vue-Contrôleur). Voici la structure principale du projet :
