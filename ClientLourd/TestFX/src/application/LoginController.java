@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import application.model.Modele;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 public class LoginController {
@@ -20,12 +22,7 @@ public class LoginController {
     
     // Constructeur privé pour le singleton
     private LoginController() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
+       
     }
     
     // Méthode pour obtenir l'instance unique
@@ -38,6 +35,12 @@ public class LoginController {
     
     // Méthode de connexion
     public boolean login(String email, String password) {
+    	try {
+			 connection = Modele.getInstance().getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         String query = "SELECT id_employe, statut_emp, mdp FROM employes WHERE email = ?";
         
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -90,6 +93,7 @@ public class LoginController {
             case "Preparateur":
                 return "preparateur/preparateur.fxml";
             case "Administrateur":
+            case "Manager":
                 return "administrateur/administrateur.fxml";
             default:
                 return "login/login.fxml";

@@ -5,6 +5,10 @@
     -fx-background-color: #252422;
 }
 
+.header {
+	-fx-background-color: #252422;
+	-fx-padding: 10px 0 10px 0;
+}
 .title {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
@@ -27,4 +31,15 @@
     -fx-border-radius: 5;
     -fx-border-color: #ccc;
     -fx-padding: 8px;
+}
+
+
+.tableau, .tableau .table-column, .tableau .column-header .label {
+	-fx-background-color: #252422;
+	-fx-text-fill: #F0EFE7;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #333333; /* Couleur de fond de la ligne sélectionnée */
+    -fx-text-fill: black; /* Couleur du texte de la ligne sélectionnée */
 }
