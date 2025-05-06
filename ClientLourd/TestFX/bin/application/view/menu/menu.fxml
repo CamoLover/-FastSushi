@@ -1,69 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
 
-<AnchorPane styleClass="root"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="800.0" prefWidth="1200.0"
+            styleClass="root"
             stylesheets="@../../stylesheet.css"
-            prefHeight="503.0" prefWidth="714.0"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="application.view.menu.menuViewController">
-
     <children>
-        <VBox AnchorPane.topAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              spacing="0">
-            <children>
-                <!-- Header inclus -->
-                <AnchorPane>
-                    <fx:include fx:id="header" source="../../header.fxml"
-                                AnchorPane.topAnchor="0.0"
-                                AnchorPane.leftAnchor="0.0"
-                                AnchorPane.rightAnchor="0.0"
-                                AnchorPane.bottomAnchor="0.0"/>
-                </AnchorPane>
+        <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane>
+                <fx:include fx:id="header" source="../../header.fxml"
+                    AnchorPane.topAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.bottomAnchor="0.0"/>
+            </AnchorPane>
 
-                <!-- Zone des onglets -->
-                <TabPane fx:id="tabPane"
-                         tabClosingPolicy="UNAVAILABLE"
-                         VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" spacing="10">
+                <Label styleClass="preparateur-title" text="Menu" />
+                <Button fx:id="refreshButton" text="Rafraîchir" onAction="#handleRefresh" styleClass="preparateur-refresh-button"/>
+            </HBox>
 
-                    <!-- Onglet Produits -->
-                    <Tab fx:id="produittab" text="Produits">
+            <TabPane fx:id="tabPane" styleClass="preparateur-tabs" VBox.vgrow="ALWAYS">
+                <tabs>
+                    <Tab fx:id="produittab" text="Produits" closable="false">
                         <content>
-                            <ScrollPane fitToWidth="true" fitToHeight="true">
-                                <content>
-                                    <VBox fx:id="ProduitContainer"
-                                          fillWidth="true"
-                                          spacing="10.0"
-                                          style="-fx-padding: 10;" />
-                                </content>
-                            </ScrollPane>
+                            <HBox spacing="10">
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                                        <Button fx:id="addProductButton" text="Ajouter un nouveau produit" 
+                                                onAction="#handleAddProduct" styleClass="preparateur-action-button"/>
+                                    </HBox>
+                                    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="preparateur-scroll-pane" VBox.vgrow="ALWAYS">
+                                        <content>
+                                            <VBox fx:id="ProduitContainer"
+                                                  fillWidth="true"
+                                                  spacing="15.0"
+                                                  styleClass="preparateur-right-panel">
+                                                <padding>
+                                                    <Insets top="15" right="15" bottom="15" left="15"/>
+                                                </padding>
+                                            </VBox>
+                                        </content>
+                                    </ScrollPane>
+                                </VBox>
+                                
+                                <ScrollPane fitToWidth="true" styleClass="preparateur-scroll-pane" prefWidth="400">
+                                    <content>
+                                        <VBox fx:id="productEditPane" styleClass="preparateur-right-panel" spacing="15">
+                                            <padding>
+                                                <Insets top="15" right="15" bottom="15" left="15"/>
+                                            </padding>
+                                            
+                                            <Label text="Détails du produit" styleClass="preparateur-section-title"/>
+                                            
+                                            <ImageView fx:id="productImage" fitWidth="200" fitHeight="200" 
+                                                     styleClass="preparateur-item-image"/>
+                                            <Button fx:id="changeProductImageButton" text="Changer l'image" 
+                                                    onAction="#handleChangeProductImage" 
+                                                    styleClass="preparateur-action-button"/>
+                                            
+                                            <Label text="Nom" styleClass="preparateur-item-title"/>
+                                            <TextField fx:id="productNameField" styleClass="menu-input"/>
+                                            
+                                            <Label text="Prix HT" styleClass="preparateur-item-title"/>
+                                            <TextField fx:id="productPriceHTField" styleClass="menu-input"/>
+                                            
+                                            <Label text="TVA (%)" styleClass="preparateur-item-title"/>
+                                            <TextField fx:id="productTVAField" styleClass="menu-input"/>
+                                            
+                                            <Label text="Prix TTC" styleClass="preparateur-item-title"/>
+                                            <Label fx:id="productPriceTTCLabel" styleClass="preparateur-order-price"/>
+                                            
+                                            <Label text="Catégorie" styleClass="preparateur-item-title"/>
+                                            <ComboBox fx:id="productCategoryCombo" styleClass="menu-input"/>
+                                            
+                                            <Label text="Description" styleClass="preparateur-item-title"/>
+                                            <TextArea fx:id="productDescriptionArea" wrapText="true" 
+                                                     styleClass="menu-input" prefRowCount="4"/>
+                                            
+                                            <HBox spacing="10" alignment="CENTER">
+                                                <Button fx:id="saveProductButton" text="Enregistrer" 
+                                                        onAction="#handleSaveProduct" styleClass="preparateur-action-button"/>
+                                                <Button fx:id="deleteProductButton" text="Supprimer" 
+                                                        onAction="#handleDeleteProduct" styleClass="preparateur-action-button"/>
+                                            </HBox>
+                                        </VBox>
+                                    </content>
+                                </ScrollPane>
+                            </HBox>
                         </content>
                     </Tab>
 
-                    <!-- Onglet Ingrédients -->
-                    <Tab fx:id="ingredienttab" text="Ingredients">
+                    <Tab fx:id="ingredienttab" text="Ingredients" closable="false">
                         <content>
-                            <ScrollPane fitToWidth="true" fitToHeight="true">
-                                <content>
-                                    <VBox fx:id="IngredientContainer"
-                                          fillWidth="true"
-                                          spacing="10.0"
-                                          style="-fx-padding: 10;" />
-                                </content>
-                            </ScrollPane>
+                            <HBox spacing="10">
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                                        <Button fx:id="addIngredientButton" text="Ajouter un nouvel ingrédient" 
+                                                onAction="#handleAddIngredient" styleClass="preparateur-action-button"/>
+                                    </HBox>
+                                    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="preparateur-scroll-pane" VBox.vgrow="ALWAYS">
+                                        <content>
+                                            <VBox fx:id="IngredientContainer"
+                                                  fillWidth="true"
+                                                  spacing="15.0"
+                                                  styleClass="preparateur-right-panel">
+                                                <padding>
+                                                    <Insets top="15" right="15" bottom="15" left="15"/>
+                                                </padding>
+                                            </VBox>
+                                        </content>
+                                    </ScrollPane>
+                                </VBox>
+                                
+                                <ScrollPane fitToWidth="true" styleClass="preparateur-scroll-pane" prefWidth="400">
+                                    <content>
+                                        <VBox fx:id="ingredientEditPane" styleClass="preparateur-right-panel" spacing="15">
+                                            <padding>
+                                                <Insets top="15" right="15" bottom="15" left="15"/>
+                                            </padding>
+                                            
+                                            <Label text="Détails de l'ingrédient" styleClass="preparateur-section-title"/>
+                                            
+                                            <ImageView fx:id="ingredientImage" fitWidth="200" fitHeight="200" 
+                                                     styleClass="preparateur-item-image"/>
+                                            <Button fx:id="changeIngredientImageButton" text="Changer l'image" 
+                                                    onAction="#handleChangeIngredientImage" 
+                                                    styleClass="preparateur-action-button"/>
+                                            
+                                            <Label text="Nom" styleClass="preparateur-item-title"/>
+                                            <TextField fx:id="ingredientNameField" styleClass="menu-input"/>
+                                            
+                                            <Label text="Prix HT" styleClass="preparateur-item-title"/>
+                                            <TextField fx:id="ingredientPriceField" styleClass="menu-input"/>
+                                            
+                                            <Label text="Catégorie" styleClass="preparateur-item-title"/>
+                                            <ComboBox fx:id="ingredientCategoryCombo" styleClass="menu-input"/>
+                                            
+                                            <HBox spacing="10" alignment="CENTER">
+                                                <Button fx:id="saveIngredientButton" text="Enregistrer" 
+                                                        onAction="#handleSaveIngredient" styleClass="preparateur-action-button"/>
+                                                <Button fx:id="deleteIngredientButton" text="Supprimer" 
+                                                        onAction="#handleDeleteIngredient" styleClass="preparateur-action-button"/>
+                                            </HBox>
+                                        </VBox>
+                                    </content>
+                                </ScrollPane>
+                            </HBox>
                         </content>
                     </Tab>
-
-                </TabPane>
-            </children>
+                </tabs>
+            </TabPane>
         </VBox>
     </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
 </AnchorPane>

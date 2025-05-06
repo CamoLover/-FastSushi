@@ -55,6 +55,7 @@ class BestSellerController extends Controller
                 DB::raw('SUM(quantite) as total_quantite_vendue')
             )
             ->join('produits', 'commande_lignes.id_produit', '=', 'produits.id_produit')
+            ->where('produits.type_produit', '!=', 'Customisation')
             ->groupBy('commande_lignes.id_produit', 'produits.nom', 'produits.description', 'produits.prix_ht', 'produits.prix_ttc', 'produits.photo')
             ->orderByDesc('total_quantite_vendue')
             ->limit(3)
@@ -81,6 +82,7 @@ class BestSellerController extends Controller
                 'prix_ttc',
                 'photo'
             )
+            ->where('type_produit', '!=', 'Customisation')
             ->orderBy('id_produit', 'desc')
             ->limit(3)
             ->get();

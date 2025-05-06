@@ -233,3 +233,57 @@
 .preparateur-list .list-cell:selected .preparateur-status-dot {
     -fx-fill: white;
 }
+
+/* Menu specific styles */
+.menu-input {
+    -fx-text-fill: black;
+    -fx-background-color: white;
+}
+
+.menu-input .text-area-background {
+    -fx-background-color: white;
+}
+
+.menu-input .content {
+    -fx-background-color: white;
+}
+
+.menu-item {
+    -fx-background-color: #252422;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);
+    -fx-transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+    -fx-background-color: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 15, 0, 2, 2);
+    -fx-translate-y: -2;
+}
+
+.menu-item.selected {
+    -fx-background-color: #D90429;
+    -fx-effect: dropshadow(gaussian, rgba(217, 4, 41, 0.4), 15, 0, 2, 2);
+}
+
+.menu-item .preparateur-item-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.menu-item .preparateur-order-price {
+    -fx-font-size: 14px;
+}
+
+.menu-item .preparateur-ingredient {
+    -fx-font-size: 12px;
+    -fx-opacity: 0.8;
+}
+
+.menu-item .preparateur-item-image {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 0);
+    -fx-background-radius: 5;
+}
