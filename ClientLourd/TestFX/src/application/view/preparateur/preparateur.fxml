@@ -16,6 +16,7 @@
 			<HBox alignment="CENTER" spacing="10">
 				<Circle fx:id="statusIndicator" radius="8" styleClass="preparateur-status-indicator"/>
 				<Label styleClass="preparateur-title" text="Interface Préparateur" />
+				<Button fx:id="refreshButton" text="Rafraîchir" onAction="#handleRefresh" styleClass="preparateur-refresh-button"/>
 			</HBox>
 			
 			<TabPane fx:id="tabPane" styleClass="preparateur-tabs" VBox.vgrow="ALWAYS">

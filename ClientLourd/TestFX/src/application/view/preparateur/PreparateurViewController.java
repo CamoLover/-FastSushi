@@ -41,6 +41,7 @@ public class PreparateurViewController {
     @FXML private Label currentOrderStatus;
     @FXML private Label readyOrderStatus;
     @FXML private Label deliveredOrderStatus;
+    @FXML private Button refreshButton;
     
     private LoginController loginController;
     private Modele modele;
@@ -283,7 +284,7 @@ public class PreparateurViewController {
     private void handleMarkInProgress(ActionEvent event) {
         Commande selectedOrder = todoOrdersList.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
-            updateOrderStatus(selectedOrder, "en cours");
+            updateOrderStatus(selectedOrder, "En cours");
             loadOrders();
         }
     }
@@ -292,7 +293,7 @@ public class PreparateurViewController {
     private void handleMarkReady(ActionEvent event) {
         Commande selectedOrder = currentOrdersList.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
-            updateOrderStatus(selectedOrder, "pret");
+            updateOrderStatus(selectedOrder, "Prêt");
             loadOrders();
         }
     }
@@ -301,7 +302,7 @@ public class PreparateurViewController {
     private void handleMarkDelivered(ActionEvent event) {
         Commande selectedOrder = readyOrdersList.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
-            updateOrderStatus(selectedOrder, "livre");
+            updateOrderStatus(selectedOrder, "Livré");
             loadOrders();
         }
     }
@@ -419,6 +420,11 @@ public class PreparateurViewController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    
+    @FXML
+    public void handleRefresh(ActionEvent event) {
+        loadOrders();
     }
     
     @FXML
