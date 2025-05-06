@@ -83,9 +83,9 @@ class Panier extends Model
         // Format photos for products
         $panier->lignes->each(function($item) {
             if ($item->produit) {
-                $item->produit->photo = $item->produit->photo 
-                    ? asset('media/' . $item->produit->photo) 
-                    : asset('media/concombre.png');
+                // Keep the original photo data and type
+                $item->produit->photo = $item->produit->photo ?? null;
+                $item->produit->photo_type = $item->produit->photo_type ?? 'image/png';
             }
         });
         

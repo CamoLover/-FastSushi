@@ -103,8 +103,10 @@
                         bestSellersContainer.innerHTML += `
                             <div class="bg-[#403D39] rounded-lg overflow-hidden shadow-lg group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 flex flex-col h-full">
                                 <div class="relative h-64 overflow-hidden">
-                                    <img src="/media/${product.photo}" alt="${product.nom}" 
-                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='/media/concombre.png'">
+                                    <img src="data:${product.photo_type || 'image/png'};base64,${product.photo}" 
+                                         alt="${product.nom}" 
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                                         onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
                                     <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/0 to-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                     <div class="absolute top-3 right-3 bg-[#D90429] text-white rounded-full px-3 py-1 text-sm font-bold shadow-lg">
                                         Best-seller
@@ -140,8 +142,10 @@
                         latestProductsContainer.innerHTML += `
                             <div class="bg-[#403D39] rounded-lg overflow-hidden shadow-lg group hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 flex flex-col h-full">
                                 <div class="relative h-64 overflow-hidden">
-                                    <img src="/media/${product.photo}" alt="${product.nom}" 
-                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='/media/concombre.png'">
+                                    <img src="data:${product.photo_type || 'image/png'};base64,${product.photo}" 
+                                         alt="${product.nom}" 
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                                         onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
                                     <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/0 to-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                     <div class="absolute top-3 right-3 bg-[#D90429] text-white rounded-full px-3 py-1 text-sm font-bold shadow-lg">
                                         Nouveauté

@@ -59,6 +59,9 @@
     </style>
 </head>
 <body class="bg-sushi-dark text-white font-sans flex justify-center items-center min-h-screen p-4">
+    <!-- Global notification container -->
+    <div id="notification-container" class="fixed top-4 right-4 z-50"></div>
+
     <div class="w-full max-w-6xl bg-sushi-card rounded-xl shadow-lg pt-15 p-4 md:p-6" id="main-container">
         <div class="flex items-center mb-6">
             <i class="fas fa-fish text-sushi-red mr-3 text-xl"></i>
@@ -75,7 +78,10 @@
                  data-name="{{ $customisation->nom }}"
                  data-price-ht="{{ $customisation->prix_ht }}">
                 @if($customisation->photo)
-                    <img src="/media/{{ $customisation->photo }}" alt="{{ $customisation->nom }}" class="w-16 h-16 object-cover rounded-full mb-2">
+                    <img src="data:{{ $customisation->photo_type ?? 'image/png' }};base64,{{ $customisation->photo }}" 
+                         alt="{{ $customisation->nom }}" 
+                         class="w-16 h-16 object-cover rounded-full mb-2"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x400/252422/FFFCF2?text=Fast+Sushi'">
                 @else
                     <i class="fas fa-fish text-sushi-red text-2xl absolute top-4"></i>
                 @endif
@@ -132,7 +138,10 @@
                     data-name="{{ $ingredient->nom }}" 
                     data-price="{{ $ingredient->prix_ht }}">
                     @if($ingredient->photo)
-                        <img src="/media/{{ $ingredient->photo }}" alt="{{ $ingredient->nom }}" class="w-10 h-10 object-cover rounded-full mb-2">
+                        <img src="data:{{ $ingredient->photo_type ?? 'image/png' }};base64,{{ $ingredient->photo }}" 
+                             alt="{{ $ingredient->nom }}" 
+                             class="w-10 h-10 object-cover rounded-full mb-2"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x400/252422/FFFCF2?text=Fast+Sushi'">
                     @endif
                     {{ $ingredient->nom }}
                 </div>
@@ -437,12 +446,10 @@
                         const ingredientsList = selectedPlatData.ingredients.map(ing => ing.name).join(', ');
                         
                         // Créer un message de confirmation
-                        const messageContent = `${selectedPlatData.name} ajouté au panier:
-                        ${ingredientsList.length > 0 ? '- Avec ' + ingredientsList : '- Sans personnalisation'}
-                        Prix: ${totalPrice.toFixed(2).replace('.', ',')} €`;
+                        const messageContent = `${selectedPlatData.name} ajouté au panier:\n${ingredientsList.length > 0 ? '- Avec ' + ingredientsList : '- Sans personnalisation'}\nPrix: ${totalPrice.toFixed(2).replace('.', ',')} €`;
                         
-                        // Afficher un message de confirmation
-                        alert(messageContent);
+                        // Afficher un message de confirmation avec le nouveau système
+                        showNotification(messageContent, 'success');
                         
                         // Mettre à jour le compteur du panier si présent
                         const cartCount = document.getElementById('cart-count');
@@ -456,7 +463,7 @@
                 })
                 .catch(error => {
                     console.error('Erreur lors de l\'ajout au panier:', error);
-                    alert('Une erreur est survenue lors de l\'ajout au panier');
+                    showNotification('Une erreur est survenue lors de l\'ajout au panier', 'error');
                 });
             });
 
@@ -498,6 +505,35 @@
             // Bouton retour pour réinitialiser la composition
             returnButton.addEventListener('click', resetComposition);
         });
+
+        // Add the showNotification function
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification-item mb-4 ${type === 'success' ? 'bg-green-100 border-green-500 text-green-700' : 'bg-red-100 border-red-500 text-red-700'} border-l-4 p-4 rounded shadow-lg transform transition-all duration-500 ease-in-out`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <div class="mr-2">
+                        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+                    </div>
+                    <p>${message}</p>
+                    <button onclick="this.closest('.notification-item').remove()" class="ml-4 ${type === 'success' ? 'text-green-700 hover:text-green-900' : 'text-red-700 hover:text-red-900'}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
     </script>
 </body>
 </html>

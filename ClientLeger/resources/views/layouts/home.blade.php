@@ -52,49 +52,49 @@
         @stack('styles')
     </head>
     <body class="font-sans antialiased bg-[#403D39] text-[#FFFCF2] min-h-screen flex flex-col">
-        @if(session('success'))
-        <div id="success-notification" class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out">
-            <div class="flex items-center">
-                <div class="mr-2">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <p>{{ session('success') }}</p>
-                <button onclick="document.getElementById('success-notification').style.display = 'none'" class="ml-4 text-green-700 hover:text-green-900">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-        <script>
-            setTimeout(() => {
-                const notification = document.getElementById('success-notification');
-                if (notification) {
-                    notification.style.display = 'none';
-                }
-            }, 5000);
-        </script>
-        @endif
+        <!-- Global notification container -->
+        <div id="notification-container" class="fixed top-4 right-4 z-50"></div>
 
-        @if(session('error'))
-        <div id="error-notification" class="fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out">
-            <div class="flex items-center">
-                <div class="mr-2">
-                    <i class="fas fa-exclamation-circle"></i>
-                </div>
-                <p>{{ session('error') }}</p>
-                <button onclick="document.getElementById('error-notification').style.display = 'none'" class="ml-4 text-red-700 hover:text-red-900">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
         <script>
-            setTimeout(() => {
-                const notification = document.getElementById('error-notification');
-                if (notification) {
-                    notification.style.display = 'none';
-                }
-            }, 5000);
+            function showNotification(message, type = 'success') {
+                const container = document.getElementById('notification-container');
+                
+                const notification = document.createElement('div');
+                notification.className = `notification-item mb-4 ${type === 'success' ? 'bg-green-100 border-green-500 text-green-700' : 'bg-red-100 border-red-500 text-red-700'} border-l-4 p-4 rounded shadow-lg transform transition-all duration-500 ease-in-out`;
+                
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="mr-2">
+                            <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+                        </div>
+                        <p>${message}</p>
+                        <button onclick="this.closest('.notification-item').remove()" class="ml-4 ${type === 'success' ? 'text-green-700 hover:text-green-900' : 'text-red-700 hover:text-red-900'}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(notification);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+
+            // Handle session flash messages on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    showNotification("{{ session('success') }}", 'success');
+                @endif
+                
+                @if(session('error'))
+                    showNotification("{{ session('error') }}", 'error');
+                @endif
+            });
         </script>
-        @endif
 
         @include('module.header')
 

@@ -96,20 +96,34 @@
                 @foreach ($items as $item)
                     <div class="cart-item">
                     @php
-                        $photoPath = isset($item->produit) ? $item->produit->photo : '/media/concombre.png';
+                        // Get photo data with proper null checks
+                        $photoData = null;
+                        $photoType = 'image/png'; // Default MIME type
+                        $placeholderUrl = "https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi";
                         
-                        // Handle absolute URLs (coming from asset() function)
-                        if (strpos($photoPath, 'http') === 0) {
-                            // Keep the URL as is - it's an absolute URL
-                        } 
-                        // Handle relative paths without leading slash
-                        else if ($photoPath && substr($photoPath, 0, 1) !== '/') {
-                            $photoPath = '/media/' . $photoPath;
-                        }
-                        
-                        // Make sure we have a fallback
-                        if (empty($photoPath)) {
-                            $photoPath = '/media/concombre.png';
+                        if (isset($item->produit)) {
+                            // Debug the data
+                            \Log::debug('Product photo data:', [
+                                'product_id' => $item->produit->id_produit ?? 'unknown',
+                                'has_photo' => isset($item->produit->photo),
+                                'photo_length' => isset($item->produit->photo) ? strlen($item->produit->photo) : 0,
+                                'photo_type' => $item->produit->photo_type ?? 'not set'
+                            ]);
+                            
+                            if (!empty($item->produit->photo)) {
+                                // Check if the photo is already a URL (starts with 'data:' or 'http')
+                                if (preg_match('/^(data:|http)/i', $item->produit->photo)) {
+                                    $photoUrl = $item->produit->photo;
+                                } else {
+                                    // Assume it's a base64 string from the database
+                                    $photoType = $item->produit->photo_type ?? 'image/png';
+                                    $photoUrl = "data:{$photoType};base64," . $item->produit->photo;
+                                }
+                            } else {
+                                $photoUrl = $placeholderUrl;
+                            }
+                        } else {
+                            $photoUrl = $placeholderUrl;
                         }
                         
                         // Check if this is a custom item - check both DB-based and cookie-based custom items
@@ -128,7 +142,10 @@
                                 ->get();
                         }
                     @endphp
-                    <img src="{{ $photoPath }}" alt="{{ $item->nom }}" onerror="this.src='/media/concombre.png'">
+                    <img src="{{ $photoUrl }}" 
+                         alt="{{ $item->nom }}" 
+                         class="w-24 h-24 object-cover rounded-lg"
+                         onerror="this.onerror=null; this.src='{{ $placeholderUrl }}';">
                         <div class="item-details">  
                             <h3 class="item-name">{{ $item->nom }}</h3>
                             <p class="item-price">{{ number_format($item->prix_ttc, 2, ',', ' ') }} €</p>
@@ -349,11 +366,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 message: response.message
                             }, function() {
                                 // Show a message before redirecting
-                                alert('Commande confirmée avec succès!');
+                                showNotification('Commande confirmée avec succès!', 'success');
                                 window.location.href = '/panier';
                             }).fail(function(err) {
                                 console.error('Failed to set flash message:', err);
-                                alert('Commande confirmée, mais erreur lors de l\'affichage du message.');
+                                showNotification('Commande confirmée, mais erreur lors de l\'affichage du message.', 'error');
                                 window.location.href = '/panier';
                             });
                         } else {
@@ -364,11 +381,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 type: 'error',
                                 message: response.message
                             }, function() {
-                                alert('Erreur: ' + response.message);
+                                showNotification(response.message, 'error');
                                 window.location.href = '/panier';
                             }).fail(function(err) {
                                 console.error('Failed to set flash message:', err);
-                                alert('Erreur: ' + response.message);
+                                showNotification(response.message, 'error');
                                 window.location.href = '/panier';
                             });
                         }
@@ -395,12 +412,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             type: 'error',
                             message: errorMessage
                         }, function() {
-                            alert('Erreur: ' + errorMessage);
+                            showNotification(errorMessage, 'error');
                             button.disabled = false;
                             button.textContent = 'Confirmer le paiement';
                         }).fail(function(err) {
                             console.error('Failed to set flash message:', err);
-                            alert('Erreur: ' + errorMessage);
+                            showNotification(errorMessage, 'error');
                             button.disabled = false;
                             button.textContent = 'Confirmer le paiement';
                         });
@@ -424,7 +441,7 @@ function minus_quantity(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         return;
     }
     
@@ -451,7 +468,7 @@ function minus_quantity(button) {
         error: function(xhr) {
             console.error('API route failed:', xhr);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la mise à jour de la quantité', 'error');
+            showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         }
     });
 }
@@ -469,7 +486,7 @@ function add_quantity(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la mise à jour de la quantité', 'error');
+        showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         return;
     }
     
@@ -496,7 +513,7 @@ function add_quantity(button) {
         error: function(xhr) {
             console.error('API route failed:', xhr);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la mise à jour de la quantité', 'error');
+            showNotification('Erreur lors de la mise à jour de la quantité', 'error');
         }
     });
 }
@@ -529,7 +546,7 @@ function handleQuantityUpdateSuccess(response, quantitySpan) {
     updateHeaderCartCount(response.count || 0);
     
     // Show success message
-    showToast('Quantité mise à jour', 'success');
+    showNotification('Quantité mise à jour', 'success');
 }
 
 // Function to delete item
@@ -543,7 +560,7 @@ function deleteItem(button) {
     const idMatch = url.match(/\/panier\/(\d+)$/);
     if (!idMatch || !idMatch[1]) {
         console.error('Invalid URL format, cannot extract ID');
-        showToast('Erreur lors de la suppression du produit', 'error');
+        showNotification('Erreur lors de la suppression du produit', 'error');
         return;
     }
     
@@ -570,7 +587,7 @@ function deleteItem(button) {
             console.error('API route failed:', xhr);
             console.error('Status:', xhr.status);
             console.error('Response:', xhr.responseText);
-            showToast('Erreur lors de la suppression du produit', 'error');
+            showNotification('Erreur lors de la suppression du produit', 'error');
         }
     });
 }
@@ -588,7 +605,7 @@ function handleDeleteSuccess(response) {
         updateHeaderCartCount(response.count || 0);
         
         // Show success message
-        showToast('Produit supprimé du panier', 'success');
+        showNotification('Produit supprimé du panier', 'success');
     }
 }
 
@@ -628,7 +645,7 @@ function attachEventListeners() {
 }
 
 // Function to show toast messages
-function showToast(message, type = 'success') {
+function showNotification(message, type = 'success') {
     // Create toast element
     const toast = document.createElement('div');
     toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${

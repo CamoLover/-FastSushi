@@ -1,20 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="application.view.preparateur.PreparateurViewController">
-    
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
-    <Label text="Interface Préparateur" style="-fx-font-size: 24;"/>
-    
-    <Label text="Bienvenue dans l'interface de préparation des commandes"/>
-    
-    <Button text="Déconnexion" onAction="#handleLogoutButton"/>
-    
-</VBox> 
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" styleClass="root" stylesheets="@../../stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.preparateur.PreparateurViewController">
+	<children>
+		<VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<AnchorPane>
+				<fx:include fx:id="header" source="../../headerPreparateur.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+			</AnchorPane>
+			
+			<HBox alignment="CENTER" spacing="10">
+				<Circle fx:id="statusIndicator" radius="8" styleClass="preparateur-status-indicator"/>
+				<Label styleClass="preparateur-title" text="Interface Préparateur" />
+				<Button fx:id="refreshButton" text="Rafraîchir" onAction="#handleRefresh" styleClass="preparateur-refresh-button"/>
+			</HBox>
+			
+			<TabPane fx:id="tabPane" styleClass="preparateur-tabs" VBox.vgrow="ALWAYS">
+				<tabs>
+					<Tab text="Commandes à faire" closable="false">
+						<content>
+							<HBox spacing="10">
+								<VBox spacing="10" prefWidth="400.0" styleClass="preparateur-left-panel">
+									<Label text="Liste des commandes à faire" styleClass="preparateur-section-title"/>
+									<ListView fx:id="todoOrdersList" VBox.vgrow="ALWAYS" styleClass="preparateur-list" />
+								</VBox>
+								<VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="preparateur-right-panel">
+									<HBox alignment="CENTER" spacing="10" styleClass="preparateur-order-header">
+										<Label text="Détails de la commande" styleClass="preparateur-section-title" />
+										<Region HBox.hgrow="ALWAYS" />
+										<Label fx:id="todoOrderStatus" styleClass="preparateur-status-label-todo" />
+									</HBox>
+									<ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="preparateur-scroll-pane">
+										<VBox fx:id="todoOrderItemsContainer" spacing="15" />
+									</ScrollPane>
+									<HBox spacing="10" alignment="CENTER_RIGHT" styleClass="preparateur-actions">
+										<Button fx:id="markInProgressButton" text="Marquer comme en cours" onAction="#handleMarkInProgress" styleClass="preparateur-action-button"/>
+									</HBox>
+								</VBox>
+							</HBox>
+						</content>
+					</Tab>
+					<Tab text="Commandes en cours" closable="false">
+						<content>
+							<HBox spacing="10">
+								<VBox spacing="10" prefWidth="400.0" styleClass="preparateur-left-panel">
+									<Label text="Liste des commandes en cours" styleClass="preparateur-section-title"/>
+									<ListView fx:id="currentOrdersList" VBox.vgrow="ALWAYS" styleClass="preparateur-list" />
+								</VBox>
+								<VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="preparateur-right-panel">
+									<HBox alignment="CENTER" spacing="10" styleClass="preparateur-order-header">
+										<Label text="Détails de la commande" styleClass="preparateur-section-title" />
+										<Region HBox.hgrow="ALWAYS" />
+										<Label fx:id="currentOrderStatus" styleClass="preparateur-status-label" />
+									</HBox>
+									<ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="preparateur-scroll-pane">
+										<VBox fx:id="currentOrderItemsContainer" spacing="15" />
+									</ScrollPane>
+									<HBox spacing="10" alignment="CENTER_RIGHT" styleClass="preparateur-actions">
+										<Button fx:id="markReadyButton" text="Marquer comme prête" onAction="#handleMarkReady" styleClass="preparateur-action-button"/>
+									</HBox>
+								</VBox>
+							</HBox>
+						</content>
+					</Tab>
+					<Tab text="Commandes prêtes" closable="false">
+						<content>
+							<HBox spacing="10">
+								<VBox spacing="10" prefWidth="400.0" styleClass="preparateur-left-panel">
+									<Label text="Liste des commandes prêtes" styleClass="preparateur-section-title"/>
+									<ListView fx:id="readyOrdersList" VBox.vgrow="ALWAYS" styleClass="preparateur-list" />
+								</VBox>
+								<VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="preparateur-right-panel">
+									<HBox alignment="CENTER" spacing="10" styleClass="preparateur-order-header">
+										<Label text="Détails de la commande" styleClass="preparateur-section-title" />
+										<Region HBox.hgrow="ALWAYS" />
+										<Label fx:id="readyOrderStatus" styleClass="preparateur-status-label-ready" />
+									</HBox>
+									<ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="preparateur-scroll-pane">
+										<VBox fx:id="readyOrderItemsContainer" spacing="15" />
+									</ScrollPane>
+									<HBox spacing="10" alignment="CENTER_RIGHT" styleClass="preparateur-actions">
+										<Button fx:id="markDeliveredButton" text="Marquer comme livrée" onAction="#handleMarkDelivered" styleClass="preparateur-action-button"/>
+									</HBox>
+								</VBox>
+							</HBox>
+						</content>
+					</Tab>
+					<Tab text="Commandes livrées" closable="false">
+						<content>
+							<HBox spacing="10">
+								<VBox spacing="10" prefWidth="400.0" styleClass="preparateur-left-panel">
+									<Label text="Historique des livraisons" styleClass="preparateur-section-title"/>
+									<ListView fx:id="deliveredOrdersList" VBox.vgrow="ALWAYS" styleClass="preparateur-list" />
+								</VBox>
+								<VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="preparateur-right-panel">
+									<HBox alignment="CENTER" spacing="10" styleClass="preparateur-order-header">
+										<Label text="Détails de la commande" styleClass="preparateur-section-title" />
+										<Region HBox.hgrow="ALWAYS" />
+										<Label fx:id="deliveredOrderStatus" styleClass="preparateur-status-label-delivered" />
+									</HBox>
+									<ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="preparateur-scroll-pane">
+										<VBox fx:id="deliveredOrderItemsContainer" spacing="15" />
+									</ScrollPane>
+								</VBox>
+							</HBox>
+						</content>
+					</Tab>
+				</tabs>
+			</TabPane>
+		</VBox>
+	</children>
+	<padding>
+		<Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+	</padding>
+</AnchorPane>

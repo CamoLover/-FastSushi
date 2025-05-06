@@ -20,9 +20,13 @@
                             productDiv.classList.add('product');
 
                             const img = document.createElement('img');
-                            img.src = product.photo; // Utilise l'URL de l'image renvoyée par l'API
+                            img.src = `data:${product.photo_type || 'image/png'};base64,${product.photo}`;
                             img.alt = product.nom;
                             img.width = 150;
+                            img.onerror = function() {
+                                this.onerror = null;
+                                this.src = 'https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi';
+                            };
 
                             const h3 = document.createElement('h3');
                             h3.textContent = product.nom;
@@ -35,12 +39,12 @@
                             tableBody.appendChild(productDiv);
                         });
                     } else {
-                        alert("Erreur lors du chargement des produits.");
+                        showNotification("Erreur lors du chargement des produits.", "error");
                     }
                 })
                 .catch(error => {
                     console.error("Erreur API:", error);
-                    alert("Une erreur est survenue lors de la récupération des produits.");
+                    showNotification("Une erreur est survenue lors de la récupération des produits.", "error");
                 });
         });
     </script>

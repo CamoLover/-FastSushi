@@ -120,7 +120,9 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full 
                                     @if($commande->statut == 'En attente') bg-yellow-200 text-yellow-800
-                                    @elseif($commande->statut == 'livré') bg-green-200 text-green-800
+                                    @elseif($commande->statut == 'En cours') bg-purple-200 text-purple-800
+                                    @elseif($commande->statut == 'Prêt') bg-teal-200 text-teal-800
+                                    @elseif($commande->statut == 'Livré') bg-green-200 text-green-800
                                     @elseif($commande->statut == 'Annulée') bg-red-200 text-red-800
                                     @else bg-blue-200 text-blue-800
                                     @endif">

@@ -17,7 +17,7 @@
         </h1>
         
         <!-- Entrée Section -->
-        <div class="mb-12">
+        <div class="mb-12" id="entrees">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-utensils mr-3"></i>
@@ -28,7 +28,14 @@
                 <!-- Salades Card -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-48 bg-neutral-800 flex items-center justify-center overflow-hidden">
-                        <img src="/media/saladechoux.png" alt="Salade japonaise" class="w-full h-full object-cover" />
+                        @if($entrees[0]->photo)
+                            <img src="data:{{ $entrees[0]->photo_type ?? 'image/png' }};base64,{{ $entrees[0]->photo }}" 
+                                 alt="Salade japonaise" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
+                        @else
+                            <i class="fas fa-leaf text-4xl text-red-600"></i>
+                        @endif
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Salades</h3>
@@ -56,7 +63,14 @@
                 <!-- Soupes Card -->
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-48 bg-neutral-800 flex items-center justify-center overflow-hidden">
-                        <img src="/media/soupemiso.png" alt="Soupe japonaise" class="w-full h-full object-cover" />
+                        @if($soupes[0]->photo)
+                            <img src="data:{{ $soupes[0]->photo_type ?? 'image/png' }};base64,{{ $soupes[0]->photo }}" 
+                                 alt="Soupe japonaise" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
+                        @else
+                            <i class="fas fa-utensil-spoon text-4xl text-red-600"></i>
+                        @endif
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4 text-red-600 border-b border-neutral-700 pb-2">Soupes</h3>
@@ -84,7 +98,7 @@
         </div>
         
         <!-- Plats Section -->
-        <div class="mb-12">
+        <div class="mb-12" id="plats">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-fish mr-3"></i>
@@ -97,7 +111,10 @@
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center overflow-hidden">
                         @if($plat->photo)
-                            <img src="/media/{{ $plat->photo }}" alt="{{ $plat->nom }}" class="w-full h-full object-cover">
+                            <img src="data:{{ $plat->photo_type ?? 'image/png' }};base64,{{ $plat->photo }}" 
+                                 alt="{{ $plat->nom }}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
                         @else
                             <i class="fas fa-fish text-4xl text-red-600"></i>
                         @endif
@@ -123,7 +140,7 @@
         @include('module.composition')
              
         <!-- Desserts Section -->
-        <div class="mb-12">
+        <div class="mb-12 mt-12" id="desserts">
             <!-- Titre de section amélioré -->
             <h2 class="text-2xl font-bold mb-8 text-red-600 pb-2 flex items-center">
                 <i class="fas fa-ice-cream mr-3"></i>
@@ -135,7 +152,10 @@
                 <div class="bg-neutral-900 rounded-lg overflow-hidden shadow-lg border border-neutral-700">
                     <div class="h-40 bg-neutral-800 flex items-center justify-center overflow-hidden">
                         @if($dessert->photo)
-                            <img src="/media/{{ $dessert->photo }}" alt="{{ $dessert->nom }}" class="w-full h-full object-cover">
+                            <img src="data:{{ $dessert->photo_type ?? 'image/png' }};base64,{{ $dessert->photo }}" 
+                                 alt="{{ $dessert->nom }}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/400x300/252422/FFFCF2?text=Fast+Sushi'">
                         @else
                             <i class="fas fa-ice-cream text-4xl text-red-600"></i>
                         @endif
@@ -185,7 +205,7 @@
             .then(data => {
                 if(data.success) {
                     // Show success message
-                    alert(`${name} ajouté au panier`);
+                    showNotification(`${name} ajouté au panier`, 'success');
                     
                     // Update cart count if element exists
                     const cartCount = document.getElementById('cart-count');
@@ -196,8 +216,45 @@
             })
             .catch(error => {
                 console.error('Error adding to cart:', error);
-                alert('Une erreur est survenue lors de l\'ajout au panier');
+                showNotification('Une erreur est survenue lors de l\'ajout au panier', 'error');
             });
         }
+
+        // Handle smooth scrolling to sections
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to scroll to element with offset for fixed header
+            function scrollToElement(elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const headerOffset = 100; // Adjust this value based on your header height
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            // Check if there's a hash in the URL when page loads
+            if (window.location.hash) {
+                // Remove the '#' from the hash
+                const sectionId = window.location.hash.substring(1);
+                // Add a small delay to ensure the page is fully loaded
+                setTimeout(() => {
+                    scrollToElement(sectionId);
+                }, 100);
+            }
+
+            // Handle clicks on anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('href').substring(1);
+                    scrollToElement(sectionId);
+                });
+            });
+        });
     </script>
     @endsection

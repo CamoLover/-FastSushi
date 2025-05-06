@@ -19,7 +19,7 @@ return new class extends Migration
                 'prenom' => 'Luc',
                 'email' => 'luc.bernard@example.com',
                 'mdp' => bcrypt('luckpass'),
-                'statut_emp' => 'Manager',
+                'statut_emp' => 'Preparateur',
             ],
             [
                 'id_employe' => 2,
@@ -27,7 +27,7 @@ return new class extends Migration
                 'prenom' => 'Elise',
                 'email' => 'elise.moreau@example.com',
                 'mdp' => bcrypt('elisepass'),
-                'statut_emp' => 'Assistant',
+                'statut_emp' => 'Preparateur',
             ],
             [
                 'id_employe' => 3,
@@ -35,7 +35,7 @@ return new class extends Migration
                 'prenom' => 'Nicolas',
                 'email' => 'nicolas.rousseau@example.com',
                 'mdp' => bcrypt('nicolaspass'),
-                'statut_emp' => 'Technicien',
+                'statut_emp' => 'Administrateur',
             ]
         ]);
     }

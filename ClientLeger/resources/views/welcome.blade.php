@@ -146,73 +146,56 @@
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-[#FFFCF2]">Notre Menu</h2>
                 <p class="text-xl text-[#CCC5B9] max-w-3xl mx-auto">
-                    Découvrez notre sélection de sushis, sashimis, makis et autres spécialités japonaises, 
-                    préparés quotidiennement avec les ingrédients les plus frais.
+                    Découvrez nos entrées, plats et desserts préparés quotidiennement 
+                    avec les ingrédients les plus frais par nos chefs experts.
                 </p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Entrées -->
                 <div class="bg-[#252422] rounded-lg overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                     <div class="h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?q=80&w=2070&auto=format&fit=crop" 
-                             alt="Sushi" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <img src="/media/saladechoux.png" 
+                             alt="Entrées" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Sushis</h3>
-                        <p class="text-[#CCC5B9] mb-4">Des pièces délicatement préparées sur un lit de riz vinaigré.</p>
-                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
-                            Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
+                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Entrées</h3>
+                        <p class="text-[#CCC5B9] mb-4">Découvrez nos salades fraîches et soupes traditionnelles japonaises.</p>
+                        <a href="/menu#entrees" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                            Voir les entrées <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
                 </div>
                 
+                <!-- Plats -->
                 <div class="bg-[#252422] rounded-lg overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                     <div class="h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?q=80&w=1974&auto=format&fit=crop" 
-                             alt="Makis" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <img src="/media/sushisaumon.png" 
+                             alt="Plats" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Makis</h3>
-                        <p class="text-[#CCC5B9] mb-4">Des rouleaux enveloppés dans une feuille d'algue nori croustillante.</p>
-                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
-                            Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
+                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Plats</h3>
+                        <p class="text-[#CCC5B9] mb-4">Une sélection variée de sushis, makis et autres spécialités.</p>
+                        <a href="/menu#plats" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                            Voir les plats <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
                 </div>
                 
+                <!-- Desserts -->
                 <div class="bg-[#252422] rounded-lg overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                     <div class="h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1534482421-64566f976cfa?q=80&w=1969&auto=format&fit=crop" 
-                             alt="Sashimis" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <img src="/media/fondantchocolat.png" 
+                             alt="Desserts" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Sashimis</h3>
-                        <p class="text-[#CCC5B9] mb-4">De fines tranches de poisson cru d'une fraîcheur exceptionnelle.</p>
-                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
-                            Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
+                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Desserts</h3>
+                        <p class="text-[#CCC5B9] mb-4">Une délicieuse sélection de desserts japonais traditionnels.</p>
+                        <a href="/menu#desserts" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
+                            Voir les desserts <i class="fa-solid fa-arrow-right ml-2"></i>
                         </a>
                     </div>
                 </div>
-                
-                <div class="bg-[#252422] rounded-lg overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
-                    <div class="h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1780&auto=format&fit=crop" 
-                             alt="Plats chauds" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 text-[#FFFCF2]">Plats Chauds</h3>
-                        <p class="text-[#CCC5B9] mb-4">Des ramens aux gyozas, découvrez nos spécialités chaudes.</p>
-                        <a href="/menu" class="text-[#D90429] font-semibold hover:text-[#ce0006] transition-colors flex items-center">
-                            Voir la sélection <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-12">
-                <a href="/menu" class="inline-block bg-[#D90429] hover:bg-[#ce0006] text-white px-8 py-3 rounded-lg font-semibold text-lg transition duration-300">
-                    Voir tout le menu
-                </a>
             </div>
         </div>
     </div>
