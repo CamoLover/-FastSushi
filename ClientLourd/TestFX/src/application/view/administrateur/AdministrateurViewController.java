@@ -22,6 +22,7 @@ public class AdministrateurViewController {
     	headerController.getInstance().updateButtonState(true);
     }
 
+    
     @FXML
     private void handleListeClients(ActionEvent event) {   
         try {	
@@ -60,6 +61,7 @@ public class AdministrateurViewController {
         try {	
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/menu/menu.fxml"));
             Parent root = loader.load();
+
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
