@@ -1,14 +1,19 @@
 package application.model;
 
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
+
+import javafx.scene.image.Image;
+
 public class Ingredient {
     private int id_ingredient;
     private String nom;
-    private byte[] photo;
+    private String photo;
     private String photo_type;
     private double prix_ht;
     private String type_ingredient;
 
-    public Ingredient(int id_ingredient, String nom, byte[] photo, String photo_type, double prix_ht, String type_ingredient) {
+    public Ingredient(int id_ingredient, String nom, String photo, String photo_type, double prix_ht, String type_ingredient) {
         this.id_ingredient = id_ingredient;
         this.nom = nom;
         this.photo = photo;
@@ -19,8 +24,21 @@ public class Ingredient {
 
     public int getId_ingredient() { return id_ingredient; }
     public String getNom() { return (nom == null) ? "" : nom; }
-    public byte[] getPhoto() { return photo; }
     public String getPhoto_type() { return (photo_type == null) ? "" : photo_type; }
     public double getPrix_ht() { return prix_ht; }
     public String getType_ingredient() { return (type_ingredient == null) ? "" : type_ingredient; }
+    
+    public Image getPhotoAsImage() {
+        if (photo == null || photo.isEmpty()) {
+            return null;
+        }
+        try {
+            byte[] imageData = Base64.getDecoder().decode(photo);
+            return new Image(new ByteArrayInputStream(imageData));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 } 
+

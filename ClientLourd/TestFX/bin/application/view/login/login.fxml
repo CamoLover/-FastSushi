@@ -25,7 +25,7 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Label>
-            <TextField styleClass="text-field, login-field" fx:id="emailField" text="luc.bernard@example.com">
+            <TextField styleClass="text-field, login-field" fx:id="emailField" text="nicolas.rousseau@example.com">
                <VBox.margin>
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
@@ -35,7 +35,7 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Label>
-            <PasswordField styleClass="password-field, login-field" fx:id="passwordField" text="luckpass"> <!-- mots de passe (modification) --> 
+            <PasswordField styleClass="password-field, login-field" fx:id="passwordField" text="nicolaspass"> <!-- mots de passe (modification) --> 
                <VBox.margin>
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
