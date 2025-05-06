@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="700" prefWidth="1000" stylesheets="@../../stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.menu.MenuViewController" >
+   <AnchorPane xmlns:fx="http://javafx.com/fxml">
+		<fx:include fx:id="header" source="../../header.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </AnchorPane>
+   <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <center>
+      
+          <!-- Zone centrale : plats et ingrédients côte à côte -->
+          <HBox alignment="CENTER" prefHeight="550" prefWidth="900" spacing="20" style="-fx-padding: 20;" BorderPane.alignment="CENTER">
+              
+              <!-- Colonne Plats -->
+              <VBox alignment="TOP_CENTER" prefHeight="550" prefWidth="450" spacing="10">
+                  <TableView fx:id="platTable" prefHeight="500" prefWidth="400">
+                      <columns>
+                          <TableColumn fx:id="platTableColumn" prefWidth="365.0" text="Nom du Plat" />
+                      </columns>
+                      <columnResizePolicy>
+                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                      </columnResizePolicy>
+                  </TableView>
+              </VBox>
+      
+              <!-- Colonne Ingrédients -->
+              <VBox alignment="TOP_CENTER" prefHeight="550" prefWidth="450" spacing="10">
+                  <TableView fx:id="ingredientTable" prefHeight="500" prefWidth="400">
+                      <columns>
+                          <TableColumn fx:id="ingredientTableColumn" prefWidth="468.0" text="Nom de l'Ingrédient" />
+                      </columns>
+                      <columnResizePolicy>
+                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                      </columnResizePolicy>
+                  </TableView>
+              </VBox>
+            <BorderPane.margin>
+               <Insets />
+            </BorderPane.margin>
+          </HBox>
+      </center>
+      <top>
+      
+          <!-- Titre en haut -->
+          <Text fx:id="menuTitle" fill="#e63946" strokeType="OUTSIDE" strokeWidth="0.0" text="Notre menu" textAlignment="CENTER" underline="true" BorderPane.alignment="CENTER">
+              <font>
+                  <Font name="System Bold" size="34.0" />
+              </font>
+          </Text>
+      </top>
+   </BorderPane>
+
+</AnchorPane>

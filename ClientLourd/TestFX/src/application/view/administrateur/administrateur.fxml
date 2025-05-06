@@ -21,7 +21,11 @@
             <VBox.margin>
                <Insets top="20.0" />
             </VBox.margin></Button>
-         <Button mnemonicParsing="false" onAction="#handleListeEmployes" text="Liste employés" />
+	         <Button mnemonicParsing="false" onAction="#handleListeEmployes" text="Liste employés" />
+	         <VBox.margin>
+	           <Insets top="20.0" />
+	         </VBox.margin>
+	         <Button mnemonicParsing="false" onAction="#handleListeMenu" text="Écran Menu" />
 		    
 		</VBox>	
 	</children>
