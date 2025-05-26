@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PanierController extends Controller
 {
@@ -43,11 +44,11 @@ class PanierController extends Controller
     }
 
     // Helper method to add an item to a panier (used when converting cookie to DB)
-    protected function addItemToPanier($item, $panier, $clientId)
+    public function addItemToPanier($item, $panier, $clientId)
     {
         // If $item is not an array or doesn't have required fields, return
         if (!is_array($item) || !isset($item['id_produit'])) {
-            \Log::error('Invalid item data:', ['item' => $item]);
+            Log::error('Invalid item data:', ['item' => $item]);
             return false;
         }
         
@@ -143,7 +144,7 @@ class PanierController extends Controller
         $client = session('client');
         
         // Add debug output for all cookies
-        \Log::debug('All request cookies:', [
+        Log::debug('All request cookies:', [
             'cookies' => $request->cookies->all(),
             'has_panier' => $request->hasCookie('panier'),
             'panier_value' => $request->cookie('panier')
@@ -181,7 +182,7 @@ class PanierController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                \Log::error('Error in voirLePanier for logged user:', [
+                Log::error('Error in voirLePanier for logged user:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -204,38 +205,38 @@ class PanierController extends Controller
             $cookieCart = [];
             $panierCookie = $request->cookie('panier');
             
-            \Log::debug('Cookie cart raw:', [
+            Log::debug('Cookie cart raw:', [
                 'cookie_value' => $panierCookie
             ]);
             
             if (!empty($panierCookie)) {
                 try {
                     $cookieCart = json_decode($panierCookie, true);
-                    \Log::debug('Parsed cookie cart:', [
+                    Log::debug('Parsed cookie cart:', [
                         'parsed' => $cookieCart,
                         'is_array' => is_array($cookieCart),
                         'count' => is_array($cookieCart) ? count($cookieCart) : 0
                     ]);
                 } catch (\Exception $e) {
-                    \Log::error('Error parsing panier cookie:', [
+                    Log::error('Error parsing panier cookie:', [
                         'error' => $e->getMessage(),
                         'cookie' => $panierCookie
                     ]);
                 }
             } else {
-                \Log::debug('No panier cookie found in request');
+                Log::debug('No panier cookie found in request');
                 
                 // Try to get it directly from $_COOKIE
                 if (isset($_COOKIE['panier'])) {
                     try {
                         $cookieCart = json_decode($_COOKIE['panier'], true);
-                        \Log::debug('Parsed cookie from $_COOKIE:', [
+                        Log::debug('Parsed cookie from $_COOKIE:', [
                             'parsed' => $cookieCart,
                             'is_array' => is_array($cookieCart),
                             'count' => is_array($cookieCart) ? count($cookieCart) : 0
                         ]);
                     } catch (\Exception $e) {
-                        \Log::error('Error parsing panier from $_COOKIE:', [
+                        Log::error('Error parsing panier from $_COOKIE:', [
                             'error' => $e->getMessage(),
                             'cookie' => $_COOKIE['panier']
                         ]);
@@ -245,7 +246,7 @@ class PanierController extends Controller
                 // Try to get directly from headers
                 $headers = $request->headers->all();
                 $cookieHeader = $request->headers->get('cookie');
-                \Log::debug('Cookie header:', [
+                Log::debug('Cookie header:', [
                     'cookie_header' => $cookieHeader
                 ]);
                 
@@ -254,12 +255,12 @@ class PanierController extends Controller
                     try {
                         $decodedCookie = urldecode($_COOKIE['panier_direct']);
                         $cookieCart = json_decode($decodedCookie, true);
-                        \Log::debug('Using direct panier cookie:', [
+                        Log::debug('Using direct panier cookie:', [
                             'value' => $decodedCookie,
                             'parsed' => $cookieCart
                         ]);
                     } catch (\Exception $e) {
-                        \Log::error('Error parsing direct panier:', [
+                        Log::error('Error parsing direct panier:', [
                             'error' => $e->getMessage()
                         ]);
                     }
@@ -269,7 +270,7 @@ class PanierController extends Controller
             // Ensure cookieCart is an array
             if (!is_array($cookieCart)) {
                 $cookieCart = [];
-                \Log::warning('Cookie cart is not an array, using empty array instead');
+                Log::warning('Cookie cart is not an array, using empty array instead');
             }
             
             $total = 0;
@@ -281,7 +282,7 @@ class PanierController extends Controller
                 $total_ht += floatval($item['prix_ht'] ?? 0) * intval($item['quantite'] ?? 0);
             }
             
-            \Log::debug('Cart totals calculated:', [
+            Log::debug('Cart totals calculated:', [
                 'total' => $total,
                 'total_ht' => $total_ht,
                 'items_count' => count($cookieCart)
@@ -337,7 +338,7 @@ class PanierController extends Controller
             );
             
             // Log the cookie creation for debugging
-            \Log::debug('Creating cookie in PanierController:', [
+            Log::debug('Creating cookie in PanierController:', [
                 'name' => 'panier',
                 'value_length' => strlen(json_encode($newCookieCart)),
                 'items_count' => count($newCookieCart),
@@ -373,7 +374,7 @@ class PanierController extends Controller
                 // For custom items, store the ingredients in the object for easy access in the view
                 if ($isCustom && isset($item['ingredients']) && is_array($item['ingredients'])) {
                     $ligne->ingredients = $item['ingredients'];
-                    \Log::debug('Added ingredients to ligne object for custom item:', [
+                    Log::debug('Added ingredients to ligne object for custom item:', [
                         'id_panier_ligne' => $index,
                         'ingredient_count' => count($item['ingredients'])
                     ]);
@@ -391,10 +392,10 @@ class PanierController extends Controller
                         $ligne->produit->photo_type = $produit->photo_type;
                     }
                 } catch (\Exception $e) {
-                    \Log::error('Error getting product:', [
+                   /* Log::error('Error getting product:', [
                         'id' => $item['id_produit'],
                         'error' => $e->getMessage()
-                    ]);
+                    ]); */
                     
                     // Try with a direct DB query as a fallback
                     try {
@@ -408,10 +409,10 @@ class PanierController extends Controller
                             $ligne->produit->photo_type = $produit->photo_type;
                         }
                     } catch (\Exception $e2) {
-                        \Log::error('Error getting product via DB:', [
+                      /*  Log::error('Error getting product via DB:', [
                             'id' => $item['id_produit'],
                             'error' => $e2->getMessage()
-                        ]);
+                        ]);*/
                     }
                 }
                 
@@ -428,13 +429,14 @@ class PanierController extends Controller
                 'total' => $total
             ];
             
-            \Log::debug('Final result structure:', [
+            Log::debug('Final result structure:', [
                 'has_lignes' => isset($result['panier'][0]->lignes),
                 'lignes_count' => isset($result['panier'][0]->lignes) ? $result['panier'][0]->lignes->count() : 0,
                 'total' => $result['total']
             ]);
             
-            return view('panier', $result)->withCookie($cookie);
+            return response(view('panier', $result))->withCookie($cookie);
+
         }
     }
 

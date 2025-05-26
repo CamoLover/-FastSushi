@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PanierLigneController extends Controller
 {
@@ -20,7 +21,7 @@ class PanierLigneController extends Controller
     public function addToCart(Request $request, $id_produit = null)
     {
         // Log the request for debugging
-        \Log::debug('Panier-update request data:', $request->all());
+        Log::debug('Panier-update request data:', $request->all());
         
         // Handle both old and new route formats
         if ($id_produit === null) {
@@ -58,7 +59,7 @@ class PanierLigneController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Log::debug('Validation failed:', $validator->errors()->toArray());
+            Log::debug('Validation failed:', $validator->errors()->toArray());
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
@@ -68,7 +69,7 @@ class PanierLigneController extends Controller
         // Verify if the product exists
         $produit = Produit::find($data['id_produit']);
         if (!$produit) {
-            \Log::debug('Product not found:', ['id' => $data['id_produit']]);
+            Log::debug('Product not found:', ['id' => $data['id_produit']]);
             
             // If product not found but we have valid data, create a temporary product object
             $tmpProduit = new \stdClass();
@@ -90,7 +91,7 @@ class PanierLigneController extends Controller
 
         if ($client) {
             // User is logged in - store in database
-            \Log::debug('User is logged in, storing in database:', ['client_id' => $client->id_client]);
+            Log::debug('User is logged in, storing in database:', ['client_id' => $client->id_client]);
             
             // Find or create a cart for this client
             $panier = Panier::firstOrCreate(
@@ -112,7 +113,7 @@ class PanierLigneController extends Controller
                 $existingLine->quantite += $data['quantite'];
                 $existingLine->save();
                 
-                \Log::debug('Updated existing cart line:', [
+                Log::debug('Updated existing cart line:', [
                     'product_id' => $data['id_produit'],
                     'new_quantity' => $existingLine->quantite
                 ]);
@@ -127,7 +128,7 @@ class PanierLigneController extends Controller
                     'prix_ttc'   => $data['prix_ttc'],
                 ]);
                 
-                \Log::debug('Created new cart line:', [
+                Log::debug('Created new cart line:', [
                     'product_id' => $data['id_produit'],
                     'line_id' => $newLine->id_panier_ligne
                 ]);
@@ -143,7 +144,7 @@ class PanierLigneController extends Controller
             $panier->montant_tot = $montantTotal;
             $panier->save();
             
-            \Log::debug('Cart updated successfully in database', [
+            Log::debug('Cart updated successfully in database', [
                 'cart_id' => $panier->id_panier,
                 'total_amount' => $montantTotal,
                 'total_items' => $lignes->sum('quantite')
@@ -157,7 +158,7 @@ class PanierLigneController extends Controller
             ], 201);
         } else {
             // User is not logged in - store in cookie
-            \Log::debug('User is not logged in, storing in cookie');
+            Log::debug('User is not logged in, storing in cookie');
             
             // Get existing cart from cookie
             $cookieCart = [];
@@ -167,7 +168,7 @@ class PanierLigneController extends Controller
                 try {
                     $cookieCart = json_decode($panierCookie, true);
                 } catch (\Exception $e) {
-                    \Log::error('Error parsing panier cookie:', [
+                    Log::error('Error parsing panier cookie:', [
                         'error' => $e->getMessage(),
                         'cookie' => $panierCookie
                     ]);
@@ -201,7 +202,7 @@ class PanierLigneController extends Controller
                 $count += (int)$item['quantite'];
             }
             
-            \Log::debug('Updated cookie cart:', [
+            Log::debug('Updated cookie cart:', [
                 'cart' => $cookieCart,
                 'total' => $total,
                 'count' => $count
@@ -234,7 +235,7 @@ class PanierLigneController extends Controller
     public function updateCartItem(Request $request, $id_panier_ligne)
     {
         // Log debugging information
-        \Log::debug('UpdateCartItem called', [
+        Log::debug('UpdateCartItem called', [
             'id_panier_ligne' => $id_panier_ligne,
             'request' => $request->all(),
             'cookie' => $request->cookie('panier'),
@@ -260,7 +261,7 @@ class PanierLigneController extends Controller
                 $ligne = Panier_ligne::find($id_panier_ligne);
     
                 if (!$ligne) {
-                    \Log::debug('Ligne not found with id:', ['id_panier_ligne' => $id_panier_ligne]);
+                    Log::debug('Ligne not found with id:', ['id_panier_ligne' => $id_panier_ligne]);
                     return response()->json(['error' => 'Ligne de panier introuvable'], 404);
                 }
     
@@ -324,7 +325,7 @@ class PanierLigneController extends Controller
                     'count' => Panier_ligne::where('id_panier', $panier->id_panier)->sum('quantite')
                 ], 200);
             } catch (\Exception $e) {
-                \Log::error('Error in updateCartItem for logged user:', [
+                Log::error('Error in updateCartItem for logged user:', [
                     'error' => $e->getMessage(), 
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -340,7 +341,7 @@ class PanierLigneController extends Controller
                     try {
                         $cookieCart = json_decode($panierCookie, true);
                     } catch (\Exception $e) {
-                        \Log::error('Error parsing cookie:', ['error' => $e->getMessage()]);
+                        Log::error('Error parsing cookie:', ['error' => $e->getMessage()]);
                         $cookieCart = [];
                     }
                 }
@@ -352,7 +353,7 @@ class PanierLigneController extends Controller
                 }
                 
                 // Debug log for cookie cart structure
-                \Log::debug('Cookie cart structure:', [
+                Log::debug('Cookie cart structure:', [
                     'cookie_cart' => $cookieCart,
                     'id_requested' => $id_panier_ligne,
                     'is_numeric' => is_numeric($id_panier_ligne),
@@ -405,7 +406,7 @@ class PanierLigneController extends Controller
                     $count += (int)$item['quantite'];
                 }
                 
-                \Log::debug('Updated cookie cart:', [
+                Log::debug('Updated cookie cart:', [
                     'cart' => $cookieCart,
                     'total' => $total,
                     'count' => $count
@@ -452,7 +453,7 @@ class PanierLigneController extends Controller
                                 $ligne->produit->photo_type = $produit->photo_type;
                             }
                         } catch (\Exception $e) {
-                            \Log::error('Error finding product:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);
+                            Log::error('Error finding product:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);
                         }
                     }
                 }
@@ -471,7 +472,7 @@ class PanierLigneController extends Controller
                 );
                 
                 // Log the cookie creation for debugging
-                \Log::debug('Creating cookie with settings in updateCartItem:', [
+                Log::debug('Creating cookie with settings in updateCartItem:', [
                     'name' => 'panier',
                     'value_length' => strlen(json_encode($cookieCart)),
                     'expires' => '+10080 minutes',
@@ -488,7 +489,7 @@ class PanierLigneController extends Controller
                     'nouvelle_quantite' => isset($cookieCart[$index]) ? $cookieCart[$index]['quantite'] : 0
                 ])->cookie($cookie);
             } catch (\Exception $e) {
-                \Log::error('Error in updateCartItem for cookie cart:', [
+                Log::error('Error in updateCartItem for cookie cart:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -501,7 +502,7 @@ class PanierLigneController extends Controller
     public function deleteCartItem($id_panier_ligne, Request $request)
     {
         // Log debugging information for delete action
-        \Log::debug('DeleteCartItem called', [
+        Log::debug('DeleteCartItem called', [
             'id_panier_ligne' => $id_panier_ligne,
             'request' => $request->all(),
             'cookie' => $request->cookie('panier'),
@@ -517,7 +518,7 @@ class PanierLigneController extends Controller
                 $ligne = Panier_ligne::find($id_panier_ligne);
     
                 if (!$ligne) {
-                    \Log::debug('Cart line not found for delete:', ['id_panier_ligne' => $id_panier_ligne]);
+                    Log::debug('Cart line not found for delete:', ['id_panier_ligne' => $id_panier_ligne]);
                     return response()->json(['message' => 'Élément non trouvé'], 404);
                 }
     
@@ -552,7 +553,7 @@ class PanierLigneController extends Controller
                     'count' => $lignes->sum('quantite')
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Error in deleteCartItem for logged user:', [
+                Log::error('Error in deleteCartItem for logged user:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -568,7 +569,7 @@ class PanierLigneController extends Controller
                     try {
                         $cookieCart = json_decode($panierCookie, true);
                     } catch (\Exception $e) {
-                        \Log::error('Error parsing cookie in delete:', ['error' => $e->getMessage()]);
+                        Log::error('Error parsing cookie in delete:', ['error' => $e->getMessage()]);
                         $cookieCart = [];
                     }
                 }
@@ -580,7 +581,7 @@ class PanierLigneController extends Controller
                 }
                 
                 // Debug log for cookie structure
-                \Log::debug('Cookie cart structure for delete:', [
+                Log::debug('Cookie cart structure for delete:', [
                     'cookie_cart' => $cookieCart,
                     'id_requested' => $id_panier_ligne,
                     'is_numeric' => is_numeric($id_panier_ligne),
@@ -626,7 +627,7 @@ class PanierLigneController extends Controller
                     $count += (int)$item['quantite'];
                 }
                 
-                \Log::debug('Updated cookie cart:', [
+                Log::debug('Updated cookie cart:', [
                     'cart' => $cookieCart,
                     'total' => $total,
                     'count' => $count
@@ -668,7 +669,7 @@ class PanierLigneController extends Controller
                                 $ligne->produit->photo_type = $produit->photo_type;
                             }
                         } catch (\Exception $e) {
-                            \Log::error('Error finding product in delete:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);
+                            Log::error('Error finding product in delete:', ['id' => $ligne->id_produit, 'error' => $e->getMessage()]);
                         }
                     }
                 }
@@ -687,7 +688,7 @@ class PanierLigneController extends Controller
                 );
                 
                 // Log the cookie creation for debugging
-                \Log::debug('Creating cookie with settings in deleteCartItem:', [
+                Log::debug('Creating cookie with settings in deleteCartItem:', [
                     'name' => 'panier',
                     'value_length' => strlen(json_encode($cookieCart)),
                     'expires' => '+10080 minutes',
@@ -703,7 +704,7 @@ class PanierLigneController extends Controller
                     'count' => $count
                 ])->cookie($cookie);
             } catch (\Exception $e) {
-                \Log::error('Error in deleteCartItem for cookie cart:', [
+                Log::error('Error in deleteCartItem for cookie cart:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString() 
                 ]);
@@ -714,7 +715,7 @@ class PanierLigneController extends Controller
 
     public function addCustomToCart(Request $request)
     {
-        \Log::debug('Custom sushi order request data:', $request->all());
+        Log::debug('Custom sushi order request data:', $request->all());
         
         // Extract data from the request
         $data = [
@@ -727,7 +728,7 @@ class PanierLigneController extends Controller
         ];
         
         // Log ingredients data for debugging
-        \Log::debug('Ingredients data:', [
+        Log::debug('Ingredients data:', [
             'ingredients' => $data['ingredients'],
             'type' => gettype($data['ingredients']),
             'is_array' => is_array($data['ingredients']),
@@ -735,7 +736,7 @@ class PanierLigneController extends Controller
         ]);
         
         if (!empty($data['ingredients'])) {
-            \Log::debug('First ingredient:', [
+            Log::debug('First ingredient:', [
                 'data' => $data['ingredients'][0] ?? 'No first element',
                 'keys' => is_array($data['ingredients'][0]) ? array_keys($data['ingredients'][0]) : 'Not an array'
             ]);
@@ -750,7 +751,7 @@ class PanierLigneController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Log::debug('Validation failed:', $validator->errors()->toArray());
+            Log::debug('Validation failed:', $validator->errors()->toArray());
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
@@ -762,7 +763,7 @@ class PanierLigneController extends Controller
         
         if ($client) {
             // User is logged in - store in database
-            \Log::debug('User is logged in, storing custom item in database:', ['client_id' => $client->id_client]);
+            Log::debug('User is logged in, storing custom item in database:', ['client_id' => $client->id_client]);
             
             // Find or create a cart for this client
             $panier = Panier::firstOrCreate(
@@ -784,17 +785,17 @@ class PanierLigneController extends Controller
                 'prix_ttc'   => $data['prix_ttc'],
             ]);
             
-            \Log::debug('Created new cart line for custom item:', [
+            Log::debug('Created new cart line for custom item:', [
                 'product_id' => $data['id_produit'],
                 'line_id' => $newLine->id_panier_ligne
             ]);
             
             // Store ingredients in compo_paniers table
             if (!empty($data['ingredients'])) {
-                \Log::debug('About to store ingredients, count:', [count($data['ingredients'])]);
+                Log::debug('About to store ingredients, count:', [count($data['ingredients'])]);
                 
                 foreach ($data['ingredients'] as $ingredient) {
-                    \Log::debug('Processing ingredient:', [
+                    Log::debug('Processing ingredient:', [
                         'ingredient' => $ingredient,
                         'type' => gettype($ingredient),
                         'is_array' => is_array($ingredient),
@@ -808,22 +809,22 @@ class PanierLigneController extends Controller
                             'prix' => $ingredient['price']
                         ]);
                         
-                        \Log::debug('Inserted ingredient into compo_paniers:', [
+                        Log::debug('Inserted ingredient into compo_paniers:', [
                             'id_ingredient' => $ingredient['id'],
                             'prix' => $ingredient['price']
                         ]);
                     } else {
-                        \Log::warning('Skipping invalid ingredient format:', [
+                        Log::warning('Skipping invalid ingredient format:', [
                             'ingredient' => $ingredient
                         ]);
                     }
                 }
                 
-                \Log::debug('Added ingredients to compo_paniers for custom item', [
+                Log::debug('Added ingredients to compo_paniers for custom item', [
                     'count' => count($data['ingredients'])
                 ]);
             } else {
-                \Log::warning('No ingredients found for custom item');
+                Log::warning('No ingredients found for custom item');
             }
 
             // Recalculate the total cart amount
@@ -844,7 +845,7 @@ class PanierLigneController extends Controller
             ], 201);
         } else {
             // User is not logged in - store in cookie
-            \Log::debug('User is not logged in, storing custom item in cookie');
+            Log::debug('User is not logged in, storing custom item in cookie');
             
             // Get existing cart from cookie
             $cookieCart = [];
@@ -854,7 +855,7 @@ class PanierLigneController extends Controller
                 try {
                     $cookieCart = json_decode($panierCookie, true);
                 } catch (\Exception $e) {
-                    \Log::error('Error parsing panier cookie:', [
+                    Log::error('Error parsing panier cookie:', [
                         'error' => $e->getMessage(),
                         'cookie' => $panierCookie
                     ]);
@@ -917,7 +918,7 @@ class PanierLigneController extends Controller
      */
     public function addRegularToCart(Request $request)
     {
-        \Log::debug('Regular menu item request data:', $request->all());
+        Log::debug('Regular menu item request data:', $request->all());
         
         // Extract data from the request
         $data = [
@@ -938,7 +939,7 @@ class PanierLigneController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Log::debug('Validation failed:', $validator->errors()->toArray());
+            Log::debug('Validation failed:', $validator->errors()->toArray());
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
@@ -950,7 +951,7 @@ class PanierLigneController extends Controller
         
         if ($client) {
             // User is logged in - store in database
-            \Log::debug('User is logged in, storing regular item in database:', ['client_id' => $client->id_client]);
+            Log::debug('User is logged in, storing regular item in database:', ['client_id' => $client->id_client]);
             
             // Find or create a cart for this client
             $panier = Panier::firstOrCreate(
@@ -1003,7 +1004,7 @@ class PanierLigneController extends Controller
             ], 201);
         } else {
             // User is not logged in - store in cookie
-            \Log::debug('User is not logged in, storing regular item in cookie');
+            Log::debug('User is not logged in, storing regular item in cookie');
             
             // Get existing cart from cookie
             $cookieCart = [];
@@ -1013,7 +1014,7 @@ class PanierLigneController extends Controller
                 try {
                     $cookieCart = json_decode($panierCookie, true);
                 } catch (\Exception $e) {
-                    \Log::error('Error parsing panier cookie:', [
+                    Log::error('Error parsing panier cookie:', [
                         'error' => $e->getMessage(),
                         'cookie' => $panierCookie
                     ]);

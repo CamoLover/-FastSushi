@@ -8,6 +8,7 @@ use App\Models\Commande_ligne;
 use App\Models\Panier_ligne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommandeController extends Controller
 {
@@ -15,7 +16,7 @@ class CommandeController extends Controller
     {
         try {
             // Log the request for debugging
-            \Log::debug('Command creation request:', [
+            Log::debug('Command creation request:', [
                 'request' => $request->all(),
                 'has_client_session' => session()->has('client'),
                 'session_data' => session()->all(),
@@ -24,7 +25,7 @@ class CommandeController extends Controller
 
             // Vérifier si l'utilisateur est connecté
             if (!session()->has('client')) {
-                \Log::warning('User not logged in when trying to create an order');
+                Log::warning('User not logged in when trying to create an order');
                 return response()->json([
                     'success' => false,
                     'message' => 'Veuillez vous connecter pour passer une commande.'
@@ -37,7 +38,7 @@ class CommandeController extends Controller
             $panier = Panier::where('id_client', $client->id_client)->first();
             
             if (!$panier) {
-                \Log::warning('No cart found for client:', ['client_id' => $client->id_client]);
+                Log::warning('No cart found for client:', ['client_id' => $client->id_client]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Votre panier est vide.'
@@ -48,14 +49,14 @@ class CommandeController extends Controller
             $lignesPanier = Panier_ligne::where('id_panier', $panier->id_panier)->get();
             
             if ($lignesPanier->isEmpty()) {
-                \Log::warning('Empty cart for client:', ['client_id' => $client->id_client, 'cart_id' => $panier->id_panier]);
+                Log::warning('Empty cart for client:', ['client_id' => $client->id_client, 'cart_id' => $panier->id_panier]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Votre panier est vide.'
                 ]);
             }
 
-            \Log::debug('Creating order with data:', [
+            Log::debug('Creating order with data:', [
                 'client_id' => $client->id_client,
                 'cart_total' => $panier->montant_tot,
                 'cart_items' => $lignesPanier->count(),
@@ -96,7 +97,7 @@ class CommandeController extends Controller
                         ->whereIn('id_panier_ligne', array_keys($ligneMapping))
                         ->get();
                         
-                    \Log::debug('Found custom ingredients to transfer:', [
+                    Log::debug('Found custom ingredients to transfer:', [
                         'count' => $compoItems->count(), 
                         'items' => $compoItems->toArray()
                     ]);
@@ -110,7 +111,7 @@ class CommandeController extends Controller
                                 'prix' => $compo->prix
                             ]);
                             
-                            \Log::debug('Transferred ingredient to order:', [
+                            Log::debug('Transferred ingredient to order:', [
                                 'from_panier_ligne' => $compo->id_panier_ligne,
                                 'to_commande_ligne' => $ligneMapping[$compo->id_panier_ligne],
                                 'ingredient_id' => $compo->id_ingredient,
@@ -128,7 +129,7 @@ class CommandeController extends Controller
                     $panier->montant_tot = 0;
                     $panier->save();
 
-                    \Log::info('Order created successfully:', [
+                    Log::info('Order created successfully:', [
                         'order_id' => $commande->id_commande,
                         'client_id' => $client->id_client
                     ]);
@@ -138,7 +139,7 @@ class CommandeController extends Controller
                         'message' => 'Commande confirmée avec succès!'
                     ]);
                 } catch (\Exception $e) {
-                    \Log::error('Error during order creation transaction:', [
+                    Log::error('Error during order creation transaction:', [
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString()
                     ]);
@@ -148,7 +149,7 @@ class CommandeController extends Controller
                 }
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to create order:', [
+            Log::error('Failed to create order:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

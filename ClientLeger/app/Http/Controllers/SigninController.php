@@ -50,7 +50,7 @@ class SigninController extends Controller
                     'date_panier' => now(),
                     'montant_tot' => 0
                 ]
-            );
+            );  
             
             // Transférer les éléments du cookie vers la base de données
             $panierController = new PanierController();
