@@ -19,16 +19,18 @@
                     <h2 class="text-2xl font-semibold mb-4 text-[#FFFCF2]">Notre Histoire</h2>
                     <div class="space-y-4 text-[#CCC5B9]">
                         <p>
-                            Fast Sushi est né en 2018 d'une passion partagée pour la cuisine japonaise et d'une vision simple : 
-                            rendre accessible la saveur authentique des sushis, sans compromis sur la qualité ni sur la rapidité.
+                            Fast Sushi a vu le jour en 2008, se spécialisant dans la restauration rapide et principalement 
+                            dans les produits alimentaires d'inspiration japonaise tels que les sushis, les makis, les sashimis, 
+                            et les springs rolls.
                         </p>
                         <p>
-                            Fondé par deux amis passionnés de gastronomie asiatique, notre restaurant a commencé comme un petit comptoir 
-                            avant de se développer pour devenir l'enseigne que vous connaissez aujourd'hui.
+                            Notre mission est de faire découvrir à notre clientèle la vraie cuisine japonaise, 
+                            élaborée à base de produits locaux et de qualité supérieure.
                         </p>
                         <p>
-                            Notre concept combine les techniques traditionnelles japonaises avec une approche moderne 
-                            de la restauration rapide, offrant ainsi une expérience culinaire unique.
+                            Sous la direction experte de M. Makytori, notre gérant, nous maintenons les plus hauts standards 
+                            de qualité. Tous nos poissons sont traités entiers et sélectionnés suivant les arrivages pour 
+                            garantir une fraîcheur maximale. Nous sommes fiers de proposer des produits certifiés AB et Label Rouge.
                         </p>
                     </div>
                 </div>
@@ -73,6 +75,17 @@
                     Nous avons optimisé notre processus de préparation et de livraison pour vous offrir des sushis d'exception en un temps record.
                 </p>
             </div>
+            
+            <div class="bg-[#252422] rounded-lg p-6 shadow-lg border-t border-[#D90429] flex flex-col">
+                <div class="text-[#D90429] text-4xl mb-4 flex justify-center">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-[#FFFCF2] text-center">Certifications</h3>
+                <p class="text-[#CCC5B9] text-center flex-grow">
+                    Nos produits sont certifiés AB et Label Rouge, attestant de notre engagement envers la qualité 
+                    et le respect des normes les plus exigeantes.
+                </p>
+            </div>
         </div>
         
         <!-- Notre Équipe Section -->
@@ -84,10 +97,10 @@
                 <div class="text-center">
                     <div class="rounded-full overflow-hidden h-32 w-32 mx-auto mb-4 border-2 border-[#D90429]">
                         <img src="{{ asset('media/about/chef1.jpg') }}" alt="Chef Takashi" class="w-full h-full object-cover"
-                             onerror="this.src='https://images.unsplash.com/photo-1607631568211-33798ab7f929?q=80&w=1000&auto=format&fit=crop';this.onerror=null;">
+                             onerror="this.src='https://images.unsplash.com/photo-1583394293214-28ded15ee548?q=80&w=1000&auto=format&fit=crop';this.onerror=null;">
                     </div>
-                    <h3 class="text-lg font-semibold text-[#FFFCF2]">Chef Takashi</h3>
-                    <p class="text-[#D90429] text-sm mb-2">Chef Exécutif</p>
+                    <h3 class="text-lg font-semibold text-[#FFFCF2]">M. Makytori</h3>
+                    <p class="text-[#D90429] text-sm mb-2">Gérant</p>
                     <p class="text-[#CCC5B9] text-sm">
                         Formé à Tokyo, 15 ans d'expérience dans la préparation de sushis traditionnels.
                     </p>
@@ -97,7 +110,7 @@
                 <div class="text-center">
                     <div class="rounded-full overflow-hidden h-32 w-32 mx-auto mb-4 border-2 border-[#D90429]">
                         <img src="{{ asset('media/about/chef2.jpg') }}" alt="Chef Sophie" class="w-full h-full object-cover"
-                             onerror="this.src='https://images.unsplash.com/photo-1583394293214-28ded15ee548?q=80&w=1000&auto=format&fit=crop';this.onerror=null;">
+                             onerror="this.src='https://this-person-does-not-exist.com/img/avatar-genb334052d7d54966fb8382d481530fb2d.jpg';this.onerror=null;">
                     </div>
                     <h3 class="text-lg font-semibold text-[#FFFCF2]">Chef Sophie</h3>
                     <p class="text-[#D90429] text-sm mb-2">Chef Créative</p>
