@@ -25,7 +25,7 @@ Il s'agit d'un client lourd (en Java) et d'un client léger (Laravel PHP) pour u
 
 - **[Evan](https://github.com/camolover)** - Scrum Master (@camolover)
 - **[Jayden](https://github.com/Starman404)** - Développeur (@Starman404)
-- **[Arthur](https://github.com/LeafZen)** - Développeur (@LeafZen)
+- **[Arthur](https://github.com/LeafZen)** - Développeur (@1969A)
 - **[Sara](https://github.com/sarapiccolo)** - Développeuse (@sarapiccolo)
 
 ## 🗄️ Structure de la Base de Données
